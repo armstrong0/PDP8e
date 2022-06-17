@@ -1,1 +1,83 @@
-test beds will no longer work, the design was originally async, it is now synchronous.  The diagnostics programs from DEC test this now
+This read me documents some of the thoughts, trial and tribulations in getting
+this going.  Read with a grain of salt!  It is roughly chronological. At the
+end there is a list things I would like to do...
+
+Hardware is an ICE40HX8K device on an ICEWERKS module bought from robot shop.
+
+Front panel has a self designed graphic... Code to design is in another
+repository.  Also in that repository a set of tools to determine the wiring
+required.  Wiring was mostly done with 30 AWG wirewrap wire.  Switches however
+were wired with 22 AWG copper bus wire.  
+
+Almost all of the circuitry is on the Icewerks modules.  Exceptions are the
+LED's and associated current limiting resistors, toggle switches, rotary
+dispaly select switch and a USB to TTL serial module.  Two 33 ufd caps were,
+placed between 3.3 volt and ground on the switch busses.  3 30 AWG wires were
+used to connect the ICEWERKS module ground to the switch ground.  Only 1 30
+AWG wire is used to hook up 3.3 Volts.
+
+Yellow LED's required - address 15, data dispaly 12, run 1 and display selected
+indicator 6.  Total 34.  Current limit resistor value is: 220 ohms.
+
+The display switch was problematic, it was not clear where the switch was
+positioned so LEDs were added.  The wiper of the switch is tied to 3.3 V, The
+six poles are connected to their respect ICEWERKS module pins, pull down
+resitors (18 k - not critical) go from each pole to ground.  Also from pole a
+wire goes to the anode of the associated display LED.  The cathodes of the
+LED's are all tied together and then routed through a 220 ohm resitor to
+ground.  Thus the only one LED lights and it indicates with switch positions
+is select.  
+
+
+This repository contains the Verilog code for the FPGA and test code to verify
+code correctness.  
+
+The design is paritioned into pieces, each piece has its own directory.  In
+some directories test code exists to test that module.  
+
+The tools required to build this code are a verilog comiler, a verilog
+simulator, a couple of PDP8 tools palbart and macro8x.  The palbart version
+required is: pal-2.13, 03 May 2015.
+
+The FPGA tools used are Icestorm tools set, yosys and nextnpr.  Iverilog wsa
+used as a simulator and Verilator was used as a linting tool.
+
+The directory integrate3 contains a test bed that will run selected DEC PDP8e
+diagnostics, this was used to debug and verify the design.
+
+The FPGA that wsa targetted is a Lattice Semiconductor ICE40Hx8k.  Very little
+code is targetted at that FPGA, that is the code that sets up the internal pll
+: pll.v the remaining (and vast majority ) code is generic.
+
+The directory FPGA_IO_test contains code useful in testing out wiring.
+Entering the directory and typing make should build an FPGA image that can be
+burned into the ICEWERKS module using the command make burn.
+
+The build the FPGA, enter the directory FPGA_image and type make.  If make is
+successful, then the image can be burned into the flash device on the ICEWERKS
+module using: make burn.
+
+This to do:
+1.) implement USER mode.
+
+2.) implement EAE
+
+3.) implement a real time clock
+
+4.) implement an emulated RK05 disk array using an SD card - take a look at
+Rob Doyle's PDP8 implentation on opencores!
+
+5.) retarget to a ICE40up5k part - which has enough RAM to implement the full
+32K words of memory (actually could implement 128 K as in the PDP8a).  However
+the part does not have enough IO pins to drive all the LEDs and sense all of
+the switches.  Would take some thought...
+
+5.) Redo the state machine adding one state to each of the 3 (4 Halt) machine
+cycles to register the RAM outputs before being used.  Currently this is the
+longest delays - should be able to speed the thing up.
+
+
+
+
+
+
