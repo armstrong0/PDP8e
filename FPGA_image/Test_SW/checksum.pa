@@ -1,0 +1,10 @@
+
+*7700
+	cla
+	dca pnt
+acm,	tad i pnt
+	isz pnt
+	jmp acm
+	hlt
+pnt,    0
+$

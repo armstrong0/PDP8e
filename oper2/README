@@ -1,0 +1,1 @@
+test beds will no longer work, the design was originally async, it is now synchronous.  The diagnostics programs from DEC test this now

@@ -1,0 +1,67 @@
+verify that op code for memory ops sequence through the proper states - choose
+one of DSA ISZ TAD AND     F,E   F,D,E
+
+DCA		o3000  y
+DCA I   o3400  y
+
+
+verify that JMP I and D works properly  F,D F
+JMP I   o5400 y
+JMP D   o5000 y
+
+verify that JMS I and D work  F,D,E F,E
+JMS I   o4400 y
+JMS D   o4000 y
+
+verify that single machine cycle ops work
+CLA     o7200
+ION     o6001
+IOF     o6002
+HLT     o7402
+
+Single Step asserted and cont does one machine cycle
+verify that single step works on 1,2 and 3 MC op and from H0
+CLA    o7200 
+JMP I  o5400
+AND I  o0400
+
+
+verify that interupt response is correct  from F3, D3 and E3  vectoring to E0
+to F0
+ADD HLTs to make it easier to control
+
+DCA I o3400
+HLT   o7402
+DCA D o3000
+HLT   o7402
+CLA   o7200
+HLT   o7402
+
+Halt - Cont executes one complete instruction
+verify halt works from F3, D3 and E3
+
+DCA I o3400
+DCA D o3000
+CLA   o7200
+
+Verify that indirect auto increment works
+current page (set the PC to 12'o0010 ) 
+Verify timing
+These are non auto increment
+JMP I 5600   // have to pull another value from memory (or hardcode)
+DCA I 3600
+
+Now using zero page  I 
+JMP I 5410
+DCA I 3410
+Now current page (PC [0:4] == 0
+JMP I 5610
+DCA I 3610
+my test bed reads the last op code and the simulation stops before it is done
+I could fix it but I think I will just add another opcode 
+7402 - just nneded a carrage return!!
+
+
+
+
+

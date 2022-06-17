@@ -1,0 +1,19 @@
+
+
+
+                                                                          Page 1
+
+
+    1              
+    2        7700  *7700
+    3 07700  7200          cla
+    4 07701  3306          dca pnt
+    5 07702  1706  acm,    tad i pnt
+    6 07703  2306          isz pnt
+    7 07704  5302          jmp acm
+    8 07705  7402          hlt
+    9 07706  0000  pnt,    0
+   10              $
+
+      No detected errors
+      No links generated

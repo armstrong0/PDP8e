@@ -1,0 +1,30 @@
+
+
+
+      / RIM loader.                                                       Page 1
+
+
+    1              / RIM loader.
+    2              
+    3        7756  *7756
+    4 07756  6032  RIM, KCC        / clear AC, clear KB, allow new data (12-bit word) -> KB.
+    5 07757  6031  KSF             / skip next instruction if KCF=1 (new data available in KB).
+    6 07760  5357  JMP .-1         / repeat last instruction (i.e. wait for new data).
+    7 07761  6036  KRB             / KB -> AC, clear KB, allow new data -> KB.
+    8 07762  7106  CLL RTL         / clear link, rotate AC twice.
+    9 07763  7006  RTL             / rotate AC twice more.
+   10 07764  7510  SPA             / skip next instruction if AC sign bit is zero (i.e. word contains half-address/data).
+   11 07765  5357  JMP RIM+1       / go back to waiting for new data word.
+   12 07766  7006  RTL             / rotate AC twice more (shifts half-address/data into upper 6-bits of AC).
+   13 07767  6031  KSF             / skip next instruction if KCF=1 (new data available in KB).
+   14 07770  5367  JMP .-1         / repeat last instruction (i.e. wait for new data).
+   15 07771  6034  KRS             / AC | KB -> AC (OR operation forms a full-word address/data).
+   16 07772  7420  SNL             / skip next instruction if link>0 (i.e. skip if AC contains an address).
+   17 07773  3776  DCA I TEMP      / store data word at the memory location specified in TEMP (address precedes data).
+   18 07774  3376  DCA TEMP        / store address word in TEMP memory location.
+   19 07775  5356  JMP RIM         / repeat endlessly.
+   20 07776  0000  TEMP, 0         / assign TEMP memory location.
+   21              $
+
+      No detected errors
+      No links generated

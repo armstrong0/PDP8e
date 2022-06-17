@@ -1,0 +1,8 @@
+	*0
+	IAC
+L1,     ISZ C1
+        JMP L1
+	JMP 0
+C1,     *100	
+	$
+

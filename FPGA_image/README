@@ -1,0 +1,13 @@
+One needs to make a pll module with the correct parameters for the operating frequency;
+
+This can be done thus:
+
+ icepll -i 12 -o 58  -f  pll.v -m
+
+ Where 12 is the input clock frequency in MHz and the 58 is the output frequency.
+
+Then the frequency has to be set in the PDP8e.pcf file and parameters.v to provide the tools information on the desired operating frequency.
+
+The file parameters.v, one level up, calculates many things from the clock frequency, such as the number of bits in the debounce timer in front_panel.v and baud rate parameters in the serial module.  So the clock frequency must match what is set in the pcf and pll.  If they are not close enough a warning will show up in one or both of the logs.
+
+

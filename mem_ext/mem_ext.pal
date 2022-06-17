@@ -1,0 +1,114 @@
+TITLE "extended mem test"
+
+*0
+	0000
+	RMF
+	JMP I 0
+	hlt
+ *0010
+IDX,   0010
+
+* 100
+ANDT,  5555   
+ISZT,  7770
+ADDT,  5557
+DCAT,  7577
+*150
+F1IT,   F1target
+* 200
+	6204  // CINT   Clear user int
+	6254  // SINT   Skip on user interrupt
+	6274  // SUF    sets the user buffer FF inhibits interrupts until next JMP 
+      // or JMS at which time UB FF -> UF FF
+	6264  // CUF    Clear User Flag  -- UF needs to be clear on load ext addr
+	CLL CML
+	GTF   // verify that these two instructions don't cause problems
+	CMA
+	RTF
+
+      // verify that we can read the field registers
+	RDF
+	RIF
+	RIB
+      // verify that AND ISZ TAD and DCA have correct addresses
+	CLA IAC
+	AND ANDT
+	ISZ ISZT
+	TAD ADDT
+	DCA DCAT
+
+// change data field to one and execute indirect AND ISZ TAD DCA
+
+	CDF 10
+	CLA IAC
+	AND I IDX
+	ISZ I IDX
+	TAD I IDX
+	DCA I IDX
+
+	CIF 10
+
+/CDF CIF 0
+	RDF
+	RIF
+	RIB
+
+	JMP F1org
+	RMF
+F0,  	CIF 10
+	JMS  F1S  
+	CIF 10
+	JMP I F1IT
+	hlt
+F0testInt,
+	7000
+	7000
+	CIF 70
+	7000
+	7000
+	RIB
+	RIF
+	7000
+	7000
+	7000
+	7000
+	hlt
+
+ FIELD 1
+ *500
+ F1org,
+	RDF
+	RIF
+	RIB
+	CDF 0
+	RDF
+	RIB
+	RIF
+	CIF 0
+	7000
+	7000
+	JMP F0
+	HLT
+F1S, 0000
+	CIF 00
+	JMP I F1S
+F1testInt,
+	CIF 10
+	JMP F0testInt
+	hlt
+
+F1target,
+	CIF 00
+	7000
+	7000
+	7000
+	7000
+	7000
+	7000
+	7000
+//	CIF 70
+//	RIF
+	jmp F0testInt
+	hlt
+$
+

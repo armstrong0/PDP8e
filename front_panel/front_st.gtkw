@@ -1,0 +1,42 @@
+[*]
+[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
+[*] Sun Apr 25 20:19:47 2021
+[*]
+[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/front_panel/front_st.vcd"
+[dumpfile_mtime] "Sun Apr 25 20:19:24 2021"
+[dumpfile_size] 11250
+[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/front_panel/front_st.gtkw"
+[timestart] 1199000
+[size] 1358 691
+[pos] -1 -1
+*-19.668289 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] front_panel_st_tb.
+[sst_width] 207
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 225
+@28
+front_panel_st_tb.addr_load
+front_panel_st_tb.addr_loadd
+front_panel_st_tb.clear
+front_panel_st_tb.cleard
+front_panel_st_tb.clk
+front_panel_st_tb.cont
+front_panel_st_tb.contd
+front_panel_st_tb.dep
+front_panel_st_tb.depd
+front_panel_st_tb.exam
+front_panel_st_tb.examd
+front_panel_st_tb.extd_addr
+front_panel_st_tb.extd_addrd
+@31
+front_panel_st_tb.instruction[0:11]
+@28
+front_panel_st_tb.reset
+front_panel_st_tb.sing_step
+@22
+front_panel_st_tb.state[3:0]
+@28
+front_panel_st_tb.halt
+[pattern_trace] 1
+[pattern_trace] 0

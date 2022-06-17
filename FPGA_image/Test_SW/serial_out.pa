@@ -1,0 +1,10 @@
+	* 200
+	CLA
+LOOP,	IAC
+	AND L1
+	TLS
+FREE,	TSF
+	JMP FREE
+	JMP LOOP
+L1,      0177
+	$

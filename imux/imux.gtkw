@@ -1,0 +1,31 @@
+[*]
+[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
+[*] Sun Apr 11 00:57:41 2021
+[*]
+[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/imux/imux_base_results.vcd"
+[dumpfile_mtime] "Sun Apr 11 00:56:56 2021"
+[dumpfile_size] 3422
+[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/imux/imux.gtkw"
+[timestart] 0
+[size] 1358 691
+[pos] -1 -1
+*-7.723040 113 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 207
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 185
+@28
+imux_base_tb.eskip
+imux_base_tb.iskip
+imux_base_tb.mskip
+imux_base_tb.sskip
+@30
+imux_base_tb.instruction[0:11]
+imux_base_tb.in_bus[0:11]
+imux_base_tb.flag_bus[0:11]
+@31
+imux_base_tb.mem_reg_bus[0:11]
+@30
+imux_base_tb.serial_bus[0:11]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,0 +1,20 @@
+
+
+
+              *0                                                          Page 1
+
+
+    1        0000          *0
+    2 00000  7001          IAC
+    3 00001  2101  L1,     ISZ C2
+    4 00002  5004          JMP L2
+    5 00003  5000          JMP 0
+    6 00004  2007  L2,     ISZ C1
+    7 00005  5004          JMP L2
+    8 00006  5001          JMP L1
+    9        0101  C1,     *101
+   10        0204  C2,     *204
+   11                      $
+
+      No detected errors
+      No links generated
