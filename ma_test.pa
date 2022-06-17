@@ -1,0 +1,30 @@
+	*0010
+I1,      L3 
+	*0020
+D1,      L2
+IS,     7776 
+	*200
+	JMP L1
+	*210
+L1,     JMP I D1
+        *220
+L2,     JMP I I1
+        *230 
+L3,     HLT
+        ISZ IS
+        ISZ IS
+	HLT
+	DCA
+	JMS S1
+	DCA
+	TAD L1
+	AND L1
+        HLT
+	HLT
+	
+	*277
+S1,	0
+	JMP I S1
+	$
+
+

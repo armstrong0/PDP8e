@@ -1,0 +1,41 @@
+[*]
+[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
+[*] Fri Mar 11 02:14:16 2022
+[*]
+[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/serial/top_tx.vcd"
+[dumpfile_mtime] "Fri Mar 11 02:13:58 2022"
+[dumpfile_size] 6611
+[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/serial/top_tx.gtkw"
+[timestart] 0
+[size] 1678 970
+[pos] -1 -1
+*-18.123075 58105000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] serial_tb.
+[treeopen] serial_tb.ST.
+[sst_width] 201
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 286
+@30
+serial_tb.instruction[0:11]
+@28
+serial_tb.flag
+serial_tb.clk
+@30
+serial_tb.ac[0:11]
+@28
+serial_tb.interrupt
+serial_tb.reset
+serial_tb.skip
+@22
+serial_tb.state[3:0]
+@28
+serial_tb.tx
+@31
+serial_tb.ST.tx1.shifter[0:11]
+@30
+serial_tb.ST.tx1.char[0:11]
+@28
+serial_tb.ST.tx1.load
+[pattern_trace] 1
+[pattern_trace] 0
