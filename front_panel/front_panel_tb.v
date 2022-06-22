@@ -6,7 +6,7 @@ reg clear, extd_addr,addr_load,dep,exam,sing_step,cont;
 wire contd;
 wire cleard , extd_addrd , addr_loadd , depd , examd; 
 
-reg [3:0] state;
+reg [4:0] state;
 wire [0:2] trig_stateo;
 wire [0:4] count;
 `include "../parameters.v"

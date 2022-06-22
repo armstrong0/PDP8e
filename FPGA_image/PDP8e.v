@@ -77,7 +77,7 @@ module top (input clk,
     wire int_ena,int_inh,irq;
     wire s_interrupt;
     wire gtf;
-    wire [3:0]  state;
+    wire [4:0]  state;
     wire [0:11] serial_data_bus,display_bus;
     wire [0:2] IF,DF;
     wire UF;

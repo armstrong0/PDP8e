@@ -1,0 +1,39 @@
+common to both mode
+ASC SCL 7403
+MUL MUY 7405
+DVI 7407
+NMI 7411
+SHL 7413
+ASR 7415
+LSR 7417
+SCA 7441
+SCA CLA 7641
+// actions are slightly different
+B Mode only
+SAM 7457 subract AC from MQ
+DAD 7443 Double Add
+DST 7445 Souble Store
+DPIC 7573 Double increment
+DCM  7575 Double Complement
+DPSZ 7451 Double Precision skip if zero
+// diagnostics
+MAINDEC-8E-DOLB replaced with maindec-8e-dhkeb
+MAINDEC-8E-DOMB replaced by maindec-8e-dhkec
+MAINDEC-8E-DORA replaced by maindec-8e-dhkea
+
+from test part 1
+skb  (skip if mode b) 7671 DPSZ  CLA MQL 
+
+Some EAE instructions will complete in the fetch machine cycle
+Some EAE instructions will complete in the fetch machine cycle BUT extend it.
+Some EAE instructions will complete in the Defered cycle BUT extend it.
+Some EAE instructions will require F,D and multiple E cycles.
+
+One could (heavily) modify the state machine to keep track of this OR put
+hooks in the state machine to allow another state machine: EAE_state_machine,
+to sequence the EAE instructions.  To do this the main state machine needs
+slight modification to allow it to relinquish control.  I think the latter
+approach is better.
+
+Need to take each instruction and determine which sequence it follows.
+

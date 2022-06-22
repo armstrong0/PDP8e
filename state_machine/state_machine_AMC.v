@@ -9,7 +9,7 @@ module state_machine(input clk,
     input trigger,
     input [0:11] instruction,pc,
     output reg int_in_prog,
-    output reg [3:0] state,
+    output reg [4:0] state,
 	output reg rdy);
 	
     reg [1:0] cnt;

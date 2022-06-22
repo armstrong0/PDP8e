@@ -4,7 +4,7 @@ module D_mux(
     input clk,
     input reset,
     input [0:5] dsel,
-    input [3:0] state,
+    input [4:0] state,
     input [3:11] state1,
     input [0:11] status,
     input [0:11] ac,

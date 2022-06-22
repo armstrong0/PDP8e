@@ -18,7 +18,7 @@ module serial_tb;
     reg clk;
     reg reset;
     reg [0:11] instruction;
-    reg [3:0] state;
+    reg [4:0] state;
     reg [0:11] ac;
 //reg rx;  //loop tx to rx
     wire [0:11] input_bus;

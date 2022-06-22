@@ -1,6 +1,6 @@
 module front_panel (input clk,
     input reset,
-    input [3:0] state,
+    input [4:0] state,
     input clear,
     input extd_addr,
     input addr_load,

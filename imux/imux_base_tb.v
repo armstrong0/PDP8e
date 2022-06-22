@@ -8,7 +8,7 @@ module imux_base_tb;
     reg [0:11] instruction;
     reg [0:11] serial_bus,mem_reg_bus;
     wire [0:11] in_bus,display_bus;
-    reg [3:0] state;
+    reg [4:0] state;
 
 imux IM(
 .clk (clk),

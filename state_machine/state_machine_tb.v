@@ -20,7 +20,7 @@ reg int_ena;
 reg int_inh;
 reg write_en;
 //wire rdy;
-wire [3:0] stateo;
+wire [4:0] stateo;
 wire int_in_prog;
 
 state_machine SM1(.clk (clk),
@@ -90,7 +90,7 @@ int_inh <= 1;
 trigger <= 0;
 
 #500 rst <= 0;
-  address <= 1;  // first addess is the rest state
+  address <= 1;  // first addess is the reset state
   data_file = $fopen("ops.txt", "r");
   if (data_file == `NULL) begin
     $display("data_file handle was NULL");

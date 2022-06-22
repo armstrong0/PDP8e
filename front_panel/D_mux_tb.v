@@ -2,11 +2,6 @@ module D_mux_tb;
 
 reg [0:5] dsel;
 reg [0:11] state;
-reg [0:11] state;
-reg [0:11] state;
-reg [0:11] state;
-reg [0:11] state;
-reg [0:11] state;
 wire [0:11] dout;
 
 D_mux UUT (

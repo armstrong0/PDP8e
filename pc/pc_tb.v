@@ -15,7 +15,7 @@ reg clk;
 reg reset;
 reg skip;
 reg [0:11] ma;
-reg [3:0] state;
+reg [4:0] state;
 reg isz_skip;
 
 `include "../parameters.v"

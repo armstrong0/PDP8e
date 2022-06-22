@@ -46,7 +46,7 @@ module top (input clk,
     reg [0:11] ir;
     reg L;
     reg [6:11] savereg;
-    reg [3:0]  state;
+    reg [4:0]  state;
     wire carry;
     wire L_out;
     wire [0:11] bselo;

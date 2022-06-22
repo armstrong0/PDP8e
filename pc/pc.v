@@ -3,7 +3,7 @@ module pc(
     input reset,
     input skip,eskip,
     input isz_skip,
-    input [3:0] state,
+    input [4:0] state,
     input [0:11] ma,
     input [0:11] instruction,
     input [0:11] mdout,
@@ -30,7 +30,8 @@ module pc(
                 next_pc <= pc + 12'o0001;
 				end
             F3: begin 
-                if ((instruction[0:1] == 2'b11) && ((skip == 1) || (eskip ==1))) 				    pc <= skip_pc;
+                if ((instruction[0:1] == 2'b11) && ((skip == 1) || (eskip ==1)))
+				   pc <= skip_pc;
 			    else if(instruction[0:3] == JMPD)
                    begin // jmp direct
                    if (instruction[4] == 0)   // page 0

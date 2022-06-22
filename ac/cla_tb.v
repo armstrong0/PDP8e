@@ -4,7 +4,7 @@ module ac_tb;
 
     reg clk;
     reg reset;
-    reg [3:0] state;
+    reg [4:0] state;
     wire [0:11] ac;
     wire [0:11] mq;
     reg [0:11] mdout;

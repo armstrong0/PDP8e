@@ -25,9 +25,9 @@ mem_ext ME(.clk (clk),
     .me_bus (me_bus));
 
 ma MA (.clk (clk),
-          .reset (reset),
+      .reset (reset),
 	  .state (state),
-          .instruction (instruction),
+      .instruction (instruction),
 	  .int_in_prog (int_in_prog),
 	  .pc (pc),
 	  .ma (ma),
@@ -85,7 +85,7 @@ wire [0:11] ma;
 wire [0:12] addr;
 wire [0:11] mdout;
 wire [0:11] instruction;
-wire [3:0] state;
+wire [4:0] state;
 wire [0:2] DF;
 wire [0:2] IF;
 wire UF;

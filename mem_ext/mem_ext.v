@@ -9,7 +9,7 @@ module mem_ext
     input [0:11] mdout,
     input [0:11] sr,
     input [0:11] rac,
-    input [3:0] state,
+    input [4:0] state,
     input clear,
     input extd_addrd,
     input gtf,

@@ -20,7 +20,7 @@ reg int_ena;
 reg int_inh;
 reg write_en;
 wire rdy;
-wire [3:0] stateo;
+wire [4:0] stateo;
 wire int_in_prog;
 
 state_machine SM1(.clk (clk),

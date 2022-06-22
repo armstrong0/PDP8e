@@ -1,5 +1,10 @@
 
-module oper2(input clk100, inout [3:0] state,input [0:11] instruction, input [0:11] ac,input l,output reg skip);
+module oper2(input clk100,
+             input [4:0] state,
+			 input [0:11] instruction, 
+			 input [0:11] ac,
+			 input l,
+			 output reg skip);
 // instruction neeeds to be hooked to mdout for valid results
 `include "../parameters.v"
     reg ac_zero;

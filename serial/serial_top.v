@@ -8,7 +8,7 @@ module serial_top(
     input clk,
     input reset,
     input [0:11] instruction,
-    input [3:0] state,
+    input [4:0] state,
     input [0:11] ac,
     input rx,
     input clear,

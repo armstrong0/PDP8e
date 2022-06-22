@@ -7,7 +7,7 @@ module ma_tb;
 
 reg clk;
 reg reset;
-reg [3:0] state;
+reg [4:0] state;
 reg [0:11] pc;
 reg [0:11] ac;
 reg [0:11] sr;
