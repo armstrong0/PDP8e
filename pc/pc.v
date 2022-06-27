@@ -57,6 +57,7 @@ module pc(
             E3: pc <= next_pc;
             H0,H1,H2: ;
             H3: pc <= ma;  // sync the pc with the ma
+			default:;
         endcase
 
     end

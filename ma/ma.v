@@ -10,28 +10,29 @@ module ma(input clk,
     input int_in_prog,
     input [0:2] IF,DF,
     output reg [0:11] addr,
-	output reg [0:2] EMA,
+    output reg [0:2] EMA,
     output reg isz_skip,
     output reg [0:11] instruction,
     output reg [0:11] ma,
-    output wire [0:11] mdout
+    output reg [0:11] mdout
 );
 
     reg [0:4] current_page;
     reg [0:11] mdin;
     reg write_en;
+    wire [0:11] mdtmp;
 
 `include "../parameters.v"
 
     ram ram(.din (mdin),
-`ifdef   address_width13	
-        .addr ({EMA[2],addr}),
+`ifdef   address_width13
+    .addr ({EMA[2],addr}),
 `else
-        .addr ({EMA[0:2],addr}),
+    .addr ({EMA[0:2],addr}),
 `endif
         .write_en (write_en),
         .clk (clk),
-        .dout (mdout));
+        .dout (mdtmp));
 
 
 
@@ -39,22 +40,23 @@ module ma(input clk,
     always @*  // just replace <= with = for verilator
     begin
         addr = ma;
-		EMA = IF;
+        EMA = IF;
         case (state)
-            F0,F1,F2,F3:
-			addr = pc;
-            default: 
-			  addr = ma;
-		endcase
-		case (state)
-            E0,E1,E2,E3: if (((instruction[0:2] == AND) ||
-                        (instruction[0:2] == TAD) ||
-                        (instruction[0:2] == ISZ) ||
-                        (instruction[0:2] == DCA)) &&
-                    (instruction[3] == 1'b1))
-                EMA = DF;
-            else
-                EMA = IF;
+            F0,FW,F1,F2,F3:
+                addr = pc;
+            default:
+                addr = ma;
+        endcase
+        case (state)
+            E0,EW,E1,E2,E3:
+			    if (((instruction[0:2] == AND) ||
+                     (instruction[0:2] == TAD) ||
+                     (instruction[0:2] == ISZ) ||
+                     (instruction[0:2] == DCA)) &&
+                     (instruction[3] == 1'b1))
+                     EMA = DF;
+                else
+                     EMA = IF;
             default: EMA = IF;
         endcase
     end
@@ -67,17 +69,23 @@ module ma(input clk,
             isz_skip <= 0;
             instruction <= 12'o7000;
             current_page <= 0;
-			write_en <= 0;
+            write_en <= 0;
         end
         else
         begin
             write_en <= 0;
             ma <= ma;
-			mdin <= mdin;
+            mdin <= mdin;
             case (state)
-                F0: ma <= pc;  // PC is not valid until the end of F3
-                F1: instruction <= mdout;
-				F2: current_page <= pc[0:4];
+                F0: begin
+                    ma <= pc;  // PC is not valid until the end of F3
+                end
+                FW:begin
+                    mdout <= mdtmp;
+                    instruction <= mdtmp;
+                end
+                F1: ; //instruction <= mdout;
+                F2: current_page <= pc[0:4];
                 F3: begin
                     case(instruction[0:2])
                         0,1,2,3,4,5:
@@ -89,7 +97,8 @@ module ma(input clk,
                         default:;
                     endcase
                 end
-                D0:;  // indirect memory read, ma is held from F3 don't need an extra state
+                D0:;
+				DW: mdout <= mdtmp;  
                 D1: if (ma[0:8] == 9'o001 )
                 begin
                     mdin <= mdout + 12'o0001;
@@ -100,41 +109,47 @@ module ma(input clk,
                 else
                     ma <= mdout;
                 D3: ;
-                E0: if (int_in_prog == 1)
+                E0: begin
+                    if (int_in_prog == 1)
                     begin
                         instruction <= 12'o4000;
                         ma <= 12'o0000;
                         mdin <= pc;
                     end
                     else case (instruction[0:2])
-                        ISZ,AND,TAD:;
-                        JMS: mdin <= pc;
-                        default:;
-                    endcase
-
-                 E1: case (instruction[0:2])
-                        ISZ: begin
-                            mdin <= mdout + 12'o0001;
-                            write_en <=1;
-                            if (mdout == 12'o7777) isz_skip <= 1 ;
-                        end
-                        JMS: begin
-                            write_en <= 1;
-                            mdin <= pc;
-                        end
-                        DCA: begin
-                            mdin <= ac;
-                            write_en <= 1;
-                        end
-                        default: ;
-                    endcase
+                            ISZ,AND,TAD:;
+                            JMS: mdin <= pc;
+                            default:;
+                        endcase
+                    mdout <= mdtmp;
+                end
+                EW: begin
+                    mdout <= mdtmp;
+                end
+                E1: case (instruction[0:2])
+                    ISZ: begin
+                        mdin <= mdout + 12'o0001;
+                        write_en <=1;
+                        if (mdout == 12'o7777) isz_skip <= 1 ;
+                    end
+                    JMS: begin
+                        write_en <= 1;
+                        mdin <= pc;
+                    end
+                    DCA: begin
+                        mdin <= ac;
+                        write_en <= 1;
+                    end
+                    default: ;
+                endcase
                 E2: case (instruction[0:2])
                     ISZ: isz_skip <= isz_skip;
                     DCA:;
                     default:;
                 endcase
                 E3:  isz_skip <= 0;
-                H0: ;
+                H0:;
+				HW:  mdout <= mdtmp ;
                 H1: if (addr_loadd == 1'b1)
                     ma <= sr;
                 else if (depd == 1'b1)
@@ -144,7 +159,8 @@ module ma(input clk,
                 end
                 H2: if ((depd ==1'b1) | (examd == 1'b1))
                     ma <= ma + 12'o0001;
-                H3: ;
+                H3:;
+                default:;
             endcase
         end
     end

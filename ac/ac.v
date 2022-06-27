@@ -177,6 +177,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             end
             H2:;
             H3:;
+			default:;
         endcase
 
     end

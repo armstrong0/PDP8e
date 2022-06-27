@@ -31,6 +31,6 @@ sim: PDP8e.v PDP8e_tb.v
 
 # was 62.25
 pll: 
-	icepll -i 12 -o 62.25  -f  pll.v -m
+	icepll -i 12 -o 85.00  -f  pll.v -m
 	
 

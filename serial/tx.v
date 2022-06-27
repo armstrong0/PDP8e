@@ -27,7 +27,7 @@ module tx( input clk100 ,
             flag <= 0;
             tto <= 8'o040;
             loaded <= 0;
-            period_cntr <= 14'd4;
+            period_cntr <= 14'd16;
             state <= IDLE;
             tx <= 1;
         end
@@ -64,7 +64,7 @@ module tx( input clk100 ,
                         end
                         else begin
                             state <= IDLE;
-                            period_cntr <= 14'd4;
+                            period_cntr <= 14'd16;
                         end
                     end
                     START:
@@ -86,7 +86,7 @@ module tx( input clk100 ,
 					STOP1: begin
 `ifdef ONESTOP
                     state <= IDLE;
-					period_cntr <= 14'd4;
+					period_cntr <= 14'd16;
 `else
                     state <= STOP2;
 					period_cntr <= tx_term_cnt[13:0];
@@ -96,10 +96,10 @@ module tx( input clk100 ,
                     STOP2: begin // we are done set up for the next
                         state <= IDLE; // loaded might be set but idle will
 						// sort it out very quickly
-                        period_cntr <= 14'd4;
+                        period_cntr <= 14'd16;
                     end
 
-                    default:period_cntr <= 14'd4;
+                    default:period_cntr <= 14'd16;
 
                 endcase
             case (state)

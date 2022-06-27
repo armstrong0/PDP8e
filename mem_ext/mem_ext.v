@@ -181,6 +181,7 @@ module mem_ext
                     int_delay <= 0;
                 end
                 H3:;
+				default:;
             endcase
     end
 endmodule
