@@ -14,7 +14,8 @@ module ram (din, addr, write_en, clk, dout);// 8196 x 12
         initial begin
            //$readmemh("loader.hex",mem,0,4095);// both bin and rim loaders
            //$readmemh("utils.hex",mem,0,4095);// both bin and rim loaders
-           $readmemh("focal.hex",mem,0,4095);
+           //$readmemh("focal.hex",mem,0,4095);
+           $readmemh("focal_loader.hex",mem,0,4095);
            //$readmemh("tit_interrupt.hex",mem,0,4095);
 		   //$readmemh("../integrate3/Diagnostics/D0AB.hex", mem,0,4095);
            //$readmemh("../integrate3/Diagnostics/dhkaf-a.hex", mem,0,4095);
