@@ -6,7 +6,6 @@
 `include "../imux/imux.v"
 `include "../front_panel/front_panel.v"
 `include "../front_panel/D_mux.v"
-//`include "../int_iot/int_iot.v"
 `include "../serial/serial_top.v"
 `include "../oper2/oper2.v"
 `include "../ac/ac.v"
@@ -188,11 +187,6 @@ module top (input clk,
         .tx (tx),
         .interrupt (s_interrupt),
         .skip (sskip));
-
-//    int_iot INT(
-//        .serial_interrupt (s_interrupt),
-//        .irq (irq)
-//        );
 
     D_mux DM(.clk (clk100),
         .reset (reset),
