@@ -1,0 +1,16 @@
+MAINDEC-8E-D0AB-InstTest-1.pt  PASS
+MAINDEC-8E-D0BB-InstTest-2.pt  PASS
+MAINDEC-8E-D0CC-AddTest.pt     PASS
+MAINDEC-8E-D0DB-Random-AND.pt  PASS
+MAINDEC-8E-D0EB-Random-TAD.pt  PASS
+MAINDEC-8E-D0FC-Random-ISZ.pt  PASS
+MAINDEC-8E-D0GC-Random-DCA.pt  PASS
+MAINDEC-8E-D0HC-Random-JMP.pt  PASS
+MAINDEC-8E-D0IB-Basic-JMP-JMS.pt PASS
+MAINDEC-8E-D0JB-Random-JMP-JMS.pt PASS
+MAINDEC-8E-D1AA-Memory-Checkerboard.pt Doesn't look like this makes sense with
+SS memory..
+dhkaf-a-pb -replaces D0AB
+maindec-08-dhkag-a-pb  replaces D0BB
+maindec-08-dhmca-a-pb memory extention  PASS
+maindec-8e-d2ab-pb -serial tests NOT run on hardware
