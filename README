@@ -58,7 +58,7 @@ successful, then the image can be burned into the flash device on the ICEWERKS
 module using: make burn.
 
 This to do:
-1.) implement USER mode.
+1.) implement USER mode. DONE July 20
 
 2.) implement EAE
 
@@ -74,7 +74,8 @@ the switches.  Would take some thought...
 
 5.) Redo the state machine adding one state to each of the 3 (4 Halt) machine
 cycles to register the RAM outputs before being used.  Currently this is the
-longest delays - should be able to speed the thing up.
+longest delays - should be able to speed the thing up. DONE July 20, it has sped the machine up
+
 
 
 
