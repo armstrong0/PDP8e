@@ -5,7 +5,6 @@ module ma(input clk,
     input [0:11] ac,
     input [0:11] sr,
     input [4:0] state,
-//	input rdy,
     input addr_loadd,depd,examd,
     input int_in_prog,
     input [0:2] IF,DF,
@@ -25,11 +24,7 @@ module ma(input clk,
 `include "../parameters.v"
 
     ram ram(.din (mdin),
-`ifdef   address_width13
-    .addr ({EMA[2],addr}),
-`else
-    .addr ({EMA[0:2],addr}),
-`endif
+        .addr ({EMA[2],addr}),
         .write_en (write_en),
         .clk (clk),
         .dout (mdtmp));
@@ -43,20 +38,20 @@ module ma(input clk,
         EMA = IF;
         case (state)
             F0,FW,F1,F2,F3:
-                addr = pc;
+            addr = pc;
             default:
-                addr = ma;
+            addr = ma;
         endcase
         case (state)
             E0,EW,E1,E2,E3:
-			    if (((instruction[0:2] == AND) ||
-                     (instruction[0:2] == TAD) ||
-                     (instruction[0:2] == ISZ) ||
-                     (instruction[0:2] == DCA)) &&
-                     (instruction[3] == 1'b1))
-                     EMA = DF;
-                else
-                     EMA = IF;
+            if (((instruction[0:2] == AND) ||
+                        (instruction[0:2] == TAD) ||
+                        (instruction[0:2] == ISZ) ||
+                        (instruction[0:2] == DCA)) &&
+                    (instruction[3] == 1'b1))
+                EMA = DF;
+            else
+                EMA = IF;
             default: EMA = IF;
         endcase
     end
@@ -78,11 +73,19 @@ module ma(input clk,
             mdin <= mdin;
             case (state)
                 F0: begin
-                    ma <= pc;  // PC is not valid until the end of F3
+                    ma <= pc;
                 end
                 FW:begin
-                    mdout <= mdtmp;
-                    instruction <= mdtmp;
+                    if (EMA > MAX_FIELD)
+                    begin
+                        mdout <= 12'o0000;
+                        instruction <= 12'o0000;
+                    end
+                    else
+                    begin
+                        mdout <= mdtmp;
+                        instruction <= mdtmp;
+                    end
                 end
                 F1: ; //instruction <= mdout;
                 F2: current_page <= pc[0:4];
@@ -92,24 +95,31 @@ module ma(input clk,
                         if (instruction[4] == 0 )  //page 0
                             ma <= {5'b00000,instruction[5:11]};
                         else
-                            ma <= {current_page,instruction[5:11]}; // pc has already been incremented
-                        6,7: ma <= pc;//  pc is problably not valid until the end of F3 so assign ma here is probably irrelavent
+                            ma <= {current_page,instruction[5:11]};
+							// pc has already been incremented
+                        6,7: ma <= pc;
+						//  pc is problably not valid until the end of F3
+						//  so assign ma here is probably irrelavent
                         default:;
                     endcase
                 end
                 D0:;
-				DW: mdout <= mdtmp;  
+                DW: if (EMA > MAX_FIELD)
+                    mdout <= 12'o0000;
+                else
+                    mdout <= mdtmp;
                 D1: if (ma[0:8] == 9'o001 )
                 begin
                     mdin <= mdout + 12'o0001;
-                    write_en <= 1;
+                    if (EMA <= MAX_FIELD) write_en <= 1;
                 end
                 D2: if (ma[0:8]  == 9'o001 )
                     ma <= mdout + 12'o0001;
                 else
                     ma <= mdout;
                 D3: ;
-                E0: begin
+                E0:;
+                EW: begin
                     if (int_in_prog == 1)
                     begin
                         instruction <= 12'o4000;
@@ -122,23 +132,24 @@ module ma(input clk,
                             default:;
                         endcase
                     mdout <= mdtmp;
-                end
-                EW: begin
-                    mdout <= mdtmp;
+                    if (EMA > MAX_FIELD)
+                        mdout <= 12'o0000;
+                    else
+                        mdout <= mdtmp;
                 end
                 E1: case (instruction[0:2])
                     ISZ: begin
                         mdin <= mdout + 12'o0001;
-                        write_en <=1;
+                        if (EMA <= MAX_FIELD) write_en <=1;
                         if (mdout == 12'o7777) isz_skip <= 1 ;
                     end
                     JMS: begin
-                        write_en <= 1;
+                        if (EMA <= MAX_FIELD) write_en <= 1;
                         mdin <= pc;
                     end
                     DCA: begin
                         mdin <= ac;
-                        write_en <= 1;
+                        if (EMA <= MAX_FIELD) write_en <= 1;
                     end
                     default: ;
                 endcase
@@ -149,13 +160,16 @@ module ma(input clk,
                 endcase
                 E3:  isz_skip <= 0;
                 H0:;
-				HW:  mdout <= mdtmp ;
+                HW:  if (EMA > MAX_FIELD)
+                    mdout <= 12'o0000;
+                else
+                    mdout <= mdtmp ;
                 H1: if (addr_loadd == 1'b1)
                     ma <= sr;
                 else if (depd == 1'b1)
                 begin
                     mdin <= sr;
-                    write_en <= 1;
+                    if (EMA <= MAX_FIELD) write_en <= 1;
                 end
                 H2: if ((depd ==1'b1) | (examd == 1'b1))
                     ma <= ma + 12'o0001;

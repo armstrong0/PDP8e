@@ -1,9 +1,5 @@
 module ram (din, addr, write_en, clk, dout);// 8196 x 12
-`ifdef address_width13
 	parameter addr_width = 13;
-`else
-    parameter addr_width = 15;
-`endif	
 	parameter data_width = 12;
 	input [addr_width-1:0] addr;
 	input [data_width-1:0] din;

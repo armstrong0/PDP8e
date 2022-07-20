@@ -33,7 +33,7 @@ module top (input clk,
 `ifdef SIM
     input clk100,
     input pll_locked,
-	input reset,
+    input reset,
 `endif
     input rx,
     input [0:11] sr,
@@ -69,7 +69,7 @@ module top (input clk,
     wire [0:11] pc;
     wire [0:11] ma;
     wire [0:11] ac,ac_input,rac,me_bus;
-    wire [0:11] mq;
+    wire [0:11] rmq;
     wire [0:11] instruction,mdout;
     wire link;
     wire isz_skip,sskip,iskip;
@@ -80,7 +80,9 @@ module top (input clk,
     wire [0:11] serial_data_bus,display_bus;
     wire [0:2] IF,DF;
     wire UF;
+    wire UI;
     reg [0:11] rsr;
+    wire EAE_mode,EAE_done;
 
 
 
@@ -102,14 +104,14 @@ module top (input clk,
     end
 `else
     always @(posedge clk)
-	begin
-	   rsr <= sr;
-	end
+    begin
+        rsr <= sr;
+    end
 `endif
 
 
 `include "../parameters.v"
- assign irq = s_interrupt;
+    assign irq = s_interrupt | UI;
 
     ma MA(.clk (clk100),
         .reset (reset),
@@ -150,6 +152,7 @@ module top (input clk,
         .int_inh (int_inh),
         .int_ena (int_ena),
         .int_in_prog (int_in_prog),
+        .UF (UF),
         .halt (halt),
         .single_step (single_step),
         .cont (contd),
@@ -166,8 +169,12 @@ module top (input clk,
         .rac (rac),
         .l (link),
         .gtf (gtf),
+        .UF (UF),
+        .UI (UI),
+        .EAE_mode (EAE_mode),
+        .EAE_done (EAE_done),
         .sr (rsr),
-        .mq (mq));
+        .rmq (rmq));
 
     oper2 oper21(.clk100 (clk100),
         .state (state),
@@ -178,13 +185,14 @@ module top (input clk,
 
     serial_top ST(.clk (clk100),
         .reset (reset),
-        .clear (clear),
+        .clear (cleard),
         .state (state),
         .instruction (mdout),
         .ac (rac),
         .serial_bus (serial_data_bus),
         .rx (rx),
         .tx (tx),
+        .UF (UF),
         .interrupt (s_interrupt),
         .skip (sskip));
 
@@ -193,9 +201,9 @@ module top (input clk,
         .dsel (dsel),
         .state1 ( {instruction[0:2],2'b00,sw,3'b000}),
         .status ({link,gtf,irq,1'b0,int_ena,{UF,IF,DF}}),
-        .ac (rac),
+        .rac (rac),
         .mb (mdout),
-        .mq (mq),
+        .rmq (rmq),
         .io_bus (display_bus),
         .dout (ds),
         .state (state),
@@ -241,7 +249,7 @@ module top (input clk,
         .sr (rsr),
         .rac (rac),
         .state (state),
-        .clear (clear),
+        .clear (cleard),
         .extd_addrd (extd_addrd),
         .int_in_prog (int_in_prog),
         .int_inh (int_inh),
@@ -251,6 +259,7 @@ module top (input clk,
         .DF (DF),
         .IF (IF),
         .UF (UF),
+        .UI (UI),
         .mskip (mskip),
         .me_bus (me_bus));
 

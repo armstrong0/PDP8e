@@ -12,6 +12,7 @@ module serial_top(
     input [0:11] ac,
     input rx,
     input clear,
+	input UF,
     output reg [0:11] serial_bus,  //from the point of view of the CPU
     output tx,
 	/* verilator lint_off SYMRSVDWORD */
@@ -65,10 +66,9 @@ module serial_top(
         begin
             skip <= 0;
             case (instruction)
-                //12'o6003: if (sint_ena == 1) skip <= 1;
-                12'o6031: if (rx_flag ) skip <= 1;
-                12'o6041: if (flag == 1 )  skip <= 1;
-                12'o6045: if (flag & sint_ena) skip <= 1;
+                12'o6031: if ((rx_flag == 1)&&(UF == 1'b0)) skip <= 1;
+                12'o6041: if ((flag == 1) && (UF == 1'b0))  skip <= 1;
+                12'o6045: if ((flag & sint_ena) && (UF == 1'b0)) skip <= 1;
                 default:;
             endcase
         end
@@ -95,23 +95,27 @@ module serial_top(
         end
         if (state == F1)
             case (instruction)
-                12'o6030: clear_rx <= 1; // KCF Clear Keyboard flag
+                12'o6030: if(UF == 1'b0) clear_rx <= 1;//KCF Clear Keyboard flag
                 12'o6031:;// KSF Skip if Keyboard Flag = 1
-                12'o6032: clear_rx <= 1; // KCC Clear AC, keyboard flag
-                12'o6034:;// KRS Read Keyboard buffer 'ors' the buffer int the AC
-                12'o6035: sint_ena <= ac[11]; //KIE AC11 to Keyboard interupt enable
-                12'o6036: clear_rx <= 1; // KRB Clear AC read buffer, clear flags
-                12'o6040: set_tx <= 1;   // SPF Set printer flag
-                12'o6041:;// TSF Skip if printer flag = 1 or the keyboard flag = 1
-                12'o6042: clear_tx <= 1; // TCF clear printer flag
-                12'o6044: load_tx <= 1;  // TCP Load buffer and print
+                12'o6032:if (UF == 1'b0) clear_rx <= 1;//KCC Clear AC,keyboard flag
+                12'o6034:;//KRS Read Keyboard buffer 'ors' the buffer int the AC
+                12'o6035: if (UF == 1'b0) sint_ena <= ac[11];
+				//KIE AC11 to Keyboard interupt enable
+                12'o6036: if (UF == 1'b0) clear_rx <= 1;
+				// KRB Clear AC read buffer, clear flags
+                12'o6040: if (UF == 1'b0) set_tx <= 1;  // SPF Set printer flag
+                12'o6041:;//TSF Skip if printer flag = 1 or keyboard flag = 1
+                12'o6042: if (UF == 1'b0) clear_tx <= 1;//TCF clear printer flag
+                12'o6044: if (UF == 1'b0) load_tx <= 1;//TCP Load buffer, print
                 12'o6045:;// SPI Skip if printer interrupt = 1
                 12'o6046: // TLS Load buffer, print and clear the printer flag
-                begin
+	         	if (UF == 1'b0)
+                 begin
                     load_tx <= 1;
                     clear_tx <= 1;
                 end
                 12'o6007: //CAF
+	         	if (UF == 1'b0)
                 begin
                     clear_tx <= 1;
                     clear_rx <= 1;

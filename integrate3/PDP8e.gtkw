@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Wed Apr  6 20:03:39 2022
+[*] Tue Jul 19 01:32:15 2022
 [*]
-[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/integrate3/JMP_JMS_test.vcd"
-[dumpfile_mtime] "Wed Apr  6 20:03:23 2022"
-[dumpfile_size] 24264
-[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/integrate3/PDP8e.gtkw"
-[timestart] 1000
-[size] 1680 971
-[pos] 39 0
-*-28.544382 127523000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[dumpfile] "/home/armstrong/Desktop/tmp/PDP8e/integrate3/extended_memory.vcd"
+[dumpfile_mtime] "Tue Jul 19 01:30:10 2022"
+[dumpfile_size] 26522
+[savefile] "/home/armstrong/Desktop/tmp/PDP8e/integrate3/PDP8e.gtkw"
+[timestart] 23974000
+[size] 1678 969
+[pos] -1 -1
+*-17.656569 24615150 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
 [sst_width] 201
@@ -33,9 +33,9 @@ PDP8e_tb.UUT.ac[0:11]
 (11)PDP8e_tb.UUT.ac[0:11]
 @1401200
 -group_end
-@c00031
+@c00030
 PDP8e_tb.UUT.instruction[0:11]
-@29
+@28
 (0)PDP8e_tb.UUT.instruction[0:11]
 (1)PDP8e_tb.UUT.instruction[0:11]
 (2)PDP8e_tb.UUT.instruction[0:11]
@@ -48,9 +48,32 @@ PDP8e_tb.UUT.instruction[0:11]
 (9)PDP8e_tb.UUT.instruction[0:11]
 (10)PDP8e_tb.UUT.instruction[0:11]
 (11)PDP8e_tb.UUT.instruction[0:11]
-@1401201
+@1401200
 -group_end
 @30
+PDP8e_tb.UUT.ME.me_bus[0:11]
+@28
+PDP8e_tb.UUT.cont
+@30
+PDP8e_tb.UUT.sr[0:11]
+@28
+PDP8e_tb.UUT.ME.UB
+PDP8e_tb.UUT.ME.UF
+PDP8e_tb.UUT.ME.UI
+@30
+PDP8e_tb.UUT.DF[0:2]
+@29
+PDP8e_tb.UUT.ME.IF[0:2]
+@28
+PDP8e_tb.UUT.ME.int_ena
+PDP8e_tb.UUT.ME.int_in_prog
+PDP8e_tb.UUT.ME.irq
+@30
 PDP8e_tb.address[0:14]
+PDP8e_tb.UUT.ME.savereg[0:6]
+@22
+PDP8e_tb.UUT.ME.state[4:0]
+@30
+PDP8e_tb.UUT.A[0:11]
 [pattern_trace] 1
 [pattern_trace] 0

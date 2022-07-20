@@ -87,11 +87,11 @@ module PDP8e_tb;
         begin
             case (test_sel)
                 1:;
-                11: if ($time < 5000)
-                begin
-                    `pulse(cont);  //it would appear that a case with just pulse does not work
-                end
-                else $finish;
+                //11: if ($time < 5000)
+                //begin
+                //    `pulse(cont);  //it would appear that a case with just pulse does not work
+                //end
+                //else $finish;
                 12: begin
                     #1000 $finish;
                 end
@@ -201,6 +201,9 @@ module PDP8e_tb;
                 15'o01600: $display("Starting Test 13");
                 15'o02200: $display("Starting Test 14");
                 15'o02600: $display("Starting Test 15");
+                15'o03200: $display("Starting Test 15 Part 2");
+                15'o03400: $display("Starting Test 15 Part 3");
+
                 15'o03502: $display("Starting Test 16");
                 15'o01565: $display("Finished complete tests!");
                 default:;
@@ -296,7 +299,7 @@ module PDP8e_tb;
             11: begin
                 $dumpfile("extended_memory.vcd");
                 $readmemh("Diagnostics/dhmca.hex",UUT.MA.ram.mem,0,8191);
-                $dumpvars(0,address,UUT.instruction,UUT.ac,UUT.UUT.ME.IB,UUT.IF,UUT.DF,UUT.ME.savereg,UUT.irq,UUT.int_ena,UUT.int_in_prog,UUT.ME.int_delay,UUT.int_inh,UUT.cont,UUT.sr,UUT.mskip,UUT.eskip,UUT.state,UUT.MA.write_en);
+                $dumpvars(0,address,UUT);
             end
 
             12: begin
@@ -314,6 +317,7 @@ module PDP8e_tb;
         #1 exam <= 0;
         #1 cont <= 0;
         #1 extd_addr <= 0;
+        #1 addr_load <= 0;
         #1 dep <= 0;
         #1 dsel <= 6'b001000;
         #1 sr <= 12'o0200;
@@ -412,11 +416,14 @@ module PDP8e_tb;
                 #150000000  $finish;
             end
             11:begin
+                sr <= 12'o2200;  //test 14
+                #1000 ;
                 `pulse(addr_load);
-                sr <= 12'o6001;
+                sr <= 12'o0001; // simulation has 8k, reads 0000 for
+				// non-exsistant memory
                 #1000 `pulse(cont);
-                #1000  `pulse(cont);
-                #1000000000 $finish;
+                // #1000  `pulse(cont);
+                #5000000 $finish;
             end
             12: begin
                 # 100 $display("in test 12"); ;

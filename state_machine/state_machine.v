@@ -6,6 +6,7 @@ module state_machine(input clk,
     input int_req,
     input int_ena,
     input int_inh,
+    input UF,
     input trigger,
     input [0:11] instruction,
     output reg int_in_prog,
@@ -36,15 +37,17 @@ module state_machine(input clk,
                 F2:begin
                     state <= F3;
                 end
-                F3:if ((instruction[0:1] == 2'b11) || (instruction[0:3] == 4'b1010)) // IOT | OPER | JMP D
+                F3:if ((instruction[0:1] == 2'b11) || (instruction[0:3] == 4'b1010))
+                    	// IOT | OPER | JMP D
                     
                 begin
 					// IOT, OPER and JMP D instructions execute in the fetch
                     if (halt == 1)
                         state <= H0;
                     else
-                    if ({instruction[0:3],instruction[10:11]} == 6'b111110)
-                         // halt instruction
+                    if (({instruction[0:3],instruction[10:11]} == 6'b111110)
+                            && (UF == 1'b0))
+                         // halt instruction, not in user mode
                         state <= H0;
                     else if  ((int_req & int_ena & ~int_inh )
                             && (instruction != 12'o6002))

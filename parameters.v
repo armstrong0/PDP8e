@@ -17,7 +17,7 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
           DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
           OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
           JMPI = 4'b1011, JM = 2'b10;
-		  
+
 `ifndef SIM
     //parameter real clock_frequency    =  62250000;
     parameter real clock_frequency    =  85500000;
@@ -43,9 +43,9 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
     parameter real baud_period = 1.0/baud_rate*1e9;
     parameter tx_term_cnt = $rtoi(baud_period/clock_period);
 `endif
-`else  // use 8K of memory instead of 32K for real FPGA
-`define address_width13
 `endif
+
+parameter MAX_FIELD = 3'b001;
 
 `define ONESTOP   // one stop bit for all baud rates greater than 110
 
