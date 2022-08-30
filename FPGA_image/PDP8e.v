@@ -21,6 +21,7 @@
 
 `default_nettype none
 
+
 /* verilator lint_off LITENDIAN */
 
 module top (input clk,
@@ -72,7 +73,7 @@ module top (input clk,
     wire [0:11] rmq;
     wire [0:11] instruction,mdout;
     wire link;
-    wire isz_skip,sskip,iskip;
+    wire isz_skip,sskip;
     wire int_ena,int_inh,irq;
     wire s_interrupt;
     wire gtf;
@@ -82,7 +83,7 @@ module top (input clk,
     wire UF;
     wire UI;
     reg [0:11] rsr;
-    wire EAE_mode,EAE_done;
+    wire EAE_mode,EAE_loop,EAE_skip;
 
 
 
@@ -142,12 +143,15 @@ module top (input clk,
         .int_in_prog (int_in_prog),
         .skip (skip),
         .isz_skip (isz_skip),
-        .eskip (eskip));
+        .eskip (eskip)
+		);
 
     state_machine SM(.clk (clk100),
         .reset (reset),
         .state (state),
         .instruction (instruction),
+		.EAE_loop (EAE_loop),
+		.EAE_mode (EAE_mode),
         .int_req (irq),
         .int_inh (int_inh),
         .int_ena (int_ena),
@@ -172,13 +176,14 @@ module top (input clk,
         .UF (UF),
         .UI (UI),
         .EAE_mode (EAE_mode),
-        .EAE_done (EAE_done),
+        .EAE_loop (EAE_loop),
+		.EAE_skip (EAE_skip),
         .sr (rsr),
         .rmq (rmq));
 
     oper2 oper21(.clk100 (clk100),
         .state (state),
-        .instruction (mdout),
+        .instruction (instruction),
         .ac (ac),
         .l (link),
         .skip (skip));
@@ -187,7 +192,7 @@ module top (input clk,
         .reset (reset),
         .clear (cleard),
         .state (state),
-        .instruction (mdout),
+        .instruction (instruction),
         .ac (rac),
         .serial_bus (serial_data_bus),
         .rx (rx),
@@ -231,13 +236,14 @@ module top (input clk,
     imux IM(.clk (clk100),
         .reset (reset),
         .state (state),
-        .instruction (mdout),
+        .instruction (instruction),
         .ac (rac),
         .mem_reg_bus (me_bus),
         .serial_data_bus (serial_data_bus),
         .in_bus (ac_input),
         .bus_display (display_bus),
-        .iskip (iskip),
+		.EAE_skip (EAE_skip),
+		.EAE_mode (EAE_mode),
         .sskip (sskip),
         .mskip (mskip),
         .skip (eskip));

@@ -10,15 +10,16 @@ module front_panel (input clk,
     input sing_step,
     input halt,
     output triggerd,cleard , extd_addrd , addr_loadd , depd , examd, contd
-	);
+);
 
 `include "../parameters.v"
-    reg cont_c;
+    wire cont_c;
     reg [0:6] switchd;
     reg [0:2] trig_state;
 
     reg [0:dbnce_nu_bits] trig_cnt;  // the highest order bit is always bit 0 !
     reg trigger1;
+	
     assign { triggerd,cleard , extd_addrd , addr_loadd , depd , examd, contd } = switchd;
 
     localparam Wait = 3'b000,
@@ -30,12 +31,13 @@ module front_panel (input clk,
 
     always @*
     begin
-        trigger1 = (trig_state == Wait)&&
+        trigger1 = (trig_state == Wait) &&
         ( clear | extd_addr | addr_load | dep | exam | cont );
-        cont_c = (cont & (sing_step | halt));
     end
 
-    always @(posedge clk) 
+    assign cont_c = (cont & (sing_step | halt));
+
+    always @(posedge clk)
     begin
         if (reset)
         begin
@@ -46,10 +48,10 @@ module front_panel (input clk,
         else
         begin
             case (trig_state)
-                Wait: if (((state == H0) & (trigger1 == 1)) |
-                        ((state == F0) & cont_c) |
-                        ((state == D0) & cont_c) |
-                        ((state == E0) & cont_c))
+                Wait: if ((((state == H0) || (state == HW)) & (trigger1 == 1)) |
+                         ((state == F0) & cont_c) |
+                         ((state == D0) & cont_c) |
+                         ((state == E0) & cont_c))
                 begin
                     trig_state <= Trig1 ;
                     switchd <= {1'b1,clear ,extd_addr ,addr_load , dep ,exam, cont };
@@ -74,11 +76,11 @@ module front_panel (input clk,
                 else
                 begin
                     trig_state <= Delay;
-		            switchd <= 7'b0000000;
+                    switchd <= 7'b0000000;
                 end
 
                 Reenable: trig_state <= Wait;
-				default: trig_state <= Wait;
+                default: trig_state <= Wait;
 
             endcase
             if (trig_state == Trig1)

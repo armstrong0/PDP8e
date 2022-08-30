@@ -1,39 +1,44 @@
 [*]
 [*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Tue May  3 16:02:28 2022
+[*] Sun Aug 28 20:33:51 2022
 [*]
-[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/state_machine/AMC.vcd"
-[dumpfile_mtime] "Tue May  3 16:01:44 2022"
-[dumpfile_size] 11821
-[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/state_machine/state.gtkw"
+[dumpfile] "/home/armstrong/Desktop/PDP8e/state_machine/state_test.vcd"
+[dumpfile_mtime] "Sun Aug 28 20:33:14 2022"
+[dumpfile_size] 32567
+[savefile] "/home/armstrong/Desktop/PDP8e/state_machine/state.gtkw"
 [timestart] 0
-[size] 1678 970
+[size] 1678 969
 [pos] -1 -1
-*-20.796745 3565400 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-20.393517 3565400 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] state_machine_tb.
 [sst_width] 207
-[signals_width] 148
+[signals_width] 166
 [sst_expanded] 1
 [sst_vpaned_height] 282
 @28
 state_machine_tb.clk
 state_machine_tb.cont
 state_machine_tb.halt
+@29
+state_machine_tb.sing_step
 @30
 state_machine_tb.op[0:11]
 @28
 state_machine_tb.int_ena
 state_machine_tb.int_req
 state_machine_tb.int_inh
-@29
 state_machine_tb.int_in_prog
+state_machine_tb.SM1.EAE_loop
+state_machine_tb.SM1.EAE_mode
+state_machine_tb.SM1.UF
+@30
+state_machine_tb.SM1.instruction[0:11]
+@22
+state_machine_tb.SM1.state[4:0]
 @420
 state_machine_tb.address
 @28
 state_machine_tb.rst
-state_machine_tb.sing_step
-@22
-state_machine_tb.stateo[3:0]
-@28
 state_machine_tb.trigger
 [pattern_trace] 1
 [pattern_trace] 0

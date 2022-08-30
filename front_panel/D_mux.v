@@ -13,17 +13,53 @@ module D_mux(
     input [0:11] io_bus,
     output reg [0:11] dout,
     output reg run_led);
+`include "../parameters.v"
 
-    reg FS,DS,ES;
+    reg FS,DS,ES,HS;
 
     always @* begin
-        if(state[3:2] == 2'b00) FS = 1;  else FS = 0;
-        if(state[3:2] == 2'b01) DS = 1;  else DS = 0;
-        if(state[3:2] == 2'b10) ES = 1;  else ES = 0;
-        if(state[3:2] == 2'b11)
-            run_led = 0;
-        else
-            run_led = 1;
+	    case (state)
+		   F0,FW,F1,F2,F3,F4,F5,F6,F7:  
+		     begin
+			   run_led = 1;
+			   FS = 1;
+			   DS = 0;
+			   ES = 0;
+			   HS = 0;
+			 end
+		   D0,DW,D1,D2,D3:
+		     begin
+			   run_led = 1;
+			   FS = 0;
+			   DS = 1;
+			   ES = 0;
+			   HS = 0;
+			 end
+		   E0,EW,E1,E2,E3:
+		     begin
+			   run_led = 1;
+			   FS = 0;
+			   DS = 0;
+			   ES = 1;
+			   HS = 0;
+			 end
+		   default:   // all the halt states plus undefined states
+		     begin
+			   FS = 0;
+			   DS = 0;
+			   ES = 0;
+			   HS = 1;
+			   run_led = 0;
+			 end
+		endcase	 
+		      
+//        if(state[3:2] == 2'b00) FS = 1;  else FS = 0;
+//        if(state[3:2] == 2'b01) DS = 1;  else DS = 0;
+//        if(state[3:2] == 2'b10) ES = 1;  else ES = 0;
+//        if(state[3:2] == 2'b11)
+//            run_led = 0;
+//        else
+//            run_led = 1;
     end
 
     always @(posedge clk) begin
@@ -44,7 +80,7 @@ module D_mux(
         else if (dsel[0] == 1)
             dout <= io_bus;
         else
-            dout <= 12'b000000000000;
+            dout <= {state,FS,DS,ES,HS,3'b000 };
     end
 endmodule
 

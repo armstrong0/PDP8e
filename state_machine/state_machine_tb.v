@@ -1,6 +1,8 @@
 `define SIM
 `timescale 1 ns / 10 ps
-`define pulse(arg) #1 ``arg <=1 ; #140 ``arg <= 0
+// assumes about a 58 MHz clock
+`define clock_period = 18;
+`define pulse(arg) #1 ``arg <=1 ; #(4*clock_period) ``arg <= 0
 
 
 
@@ -19,9 +21,10 @@ reg int_req;
 reg int_ena;
 reg int_inh;
 reg write_en;
-//wire rdy;
 wire [4:0] stateo;
 wire int_in_prog;
+reg EAE_loop,EAE_mode;
+reg UF;
 
 state_machine SM1(.clk (clk),
           .reset (rst),
@@ -29,10 +32,11 @@ state_machine SM1(.clk (clk),
 	      .cont (cont),
 	      .single_step (sing_step),
           .instruction (op),
-		  //.pc (pc),
 	      .trigger (trigger),
-		  //.rdy (rdy),
 	      .state (stateo),
+		  .EAE_mode (EAE_mode),
+		  .EAE_loop (EAE_loop),
+		  .UF (UF),
 	      .int_ena (int_ena),
 	      .int_req (int_req),
 		  .int_inh (int_inh),
@@ -57,9 +61,9 @@ integer loaded;
 `define NULL 0    
 
 
-always begin  // assumes about a 58 MHz clock
-        #9 clk <= 1;
-        #9 clk <= 0;
+always begin  
+        #(clock_period/2) clk <= 1;
+        #(clock_period/2) clk <= 0;
 end
 
   
@@ -80,6 +84,9 @@ end
  $dumpfile("state_test.vcd");
  $dumpvars(0,clk,rst,op,halt,cont,sing_step,trigger,stateo,int_ena,int_req,int_in_prog,address,mem,loaded,int_inh,SM1);
  rst <= 1;
+ EAE_loop <= 0;
+ EAE_mode <= 0;
+ UF <= 0;
  loaded <= 0;
  sing_step <=  0;
  cont <= 0;
@@ -112,42 +119,36 @@ trigger <= 0;
 #50 loaded <= 1;
 
 #1 halt = 0;
-#20 cont <=1;
-#20 cont <= 0;
+#20 `pulse(cont);
 #1346 sing_step <= 1;
-#100 cont <=1;
 // the following tests single machine cycles for 1,2 and 3 MC instructions
-#60 cont <= 0; // needs to be longer than 1 cycle
-#60 cont <= 1;
-#60 cont <= 0;
-#60 cont <= 1;
-#60 cont <= 0;
-#60 cont <= 1;
-#60 cont <= 0;
-#60 cont <= 1;
-#60 cont <= 0;
-#60 cont <= 1;
-#60 cont <= 0;
+#60 `pulse(cont);
+#60 `pulse(cont);
+#60 `pulse(cont);
+#60 `pulse(cont);
+#60 `pulse(cont);
+#60 `pulse(cont);
 #100 sing_step <= 0;
 #10 int_ena <= 1;
 #1 int_inh <= 0;
 #135 int_req <= 1;
-#300 cont <= 1;
-#60 cont <= 0;
-#300 cont <= 1;
-#60 cont <= 0;
+#100 `pulse(cont);
+#100 `pulse(cont);
+#250 `pulse(cont);
 #225 int_ena <= 0;
 #1 int_req <= 0;
 #50 halt <= 1;
-#50 cont <= 1;
-#60 cont <= 0;
-#250 cont <= 1;
-#60 cont <= 0;
-#250 cont <= 1;
-#60 cont <= 0;
-
-
-#5000 $finish;
+#200 `pulse(cont);
+#400 `pulse(cont);
+#600 `pulse(cont);
+#200 `pulse(cont);
+#200 `pulse(cont);
+#200 `pulse(cont);
+#200 `pulse(cont);
+#200 `pulse(cont);
+#200 `pulse(cont);
+#200 `pulse(cont);
+#1000 $finish;
 
 
 

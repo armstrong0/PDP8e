@@ -9,6 +9,8 @@ module state_machine(input clk,
     input UF,
     input trigger,
     input [0:11] instruction,
+    input EAE_mode,
+    input EAE_loop,
     output reg int_in_prog,
     output reg [4:0] state);
 
@@ -34,18 +36,23 @@ module state_machine(input clk,
                 end
                 FW: state <= F1;
                 F1: state <= F2;
-                F2:begin
-                    state <= F3;
-                end
-                F3:if ((instruction[0:1] == 2'b11) || (instruction[0:3] == 4'b1010))
-                    	// IOT | OPER | JMP D
-                    
+                F2: casez (instruction)
+				    12'b1111??0?0101,   //7405 MUY
+				    12'b1111??0?0111,   //7407 DIV
+				    12'b1111??0?1001,   //7411 NMI
+				    12'b1111??0?1011,   //7413 SHL
+				    12'b1111??0?1101,   //7415 ASR
+				    12'b1111??0?1111:   //7417 LSR
+                         state <= F4;
+				    default:
+					     state <= F3;
+					endcase	 
+                F3: if ((instruction[0:1] == 2'b11) || // IOT & OPER
+                        (instruction[0:3] == 4'b1010)) // JMP D
                 begin
-					// IOT, OPER and JMP D instructions execute in the fetch
-                    if (halt == 1)
+					if (halt == 1)
                         state <= H0;
-                    else
-                    if (({instruction[0:3],instruction[10:11]} == 6'b111110)
+                    else if (({instruction[0:3],instruction[10:11]} == 6'b111110) //halt
                             && (UF == 1'b0))
                          // halt instruction, not in user mode
                         state <= H0;
@@ -56,14 +63,15 @@ module state_machine(input clk,
                         int_in_prog <= 1;
                         state <= E0;
                     end
-
                     else state <= F0;
                 end
-                else if (instruction[3] == 1)
-                     // defer cycle/
+                else if (instruction[3] == 1) // defer cycle/
                     state <= D0;
                 else
                     state <= E0;
+                F4: state <= F5;
+                F5: if (EAE_loop == 1) state <= F5;
+                else state <= F3;
 
                 D0: if (~single_step |  cont )
                     state <= DW;

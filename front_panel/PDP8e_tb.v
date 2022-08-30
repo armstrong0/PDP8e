@@ -67,14 +67,14 @@ module PDP8e_tb;
         .addr_loadn (~addr_load),
         .clearn (~clear)) ;
 
-		
+
 
     initial begin
 
-            
-                $dumpfile("front_panel_system_test.vcd");
-				$dumpvars(0,address,UUT);
-        
+
+        $dumpfile("front_panel_system_test.vcd");
+        $dumpvars(0,address,UUT);
+
         #0 halt <= 1;
         #1 single_step <= 0;
         #1 sw <= 0;
@@ -91,7 +91,7 @@ module PDP8e_tb;
         #300;
         `pulse(addr_load);
         #400 $finish;
-       
+
     end
 
 endmodule

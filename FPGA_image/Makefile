@@ -20,9 +20,10 @@ burn:
 	iceFUNprog $(PROJ).bin
 
 clean:
-	rm *.asc *.bin *blif
-	rm top_design
-	rm top.vcd
+	rm -f *.asc *.bin *blif
+	rm -f *.log
+	rm -f top_design
+	rm -f *.vcd
 
 sim: PDP8e.v PDP8e_tb.v 
 	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e_design
@@ -31,6 +32,10 @@ sim: PDP8e.v PDP8e_tb.v
 
 # was 62.25
 pll: 
-	icepll -i 12 -o 85.00  -f  pll.v -m
+	icepll -i 12 -o 80.00  -f  pll.v -m
+
+lint: 
+	verilator -cc -DSIM PDP8e.v
+	
 	
 

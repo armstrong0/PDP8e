@@ -1,7 +1,7 @@
 // state machine encoding
 parameter     F0 = 5'b00000, F1 = 5'b00001, F2 = 5'b00010, F3 = 5'b00011,
-              FW = 5'b10000, F5 = 5'b10001, F6 = 5'b10010, F7 = 5'b10011,
-              F8 = 5'b11101,
+              FW = 5'b10000, F4 = 5'b10001, F5 = 5'b10010, F6 = 5'b10011,
+              F7 = 5'b11101,
 
               D0 = 5'b00100, D1 = 5'b00101, D2 = 5'b00110, D3 = 5'b00111,
               DW = 5'b10100,
@@ -20,7 +20,7 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
 
 `ifndef SIM
     //parameter real clock_frequency    =  62250000;
-    parameter real clock_frequency    =  85500000;
+    parameter real clock_frequency    =  79500000;
     parameter real clock_period = 1/clock_frequency*1e9;
     parameter real baud_rate=9600;
     parameter real baud_period = 1.0/baud_rate*1e9;

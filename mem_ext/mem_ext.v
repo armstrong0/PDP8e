@@ -56,7 +56,7 @@ module mem_ext
                 case (instruction) // these should only get executed when
 			     	// in executive mode or in an interrupt
                     12'o6003: if ((UF == 1'b0) && (irq == 1 ))    mskip <= 1; // SRQ
-                    12'o6006: if ((UF == 1'b0) && (gtf == 1'b1))  mskip <= 1; // SGT
+                    12'o6006: if (gtf == 1'b1)  mskip <= 1; // SGT
                     12'o6000: if ((UF == 1'b0) && (int_ena == 1)) mskip <= 1; // SKON
                     12'o6254: if ((UF == 1'b0) && (UI == 1)) mskip <= 1;      // SINT
                     default:;
@@ -80,8 +80,9 @@ module mem_ext
                         12'o6234: if (UF == 1'b0)
                             me_bus <= rac | {5'o00,savereg} ;// RIB
                         else UI <= 1'b1;
-                        12'b1111??????10: if (UF == 1'b1) UI <= 1'b1; // HLT
-                        12'b1111?????1?0: if (UF == 1'b1) UI <= 1'b1; // OSR LAS
+                        12'b1111?????010, // HLT
+                        12'b1111?????100, // OSR LAS 
+                        12'b1111?????110: if (UF == 1'b1) UI <= 1'b1; // OSR LAS
                         12'b1010????????:  // JMP DIRECT
                         begin
                             if (int_inh == 1)
