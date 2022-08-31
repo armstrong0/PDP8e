@@ -31,7 +31,7 @@ to do.
 
 There are 14 tests possible (designated t1, t1.1, t2, t2.1, t2 .. t12.  The
 names of the VCD files produced tells you what is being tested.  For each test
-a hex file is loded, the hex file comes from within the Diagnostics directory.
+a hex file is loaded, the hex file comes from within the Diagnostics directory.
 In the diagnostics directory are the hex files, a bin file with the same 4 (or
 5) charactor base name.  It maybe prepended with maindec-8e-  (or in caps).
 Also is a documentation file with the same base part of the file name.  That

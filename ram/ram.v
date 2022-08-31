@@ -27,6 +27,8 @@ module ram (din, addr, write_en, clk, dout);// 8196 x 12
            //$readmemh("../integrate3/Diagnostics/D0JB.hex",mem,0,4095);
            //$readmemh("../integrate3/Diagnostics/dhmca.hex",mem,0,8191);
            //$readmemh("../integrate3/Diagnostics/d2ab.hex",mem,0,4095);
+           //$readmemh("../EAE/d0la.hex",mem,0,8191);
+
 		   //$readmemh("toggle-in-tests.hex",mem,0,4095);
         end
 `endif	
