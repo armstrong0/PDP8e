@@ -37,18 +37,19 @@ module ma(input clk,
         addr = ma;
         EMA = IF;
         case (state)
-            F0,FW,F1,F2,F3:
+            F0,FW: //,F1,F2,F3:
             addr = pc;
             default:
             addr = ma;
         endcase
         case (state)
-            E0,EW,E1,E2,E3:
+            E0,EW,E1,E2,E3:  // need to add the mode B EAE instructions that 
+			// use indicrect addressing
             if (((instruction[0:2] == AND) ||
-                        (instruction[0:2] == TAD) ||
-                        (instruction[0:2] == ISZ) ||
-                        (instruction[0:2] == DCA)) &&
-                    (instruction[3] == 1'b1))
+                (instruction[0:2] == TAD) ||
+                (instruction[0:2] == ISZ) ||
+                (instruction[0:2] == DCA)) &&
+                (instruction[3] == 1'b1))
                 EMA = DF;
             else
                 EMA = IF;
@@ -86,9 +87,13 @@ module ma(input clk,
                         mdout <= mdtmp;
                         instruction <= mdtmp;
                     end
+					ma <= pc + 12'o0001;
                 end
                 F1: ; //instruction <= mdout;
-                F2: current_page <= pc[0:4];
+                F2: begin
+				         current_page <= pc[0:4];
+						 mdout <= mdtmp;
+					end	 
                 F3: begin
                     case(instruction[0:2])
                         0,1,2,3,4,5:

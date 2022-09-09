@@ -103,17 +103,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
 				// way they have priority
 				//
 
-                    12'b111100101001: if (EAE_mode == 1) //7451 DPSZ
-                        if(( AC_ALL_0 == 1) && (MQ_ALL_0 == 1)) EAE_skip <= 1;
-                    12'o7411: if (EAE_mode == 0)
-                        EAE_loop <= 1; //no conditional needed?
-                    12'o7671:// skip if mode B
-                    begin
-                        ac <= 12'o0000;
-                        mq <= 12'o0000;
-                        if(EAE_mode == 1'b1) EAE_skip <= 1;
-                    end
-                    //12'b111100?0???1:;  //NOP
+                    //12'b111100?0???1:;  //NOP  caught by default
                     12'b111100?1???1: if (!forbidden)
                     begin     //MQL
                         mq <=ac;
@@ -138,7 +128,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         ac <= mq;
                         mq <= 12'o0000;
                     end
-                    default: begin
+					                    default: begin
                         ac <= ac;
                         l <= l;
                         gtf <= gtf;
@@ -157,14 +147,19 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     EAE_mode <= 0;
                     gtf <= 0;
                 end
-                12'b111110111001:   //12'o7671:// skip if mode B
+                12'b111110111001:   // 7671:// skip if mode B
                     begin
                         ac <= 12'o0000;
                         mq <= 12'o0000;
                         if(EAE_mode == 1'b1) EAE_skip <= 1;
                     end
+				12'b111100101001: if (EAE_mode == 1) //7451 DPSZ
+                    begin  
+						if(( AC_ALL_0 == 1) && (MQ_ALL_0 == 1)) EAE_skip <= 1;
+					end
+					else ac <= ac || sc;  //SCA
                 12'b1111??0?0011:   //7403 SCL
-                if (EAE_mode == 1'b0) EAE_skip <= 1;
+                	if (EAE_mode == 1'b0) EAE_skip <= 1;
                 12'b1111??0?0101,   //7405 MUY
                 12'b1111??0?0111,   //7407 DIV
                 12'b1111??0?1011,   //7413 SHL
@@ -175,6 +170,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     EAE_skip <= 1;
                     EAE_loop <= 1;
                 end
+				12'b111100000011:   //7411 NMI can't be combined 
+                    EAE_loop <= 1; 
 
 
                 default:
