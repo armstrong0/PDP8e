@@ -128,7 +128,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         ac <= mq;
                         mq <= 12'o0000;
                     end
-					                    default: begin
+                    default: begin
                         ac <= ac;
                         l <= l;
                         gtf <= gtf;
@@ -148,30 +148,29 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     gtf <= 0;
                 end
                 12'b111110111001:   // 7671:// skip if mode B
-                    begin
-                        ac <= 12'o0000;
-                        mq <= 12'o0000;
-                        if(EAE_mode == 1'b1) EAE_skip <= 1;
-                    end
-				12'b111100101001: if (EAE_mode == 1) //7451 DPSZ
-                    begin  
-						if(( AC_ALL_0 == 1) && (MQ_ALL_0 == 1)) EAE_skip <= 1;
-					end
-					else ac <= ac || sc;  //SCA
+                begin
+                    ac <= 12'o0000;
+                    mq <= 12'o0000;
+                    if(EAE_mode == 1'b1) EAE_skip <= 1;
+                end
+                12'b111100101001: if (EAE_mode == 1) //7451 DPSZ
+                begin
+                    if(( AC_ALL_0 == 1) && (MQ_ALL_0 == 1)) EAE_skip <= 1;
+                end
+                else ac <= ac || sc;  //SCA
                 12'b1111??0?0011:   //7403 SCL
-                	if (EAE_mode == 1'b0) EAE_skip <= 1;
+                if (EAE_mode == 1'b0) EAE_skip <= 1;
                 12'b1111??0?0101,   //7405 MUY
-                12'b1111??0?0111,   //7407 DIV
+                12'b1111??0?0111 :; //7407 DIV // muy and die ne
                 12'b1111??0?1011,   //7413 SHL
                 12'b1111??0?1101,   //7415 ASR
                 12'b1111??0?1111:   //7417 LSR
-                if (EAE_mode == 1'b0)
                 begin
                     EAE_skip <= 1;
                     EAE_loop <= 1;
                 end
-				12'b111100000011:   //7411 NMI can't be combined 
-                    EAE_loop <= 1; 
+                12'b111100000011:   //7411 NMI can't be combined
+                EAE_loop <= 1;
 
 
                 default:
@@ -266,10 +265,28 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
             endcase
             F4:begin
-                if (EAE_mode == 1'b0) gtf <= 0;
                 case (instruction)
                     12'o7413: // SHL
-                    if (mdout[7:11] > 25 ) // then no need to shift
+                    if (EAE_mode == 1'b0)
+                    begin
+                        gtf <= 0;
+                        if (mdout[7:11] >= 5'd24 ) // then no need to shift
+                        begin
+                            sc <= 5'd0;
+                            ac <= 12'd0;
+                            mq <= 12'd0;
+                            l  <= 1'b0;
+                            EAE_loop <= 0;
+                        end
+                        else
+                        begin
+                            sc <= mdout[7:11] + 5'd1;
+                        end
+                    end
+                    else if ((mdout[7:11] >= 5'd25 )||
+					         (mdout[7:11] == 5'd0  ))
+					// B Mode  
+					// then no need to shift
                     begin
                         sc <= 5'd0;
                         ac <= 12'd0;
@@ -278,12 +295,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         EAE_loop <= 0;
                     end
                     else
-                    if (EAE_mode == 1'b0)
-                    begin
-                        sc <= mdout[7:11] + 5'd1;
-                    end
-                    else
                         sc <= mdout[7:11];
+
                     12'o7415:  //ASR
                     if (mdout[7:11] > 25 ) // then no need to shift
                     begin
@@ -325,11 +338,13 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     end
                     else
                         sc <= mdout[7:11];
+
+						
                     12'o7411:   // NMI
                     if (((ac[0] != ac[1])||
-                         (ac[0:1] == 2'o0)) &&
-                         (ac[2:11] == 10'o0) &&
-                         (mq == 12'o0))
+                                (ac[0:1] == 2'o0)) &&
+                            (ac[2:11] == 10'o0) &&
+                            (mq == 12'o0))
                          // already normalized
                     begin
                         sc <= 5'd0;
