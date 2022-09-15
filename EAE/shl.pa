@@ -1,0 +1,287 @@
+    SHL=7413 
+	SWAB=7431
+
+
+    *200
+	cla iac
+	MQL 
+    shl
+	0000
+	cla iac
+	mql
+	shl 
+	0001
+	cla iac
+	mql
+	shl 
+    0002
+	cla iac
+	mql
+	shl 
+	0003
+	cla iac
+	mql
+	shl 
+	0004
+	cla iac
+	mql
+	shl 
+	0005
+	cla iac
+	mql
+	shl 
+	0006
+	cla iac
+	mql
+	shl 
+	0007
+	cla iac
+	MQL 
+    shl
+	0010
+	cla iac
+	mql
+	shl 
+	0011
+	cla iac
+	mql
+	shl 
+	0012
+	cla iac
+	mql
+	shl 
+	0013
+	cla iac
+	mql
+	shl 
+	0014
+	cla iac
+	mql
+	shl 
+	0015
+	cla iac
+	mql
+	shl 
+	0016
+	cla iac
+	mql
+	shl 
+	0017
+	cla iac
+	MQL 
+    shl
+	0020
+	cla iac
+	mql
+	shl 
+	0021
+	cla iac
+	mql
+	shl 
+	0022
+	cla iac
+	mql
+	shl 
+	0023
+	cla iac
+	mql
+	shl 
+	0024
+	cla iac
+	mql
+	shl 
+	0025
+	cla iac
+	mql
+	shl 
+	0026
+	cla iac
+	mql
+	shl 
+	0027
+	cla iac
+	MQL 
+    shl
+	0030
+	cla iac
+	mql
+	shl 
+	0031
+	cla iac
+	mql
+	shl 
+	0032
+	cla iac
+	mql
+	shl 
+	0033
+	cla iac
+	mql
+	shl 
+	0034
+	cla iac
+	mql
+	shl 
+	0035
+	cla iac
+	mql
+	shl 
+	0036
+	cla iac
+	mql
+	shl 
+	0037
+	cla iac
+	mql
+	shl 
+    1366	
+    7000
+	7000
+	7000
+	SWAB
+	cla iac
+	MQL 
+    shl
+	0000
+	cla iac
+	mql
+	shl 
+	0001
+	cla iac
+	mql
+	shl 
+    0002
+	cla iac
+	mql
+	shl 
+	0003
+	cla iac
+	mql
+	shl 
+	0004
+	cla iac
+	mql
+	shl 
+	0005
+	cla iac
+	mql
+	shl 
+	0006
+	cla iac
+	mql
+	shl 
+	0007
+	cla iac
+	MQL 
+    shl
+	0010
+	cla iac
+	mql
+	shl 
+	0011
+	cla iac
+	mql
+	shl 
+	0012
+	cla iac
+	mql
+	shl 
+	0013
+	cla iac
+	mql
+	shl 
+	0014
+	cla iac
+	mql
+	shl 
+	0015
+	cla iac
+	mql
+	shl 
+	0016
+	cla iac
+	mql
+	shl 
+	0017
+	cla iac
+	MQL 
+    shl
+	0020
+	cla iac
+	mql
+	shl 
+	0021
+	cla iac
+	mql
+	shl 
+	0022
+	cla iac
+	mql
+	shl 
+	0023
+	cla iac
+	mql
+	shl 
+	0024
+	cla iac
+	mql
+	shl 
+	0025
+	cla iac
+	mql
+	shl 
+	0026
+	cla iac
+	mql
+	shl 
+	0027
+	cla iac
+	MQL 
+    shl
+	0030
+	cla iac
+	mql
+	shl 
+	0031
+	cla iac
+	mql
+	shl 
+	0032
+	cla iac
+	mql
+	shl 
+	0033
+	cla iac
+	mql
+	shl 
+	0034
+	cla iac
+	mql
+	shl 
+	0035
+	cla iac
+	mql
+	shl 
+	0036
+	cla iac
+	mql
+	shl 
+	0037
+	cla iac
+	mql
+	shl 
+    1366	
+	hlt
+
+
+
+
+
+
+	
+	HLT
+	
+
+	$
+
+
