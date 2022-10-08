@@ -1,0 +1,31 @@
+	CAM=7621
+	SWAB=7431
+    DPSZ=7451 
+	swp=7521
+    *100
+	K4000, 4000
+	K2000, 2000
+    *200
+	swab
+	cam
+	dpsz
+	hlt
+    iac
+	dpsz
+	jmp .+2 
+	hlt
+    swp
+	dpsz
+    jmp .+2
+	hlt
+	iac
+	dpsz
+	jmp .+2
+	hlt
+	cam
+	dpsz
+	hlt
+	hlt
+	$
+
+

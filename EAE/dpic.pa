@@ -1,0 +1,30 @@
+	CAM=7621
+	SWAB=7431
+    DPSZ=7451 
+    DPIC=7573 
+	swp=7521
+    *100
+	K7777, 7777
+	K3777, 3777
+    *200
+	swab
+	cam
+	dpic  // ac = 0000 mq == 0001
+	iac   // ac == 0001
+	dpic  // ac == 0001 mq == 0002
+    cla cma 
+	swp  /ac == 0 mq == 7777
+	dpic /ac == 0001 mq = 0000
+	cla  / ac == 0001
+	/ swp  
+	cla cma / ac == 7777 
+	dpic
+	cla cma
+	swp
+	cla cma
+	dpic    / ac == 0000 mq == 0000 l ==1
+	hlt
+	hlt
+	$
+
+

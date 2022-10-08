@@ -1,0 +1,27 @@
+	CAM=7621
+	SWAB=7431
+    DPSZ=7451 
+    DPIC=7573 
+	SAM=7457
+	swp=7521
+    *100   // some constants
+	K7777, 7777   // -1
+	K3777, 3777   // 2048
+	K7776, 7776   // -2
+	K0001, 0001   // +1
+	K0002, 0002   // +2
+	K4000, 4000   // -2047
+
+    *200
+	swab
+	cam
+	sam   // ac = 0000 mq = 0000 res ac = 0000
+	iac   // ac = 0001
+	sam   // ac = 0001 mq = 0000 res ac = 7777
+    cla cma  // ac = -1
+	sam   // ac == -1 mq == 0000 res ac = 0001
+	hlt
+	hlt
+	$
+
+

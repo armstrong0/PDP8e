@@ -1,3 +1,5 @@
+
+/* verilator lint_off LITENDIAN */
 module state_machine(input clk,
     input reset,
     input halt,
@@ -13,7 +15,6 @@ module state_machine(input clk,
     input EAE_loop,
     output reg int_in_prog,
     output reg [4:0] state);
-
 
 `include "../parameters.v"
 
@@ -37,13 +38,34 @@ module state_machine(input clk,
                 FW: state <= F1;
                 F1: state <= F2;
                 F2: casez (instruction)
-				    12'b1111??0?0101,   //7405 MUY
-				    12'b1111??0?0111,   //7407 DIV
-				    12'b1111??0?1001,   //7411 NMI
+				    12'b1111??0?0101:   //7405 MUY
+					  if (EAE_mode == 1'b0) state <= EAE0;
+					  else state <= D0; 
+				    12'b1111??0?0111:   //7407 DIV
+					  if (EAE_mode == 1'b0) state <= EAE0;
+					  else state <= D0;   
+				    12'b111100001001,   //7411 NMI
 				    12'b1111??0?1011,   //7413 SHL
 				    12'b1111??0?1101,   //7415 ASR
 				    12'b1111??0?1111:   //7417 LSR
-                         state <= F4;
+                         state <= EAE0;
+					12'b1111??1?0011,   // DAD
+				//	12'b111111110001,   // DLD if AC/MQ cleared then DAD
+				//	becomes DLD 
+					12'b1111??1?0101:   // DST
+					     state <= D0;
+					
+					// 12'b1111??1?0001,   // NOP
+					12'b1111??0?0011,   // SCL or ACS normal flow
+					12'b1111??1?0111,   // SWBA       normal flow
+					12'b1111??0?0001,   // NOP        normal flow
+				    12'b111100011001,   // SWAB
+					12'b1111??1?1001,   // DPSZ       normal flow
+					12'b1111?1111011,   // DPIC       normal flow
+					12'b1111?1111101,   // DCM        normal flow
+					12'b1111??1?1111:   // SAM        normal flow
+                        state <= F3;
+
 				    default:
 					     state <= F3;
 					endcase	 
@@ -69,8 +91,8 @@ module state_machine(input clk,
                     state <= D0;
                 else
                     state <= E0;
-                F4: state <= F5;
-                F5: if (EAE_loop == 1) state <= F5;
+                EAE0: state <= EAE1;
+                EAE1: if (EAE_loop == 1) state <= EAE1;
                 else state <= F3;
 
                 D0: if (~single_step |  cont )

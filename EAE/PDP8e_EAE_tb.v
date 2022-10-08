@@ -23,6 +23,7 @@ module PDP8e_tb;
     reg  addr_load;
     reg  clear ;
     reg [0:14] address;
+	reg [0:23] acmq;
     wire led1;
     wire led2;
     wire runn;
@@ -45,6 +46,7 @@ module PDP8e_tb;
     end
     always @* begin
         address <= {~EMAn,~An};
+		acmq <= {UUT.AC.ac,UUT.AC.mq};
     end
 
     always @(posedge clk100)
@@ -319,13 +321,13 @@ module PDP8e_tb;
                 $dumpfile("EAE_Test1.vcd");
                 $readmemh("d0la.hex",UUT.MA.ram.mem,0,8191);
 				// use d0la for debugging then switch to d0lb
-                $dumpvars(0,address,UUT);
+                $dumpvars(0,address,acmq,UUT);
             end
 
             14: begin
                 $dumpfile("SHL_Test1.vcd");
                 $readmemh("t14.hex",UUT.MA.ram.mem,0,8191);
-                $dumpvars(0,address,UUT);
+                $dumpvars(0,address,acmq,UUT);
             end
 
         endcase

@@ -24,11 +24,15 @@ clean:
 	rm -f *.log
 	rm -f top_design
 	rm -f *.vcd
+	rm -r *.json
 
 sim: PDP8e.v PDP8e_tb.v 
 	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e_design
 	vvp PDP8e_design
 	gtkwave top.vcd top.gtkw
+
+verilator: PDP8e.v
+	verilator -DSIM -cc PDP8e.v
 
 # was 62.25
 pll: 

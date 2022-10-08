@@ -1,4 +1,4 @@
-    ASR=7415 
+    LSR=7417 
 	CAM=7621
 	SWAB=7431
 
@@ -8,267 +8,267 @@
     *200
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0000
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0001
 	cam
 	TAD K4000
-	asr 
+	lsr 
     0002
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0003
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0004
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0005
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0006
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0007
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0010
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0011
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0012
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0013
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0014
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0015
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0016
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0017
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0020
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0021
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0022
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0023
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0024
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0025
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0026
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0027
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0030
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0031
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0032
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0033
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0034
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0035
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0036
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0037
 	cam
 	TAD K4000
-	asr 
+	lsr 
     1366	
     7000
 	TAD K2000 
-    asr
+    lsr
 	0000
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0001
 	cam
 	TAD K2000
-	asr 
+	lsr 
     0002
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0003
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0004
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0005
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0006
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0007
 	cam
 	TAD K2000 
-    asr
+    lsr
 	0010
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0011
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0012
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0013
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0014
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0015
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0016
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0017
 	cam
 	TAD K2000 
-    asr
+    lsr
 	0020
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0021
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0022
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0023
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0024
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0025
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0026
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0027
 	cam
 	TAD K2000 
-    asr
+    lsr
 	0030
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0031
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0032
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0033
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0034
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0035
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0036
 	cam
 	TAD K2000
-	asr 
+	lsr 
 	0037
 	cam
 	TAD K2000
-	asr 
+	lsr 
     1366	
     7000
 	7000
@@ -277,135 +277,135 @@
 	SWAB
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0000
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0001
 	cam
 	TAD K4000
-	asr 
+	lsr 
     0002
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0003
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0004
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0005
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0006
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0007
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0010
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0011
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0012
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0013
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0014
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0015
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0016
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0017
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0020
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0021
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0022
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0023
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0024
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0025
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0026
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0027
 	cam
 	TAD K4000 
-    asr
+    lsr
 	0030
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0031
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0032
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0033
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0034
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0035
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0036
 	cam
 	TAD K4000
-	asr 
+	lsr 
 	0037
 	cam
 	TAD K4000
-	asr 
+	lsr 
     1366	
 	hlt
 
