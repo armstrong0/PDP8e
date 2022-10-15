@@ -1,0 +1,30 @@
+	CAM=7621
+	SWAB=7431
+    DPSZ=7451 
+    DPIC=7573 
+	DAD=7443
+	DLD=7763
+	swp=7521
+	*0010   // new to check auto increment
+
+
+    *100
+	 
+	K7777, 7777
+	K3777, 3777
+    /  a whole selection of constants
+
+    *200
+	swab  // first check to see if double add works
+	      // see if double add with auto increment works
+		  // see that the carry propogates from mq to ac
+
+	cam
+	      // then check to see that double load works
+		  // see if double load with auto increment
+	dad	  
+    0100 
+	hlt
+	$
+
+

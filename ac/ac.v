@@ -160,7 +160,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'b1111??0?0011:   //7403 SCL
                 if (EAE_mode == 1'b0) EAE_skip <= 1;
                 12'b1111??0?0101,   //7405 MUY
-                12'b1111??0?0111 :; //7407 DIV 
+                12'b1111??0?0111 :; //7407 DIV
                 12'b1111??0?1011,   //7413 SHL
                 12'b1111??0?1101,   //7415 ASR
                 12'b1111??0?1111:   //7417 LSR
@@ -240,7 +240,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
 				// now some oper3
 				// there are two states that can come before this, F2 or F5
-				// if it comes through F5 then we don't want to do this hence 
+				// if it comes through F5 then we don't want to do this hence
 				// a fully described instruction
 				// if it comes from F2 then ac has already been cleared if it
 				// needs to be.  some of the other micro op combinations don't
@@ -258,60 +258,84 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 begin sc <= ac[7:11];
                     ac <= 12'o0000;
                 end
-				12'b1111?1111011:   //DPIC 7573
-				if (MQ_ALL_1 == 1'b1)
-				begin
-				    mq <= 12'o0000;
-					if (AC_ALL_1 == 1'b1)
-					begin
-						ac <= 12'o0000;
-						l <= 1'b1;
-					end
-					else
-					begin
-					    ac <= ac +12'o0001;
-						l <= 1'b0;
-					end
-				end
-				else
-				begin
-				    mq <= mq +12'o0001;
-					l <= 1'b0;
-				end	
+                12'b1111?1111011:   //DPIC 7573
+                if (MQ_ALL_1 == 1'b1)
+                begin
+                    mq <= 12'o0000;
+                    if (AC_ALL_1 == 1'b1)
+                    begin
+                        ac <= 12'o0000;
+                        l <= 1'b1;
+                    end
+                    else
+                    begin
+                        ac <= ac +12'o0001;
+                        l <= 1'b0;
+                    end
+                end
+                else
+                begin
+                    mq <= mq +12'o0001;
+                    l <= 1'b0;
+                end
 
-				12'b1111?1111101:   //DCM 7575
-				if (MQ_ALL_0 == 1'b1)
-				begin  // 0000 complimented then add 1 results in all 0 mq and a carry
-				    if (AC_ALL_0 == 1'b1)
-					begin
-					    l <= 1'b1;
-					end	
-					else
-					begin
-					    l <= 1'b0;
-						ac <= ~ac + 12'o0001;
-					end
-				end
-				else
-				begin
-				    mq <= ~mq + 12'o0001;
-					l <= 1'b0;
-				end	
-				12'b1111??1?1111:   // 7457 SAM
-				if (EAE_mode == 1'b1)
-				begin
-				    {gtf,ac } <= {mq[0],mq} + ~{ac[0],ac} + 13'b1;
-				end	
-
-
+                12'b1111?1111101:   //DCM 7575
+                if (MQ_ALL_0 == 1'b1)
+                begin  // 0000 complimented then add 1 results in all 0 mq and a carry
+                    if (AC_ALL_0 == 1'b1)
+                    begin
+                        l <= 1'b1;
+                    end
+                    else
+                    begin
+                        l <= 1'b0;
+                        ac <= ~ac + 12'o0001;
+                    end
+                end
+                else
+                begin
+                    mq <= ~mq + 12'o0001;
+                    l <= 1'b0;
+                end
+                12'b1111??1?1111:   // 7457 SAM
+                if (EAE_mode == 1'b1)
+                begin
+                    {gtf,ac } <= {mq[0],mq} + ~{ac[0],ac} + 13'b1;
+                end
                 default:
                 begin
                     ac <= ac;
                     l <= l;
                 end
             endcase
-            EAE0:begin
-                case (instruction)
+
+            D0,DW,D1,D2,D3:;
+            E0,EW:; // ac_tmp <= mdout;  // shorten some paths ERROR mdout still settled,
+            E1: ac_tmp <= mdout;
+            E2: if (instruction[0:2] == AND)
+                ac <= ac & ac_tmp;
+            else if (instruction[0:2] == TAD)
+                {l,ac} <= {l,ac} + {1'b0,ac_tmp};
+            else {l,ac} <= {l,ac} ;
+
+            E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
+
+            H0:rac <= ac;
+            HW:;
+            H1: if (clear == 1)
+            begin
+                ac <= 12'o0000;
+                l <= 1'b0;
+            end
+            H2:;
+            H3:;
+            //   EAE stuff 
+            EAE0:begin   // set up state
+                case (instruction & 12'b111100001111)
+				    // MUL
+					// 12'o7405:
+					// DIV
+					// 12'o7407:
                     12'o7413: // SHL
                     if (EAE_mode == 1'b0)
                     begin
@@ -432,9 +456,14 @@ module ac (input clk,  // have to rename the mdulate for verilator
 
                 endcase
             end
-            EAE1:begin
+            EAE1:begin  // iteration state
                 if (EAE_loop == 1)
                 begin
+				  // MUL
+					// 12'o7405:
+					// DIV
+					// 12'o7407:
+
                     if (instruction == 12'o7411) //NMI
                     begin
                         {l,ac,mq} <= {ac,mq,1'b0};
@@ -472,26 +501,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
                // if (sc == 5'd1 ) EAE_loop <= 0;
             end
 
-            D0,DW,D1,D2,D3:;
-            E0,EW:; // ac_tmp <= mdout;  // shorten some paths ERROR mdout still settled,
-            E1: ac_tmp <= mdout;
-            E2: if (instruction[0:2] == AND)
-                ac <= ac & ac_tmp;
-            else if (instruction[0:2] == TAD)
-                {l,ac} <= {l,ac} + {1'b0,ac_tmp};
-            else {l,ac} <= {l,ac} ;
-
-            E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
-
-            H0:rac <= ac;
-            HW:;
-            H1: if (clear == 1)
-            begin
-                ac <= 12'o0000;
-                l <= 1'b0;
-            end
-            H2:;
-            H3:;
             default:;
         endcase
 

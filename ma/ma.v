@@ -44,12 +44,12 @@ module ma(input clk,
         endcase
         case (state)
             E0,EW,E1,E2,E3:  // need to add the mode B EAE instructions that 
-			// use indicrect addressing
+			// use indirect addressing
             if (((instruction[0:2] == AND) ||
                 (instruction[0:2] == TAD) ||
-                (instruction[0:2] == ISZ) ||
+                (instruction[0:2] == ISZ) || // need to add EAE intructions
                 (instruction[0:2] == DCA)) &&
-                (instruction[3] == 1'b1))
+                (instruction[3] == 1'b1))    // this specifies deferred
                 EMA = DF;
             else
                 EMA = IF;

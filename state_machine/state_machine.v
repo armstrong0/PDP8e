@@ -65,9 +65,8 @@ module state_machine(input clk,
 					12'b1111?1111101,   // DCM        normal flow
 					12'b1111??1?1111:   // SAM        normal flow
                         state <= F3;
-
 				    default:
-					     state <= F3;
+					    state <= F3;
 					endcase	 
                 F3: if ((instruction[0:1] == 2'b11) || // IOT & OPER
                         (instruction[0:3] == 4'b1010)) // JMP D
@@ -91,9 +90,6 @@ module state_machine(input clk,
                     state <= D0;
                 else
                     state <= E0;
-                EAE0: state <= EAE1;
-                EAE1: if (EAE_loop == 1) state <= EAE1;
-                else state <= F3;
 
                 D0: if (~single_step |  cont )
                     state <= DW;
@@ -115,8 +111,12 @@ module state_machine(input clk,
                     else
                         state <= F0;
                 end
-                else
-                    state <= E0;
+                else  // if EAE instruction
+				    if ((instruction & 12'b111100000001 ) == 12'b111100000001)
+					  state <= EAE2;
+                    else
+                      state <= E0;
+
                 // execute cycle
                 E0: if (~single_step |  cont )
                     state <= EW;
@@ -145,7 +145,16 @@ module state_machine(input clk,
                 H1: state <= H2;
                 H2: state <= H3;
                 H3: state <= H0;
-                default: state <= H0;
+                
+				EAE0: state <= EAE1;
+                EAE1: if (EAE_loop == 1) state <= EAE1;
+                      else state <= F3;
+				EAE2: state <= EAE3;
+				EAE3: state <= EAE4; // need to vector off to EAE0 if MUL or DIV
+				EAE4: state <= EAE5;
+				EAE5: state <= E3;   // back to normal processing
+                
+				default: state <= H0;
             endcase
     end
 endmodule

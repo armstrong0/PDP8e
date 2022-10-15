@@ -26,7 +26,9 @@ parameter     F0 = 5'b00000,
 			  EAE0 = 5'b10101,
 			  EAE1 = 5'b10110,
 			  EAE2 = 5'b10111,
-              EAE3 = 5'b11000;
+              EAE3 = 5'b11000,
+			  EAE4 = 5'b11001,
+			  EAE5 = 5'b11010;
 
 
 // instruction encodings
