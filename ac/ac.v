@@ -21,6 +21,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
 
     reg [0:11] ac_tmp,mq;
     reg [0:4] sc;
+	reg il;  // intermediate link used in EAE Double Add
     reg AC_ALL_0;
     reg AC_ALL_1;
     reg MQ_ALL_0;
@@ -96,12 +97,9 @@ module ac (input clk,  // have to rename the mdulate for verilator
 				// Additionally depending upon the EAE instructions some of
 				// these operations are forbidden.
 				// Different actions depend  on the mode bit
-				// The instruction below execute in this phase of the machine
+				// The instructions below execute in this phase of the machine
 				// cycle.  Any further operations on the link, ac or mq must
 				// happen in the following phases.
-                // put some of the extended operations before the MQ ops, that
-				// way they have priority
-				//
 
                     //12'b111100?0???1:;  //NOP  caught by default
                     12'b111100?1???1: if (!forbidden)
@@ -239,10 +237,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     l <= ac[10];
                 end
 				// now some oper3
-				// there are two states that can come before this, F2 or F5
-				// if it comes through F5 then we don't want to do this hence
-				// a fully described instruction
-				// if it comes from F2 then ac has already been cleared if it
+				// ac may have already been cleared if it
 				// needs to be.  some of the other micro op combinations don't
 				// make sense
                 12'b111100100001:   ac <= ac | {7'b0,sc }; //SCA These two
@@ -319,6 +314,10 @@ module ac (input clk,  // have to rename the mdulate for verilator
             else {l,ac} <= {l,ac} ;
 
             E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
+			else if ((instruction & 12'b111100101111) == 12'o7443)  //DAD
+			begin
+			     {l,ac } <= {1'b0,ac} + {1'b0,mdout} + il;
+			end	 
 
             H0:rac <= ac;
             HW:;
@@ -500,6 +499,14 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
                // if (sc == 5'd1 ) EAE_loop <= 0;
             end
+			EAE2:;
+			EAE3:;
+			EAE4:
+			if ((instruction & 12'b111100101111) == 12'o7443)  //DAD
+			begin
+			     {il,mq } <= {1'b0,mq} + {1'b0,mdout};
+			end	 
+			EAE5:;
 
             default:;
         endcase

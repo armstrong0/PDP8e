@@ -3,6 +3,7 @@ module ma(input clk,
     input reset,
     input [0:11] pc,
     input [0:11] ac,
+    input [0:11] mq,
     input [0:11] sr,
     input [4:0] state,
     input addr_loadd,depd,examd,
@@ -43,13 +44,14 @@ module ma(input clk,
             addr = ma;
         endcase
         case (state)
-            E0,EW,E1,E2,E3:  // need to add the mode B EAE instructions that 
+            E0,EW,E1,E2,E3,EAE2,EAE3,EAE4,EAE5: 
 			// use indirect addressing
-            if (((instruction[0:2] == AND) ||
+            if ((((instruction[0:2] == AND) ||
                 (instruction[0:2] == TAD) ||
                 (instruction[0:2] == ISZ) || // need to add EAE intructions
                 (instruction[0:2] == DCA)) &&
                 (instruction[3] == 1'b1))    // this specifies deferred
+				|| (instruction & 12'b111100000001))
                 EMA = DF;
             else
                 EMA = IF;
@@ -179,6 +181,32 @@ module ma(input clk,
                 H2: if ((depd ==1'b1) | (examd == 1'b1))
                     ma <= ma + 12'o0001;
                 H3:;
+				// EAE accesses
+				EAE2:;
+				EAE3: begin 
+				    if((instruction & 12'b111100101111) == 12'o7445)  // DST
+				    begin
+					    mdin <= ac;
+						write_en <= 1'b1;
+					end	
+                    else if (EMA > MAX_FIELD)
+                        mdout <= 12'o0000;
+                    else
+                        mdout <= mdtmp;
+					ma <= ma + 1;	
+					end	
+				EAE4:;
+				EAE5:if((instruction & 12'b111100101111) == 12'o7445)  // DST
+				    begin
+					    mdin <= mq;
+						write_en <= 1'b1;
+					end	
+
+                    else if (EMA > MAX_FIELD)
+                        mdout <= 12'o0000;
+                    else
+                        mdout <= mdtmp;
+
                 default:;
             endcase
         end
