@@ -51,7 +51,8 @@ module ma(input clk,
                 (instruction[0:2] == ISZ) || // need to add EAE intructions
                 (instruction[0:2] == DCA)) &&
                 (instruction[3] == 1'b1))    // this specifies deferred
-				|| (instruction & 12'b111100000001))
+				|| (instruction & 12'b111100000001)== 12'b111100000001) 
+				// EAE mode B indirect
                 EMA = DF;
             else
                 EMA = IF;

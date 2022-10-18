@@ -316,7 +316,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
 			else if ((instruction & 12'b111100101111) == 12'o7443)  //DAD
 			begin
-			     {l,ac } <= {1'b0,ac} + {1'b0,mdout} + il;
+			     {l,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
 			end	 
 
             H0:rac <= ac;
