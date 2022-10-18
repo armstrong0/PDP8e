@@ -4,14 +4,25 @@
     DPIC=7573 
 	DAD=7443
 	DLD=7763
+	DST=7445
 	swp=7521
 	*0010   // new to check auto increment
+	K7777
+	K1234
+	0
+	0
+	0
 
 
     *100
 	 
 	K7777, 7777
 	K3777, 3777
+	K1234, 1234
+	K4567, 4567
+
+	*150
+	stor, 0000
     /  a whole selection of constants
 
     *200
@@ -24,6 +35,25 @@
 		  // see if double load with auto increment
 	dad	  
     0100 
+	cam dad
+	cll
+	0100
+	dad
+	0100
+	cll
+	dad
+	0102
+	dst
+	stor
+	// now try auto increment
+	dld
+	0010
+	dad
+	0010
+
+	
+	
+	
 	hlt
 	$
 

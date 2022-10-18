@@ -1,6 +1,6 @@
 .PRECIOUS: %.vcd %.ob
 
-all: shl asr lsr dpsz dpic dcm sam dad dst
+all: shl asr lsr mul div dpsz dpic dcm sam dad dst
 
 %.ob:../FPGA_image/PDP8e.v PDP8e_EAE_tb.v  ../ac/ac.v ../state_machine/state_machine.v ../ma/ma.v %.hex
 	-iverilog -DSIM ../FPGA_image/PDP8e.v PDP8e_EAE_tb.v -o $*.ob -PPDP8e_tb.test_sel=14

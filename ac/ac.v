@@ -157,8 +157,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
                 12'b1111??0?0011:   //7403 SCL
                 if (EAE_mode == 1'b0) EAE_skip <= 1;
-                12'b1111??0?0101,   //7405 MUY
                 12'b1111??0?0111 :; //7407 DIV
+                12'b1111??0?0101,   //7405 MUY
                 12'b1111??0?1011,   //7413 SHL
                 12'b1111??0?1101,   //7415 ASR
                 12'b1111??0?1111:   //7417 LSR
@@ -332,7 +332,11 @@ module ac (input clk,  // have to rename the mdulate for verilator
             EAE0:begin   // set up state
                 case (instruction & 12'b111100001111)
 				    // MUL
-					// 12'o7405:
+					12'o7405:
+					begin
+					    EAE_loop <= 1'b1;
+						sc <= 5'd12;
+					end
 					// DIV
 					// 12'o7407:
                     12'o7413: // SHL
@@ -459,11 +463,27 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 if (EAE_loop == 1)
                 begin
 				  // MUL
-					// 12'o7405:
+					if (instruction == 12'o7405) 
+					begin
+
+                        sc <= sc - 5'd1;
+
+						if (mq[11] == 1'b1)
+						begin
+						    {ac,mq[0]} <= {1'b0, ac} + {1'b0,mdout};
+							mq[1:11] <= mq[0:10];
+						end	
+						else
+						begin
+                            {ac,mq} <=  {1'b0,ac,mq[0:10]};
+						end
+
+					    if (sc == 5'd1) EAE_loop <= 0;
+					end	
 					// DIV
 					// 12'o7407:
 
-                    if (instruction == 12'o7411) //NMI
+                    else if (instruction == 12'o7411) //NMI
                     begin
                         {l,ac,mq} <= {ac,mq,1'b0};
                         sc <= sc + 5'd1;

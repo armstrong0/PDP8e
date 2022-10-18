@@ -182,8 +182,7 @@ module ma(input clk,
                     ma <= ma + 12'o0001;
                 H3:;
 				// EAE accesses
-				EAE2:;
-				EAE3: begin 
+				EAE2: begin 
 				    if((instruction & 12'b111100101111) == 12'o7445)  // DST
 				    begin
 					    mdin <= ac;
@@ -193,10 +192,10 @@ module ma(input clk,
                         mdout <= 12'o0000;
                     else
                         mdout <= mdtmp;
-					ma <= ma + 1;	
-					end	
-				EAE4:;
-				EAE5:if((instruction & 12'b111100101111) == 12'o7445)  // DST
+					end
+				EAE3:ma <= ma + 1;	
+						
+				EAE4:if((instruction & 12'b111100101111) == 12'o7445)  // DST
 				    begin
 					    mdin <= mq;
 						write_en <= 1'b1;

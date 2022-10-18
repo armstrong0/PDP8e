@@ -1,0 +1,26 @@
+	CAM=7621
+	SWAB=7431
+    DPSZ=7451 
+	MUL=7405
+	swp=7521
+    *100
+	K1234, 1234
+	K4567, 4567
+    K0100, 0100
+
+	*200
+	cla
+	tad K1234
+	swp
+	mul
+	4567
+	swab
+	cam
+	tad k1234
+	swp
+	mul
+	k0100
+	hlt
+	$
+
+
