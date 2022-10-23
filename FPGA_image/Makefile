@@ -20,11 +20,12 @@ burn:
 	iceFUNprog $(PROJ).bin
 
 clean:
-	rm -f *.asc *.bin *blif
-	rm -f *.log
-	rm -f top_design
-	rm -f *.vcd
-	rm -r *.json
+	rm -rf *.asc *.bin *blif
+	rm -rf *.log
+	rm -rf top_design
+	rm -rf *.vcd
+	rm -rf *json
+	rm -rf obj_dir
 
 sim: PDP8e.v PDP8e_tb.v 
 	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e_design

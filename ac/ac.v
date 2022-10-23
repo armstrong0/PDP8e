@@ -21,21 +21,22 @@ module ac (input clk,  // have to rename the mdulate for verilator
 
     reg [0:11] ac_tmp,mq;
     reg [0:4] sc;
-	reg il;  // intermediate link used in EAE Double Add
+    reg il;  // intermediate link used in EAE Double Add
     reg AC_ALL_0;
     reg AC_ALL_1;
     reg MQ_ALL_0;
     reg MQ_ALL_1;
     wire forbidden;
+	reg tmp;
 
 `include "../parameters.v"
 
-    assign forbidden = ((EAE_mode == 0) && (instruction == 12'o7411) ||
-			       ((EAE_mode == 1) &&((instruction == 12'o7411) ||
-				    (instruction == 12'b111101111011) ||
-				    (instruction == 12'b111111111011) ||
-				    (instruction == 12'b111101111101) ||
-				    (instruction == 12'b111111111101))));
+    assign forbidden = ((EAE_mode == 0) && (instruction == 12'o7411) || //NMI
+			       ((EAE_mode == 1) &&((instruction == 12'o7411) || //NMI
+				    (instruction == 12'b111101111011) || //7573 DPIC
+				    (instruction == 12'b111111111011) || //7773 CLA DPIC
+				    (instruction == 12'b111101111101) || //7575 DCM
+				    (instruction == 12'b111111111101))));//7775 CLA DCM
 
     always @(posedge clk)
     begin
@@ -157,7 +158,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
                 12'b1111??0?0011:   //7403 SCL
                 if (EAE_mode == 1'b0) EAE_skip <= 1;
-                12'b1111??0?0111 :; //7407 DIV
+                12'b1111??0?0111,   //7407 DIV
                 12'b1111??0?0101,   //7405 MUY
                 12'b1111??0?1011,   //7413 SHL
                 12'b1111??0?1101,   //7415 ASR
@@ -314,10 +315,10 @@ module ac (input clk,  // have to rename the mdulate for verilator
             else {l,ac} <= {l,ac} ;
 
             E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
-			else if ((instruction & 12'b111100101111) == 12'o7443)  //DAD
-			begin
-			     {l,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
-			end	 
+            else if ((instruction & 12'b111100101111) == 12'o7443)  //DAD
+            begin
+                {l,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
+            end
 
             H0:rac <= ac;
             HW:;
@@ -328,17 +329,28 @@ module ac (input clk,  // have to rename the mdulate for verilator
             end
             H2:;
             H3:;
-            //   EAE stuff 
+            //   EAE stuff
             EAE0:begin   // set up state
                 case (instruction & 12'b111100001111)
 				    // MUL
-					12'o7405:
-					begin
-					    EAE_loop <= 1'b1;
-						sc <= 5'd12;
-					end
+                    12'o7405:
+                    begin
+                        EAE_loop <= 1'b1;
+                        sc <= 5'd12;
+                    end
 					// DIV
-					// 12'o7407:
+                    12'o7407: begin
+                        if (mdout < ac)  // this may need to be <=
+                        begin
+                            EAE_loop <= 1'b0;  // divide overflow terminate
+                            sc <= 5'd0;
+                        end
+                        else
+                        begin
+                            EAE_loop <= 1'b1;
+                            sc <= 5'd13;
+                        end
+                    end
                     12'o7413: // SHL
                     if (EAE_mode == 1'b0)
                     begin
@@ -463,25 +475,59 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 if (EAE_loop == 1)
                 begin
 				  // MUL
-					if (instruction == 12'o7405) 
-					begin
+                    if (instruction == 12'o7405)
+                    begin
 
                         sc <= sc - 5'd1;
 
-						if (mq[11] == 1'b1)
-						begin
-						    {ac,mq[0]} <= {1'b0, ac} + {1'b0,mdout};
-							mq[1:11] <= mq[0:10];
-						end	
-						else
-						begin
+                        if (mq[11] == 1'b1)
+                        begin
+                            {ac,mq[0]} <= {1'b0, ac} + {1'b0,mdout};
+                            mq[1:11] <= mq[0:10];
+                        end
+                        else
+                        begin
                             {ac,mq} <=  {1'b0,ac,mq[0:10]};
-						end
+                        end
 
-					    if (sc == 5'd1) EAE_loop <= 0;
-					end	
+                        if (sc == 5'd1) EAE_loop <= 0;
+                    end
 					// DIV
-					// 12'o7407:
+                    else if (instruction == 12'o7407)
+                    begin // there are two cases here depending upon some
+					// condition we either add or subtract from a shifted
+					// ac,mq
+					// the maintenacne manual is hard to follow because of
+					// the ac is stored in normal or complement form depending
+					// on the last operation
+					// we have to remember what the sign bit of the last ac
+					// was so we can patch up mq
+                        if (sc == 5'o1)
+						begin
+                           if (ac[0] == 1'b1)
+						      ac <= ac + mdout;
+							  mq <= {mq[1:11],1'b0};
+                        end
+						else if (ac[0] == 1'b0)
+                        begin
+                            ac <={ac[1:11],mq[0]} - mdout;
+                            mq[0:10] <= mq[1:11];
+                            if (sc == 5'o14)
+							    mq[11] <= 1'b0;
+							else 
+						       mq[11] <= 1'b1;
+                        end
+                        else
+                        begin
+                            ac <={ac[1:11],mq[0]} + mdout;
+                            mq[0:10] <= mq[1:11];
+                            mq[11] <= 1'b0;
+                        end
+					    il <= ac[0]; //set up for next iteration
+						tmp <= il ^ ac[0];
+                        sc <= sc - 5'd1;
+                        if (sc == 5'd1 ) EAE_loop <= 0;
+                    end
 
                     else if (instruction == 12'o7411) //NMI
                     begin
@@ -493,13 +539,13 @@ module ac (input clk,  // have to rename the mdulate for verilator
                                     && (mq == 12'o0)))
                             EAE_loop <= 0;  // we are finished
                     end
-                    if (instruction == 12'o7413)  // SHL
+                    else if (instruction == 12'o7413)  // SHL
                     begin
                         {l,ac,mq} <= {ac,mq,1'b0};
                         sc <= sc - 5'd1;
                         if (sc == 5'd1 ) EAE_loop <= 0;
                     end
-                    if (instruction == 12'o7415)   // ASR
+                    else if (instruction == 12'o7415)   // ASR
                     begin
                         {ac,mq} <=  {ac[0],ac,mq[0:10]};
                         if (EAE_mode == 1'b1) gtf <= mq[11];
@@ -508,7 +554,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         sc <= sc - 5'd1;
                         if (sc == 5'd1 ) EAE_loop <= 0;
                     end
-                    if (instruction == 12'o7417) // LSR
+                    else if (instruction == 12'o7417) // LSR
                     begin
                         {ac,mq} <=  {1'b0,ac,mq[0:10]};
                         if (EAE_mode == 1'b1) gtf <= mq[11];
@@ -519,14 +565,14 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
                // if (sc == 5'd1 ) EAE_loop <= 0;
             end
-			EAE2:;
-			EAE3:;
-			EAE4:
-			if ((instruction & 12'b111100101111) == 12'o7443)  //DAD
-			begin
-			     {il,mq } <= {1'b0,mq} + {1'b0,mdout};
-			end	 
-			EAE5:;
+            EAE2:;
+            EAE3:;
+            EAE4:
+            if ((instruction & 12'b111100101111) == 12'o7443)  //DAD
+            begin
+                {il,mq } <= {1'b0,mq} + {1'b0,mdout};
+            end
+            EAE5:;
 
             default:;
         endcase
