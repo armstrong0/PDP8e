@@ -20,7 +20,7 @@ view_AMC: AMC.vcd
     
 
 clean: 
-	rm *vcd
-	rm state_design
-	rm AMC
+	rm -rf *vcd
+	rm -rf state_design
+	rm -rf AMC
 

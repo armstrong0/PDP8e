@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Instruction Test Part 1"
 echo "Set Switch Register (SR) to 7777, press Addr Load(AL) press Clear(CL) then Cont (CO)"
 read -p "Press any key"
 sendtape MAINDEC-8E-D0AB-InstTest-1.pt
@@ -10,7 +11,9 @@ read -p "Press any key to continue"
 sleep 1
 echo " if the CPU is not stopped we have run many passes of the whole test"
 echo " moving to the next one"
-echo "Set SR=7777 press AL,CL,CO"
+echo "Switch Halt to ON and then OFF"
+echo "Instruction Test Part 1 newer rev"
+echo "eet SR=7777 press AL,CL,CO"
 read -p "Press any key"
 sendtape dhkaf-a-pb 
 echo "Set SR=0200 Press AL"
@@ -21,6 +24,8 @@ read -p "Press any key to continue"
 sleep 1
 echo " if the CPU is not stopped we have run many passes of the whole test"
 echo " moving to the next one"
+echo "Switch Halt to ON and then OFF"
+echo "Instruction Test Part 2"
 echo "Set SR=7777 press AL,CL,CO"
 read -p "Press any key"
  sendtape MAINDEC-8E-D0BB-InstTest-2.pt
@@ -28,6 +33,8 @@ echo "Set SR=0200 Press AL,CL,CO"
 sleep 1
 echo " if the CPU is not stopped we have run many passes of the whole test"
 echo " moving to the next one"
+echo "Switch Halt to ON and then OFF"
+echo "Instruction Test Part 2, newer rev"
 echo "Set SR=7777 press AL,CL,CO"
  sendtape maindec-08-dhkag-a-pb 
 read -p "Press any key"
@@ -35,9 +42,10 @@ echo "Set SR=0200 Press AL,CL,CO"
 sleep 1
 echo " if the CPU is not stopped we have run many passes of the whole test"
 echo " moving to the next one"
+echo "Switch Halt to ON and then OFF"
+echo "Adder test"
 echo "Set SR=7777 press AL,CL,CO"
 echo "Starting Adder Tests requires about 4 minutes to run, examine terminal for errors"
-echo "Set SR=7777 press AL,CL,CO"
  sendtape MAINDEC-8E-D0CC-AddTest.pt  
 sleep 1
  mate-terminal -e minicom &

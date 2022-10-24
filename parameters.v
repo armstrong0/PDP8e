@@ -39,7 +39,8 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
 
 `ifndef SIM
     //parameter real clock_frequency    =  62250000;
-    parameter real clock_frequency    =  79500000;
+    //parameter real clock_frequency    =  79500000;
+    parameter real clock_frequency    =  73500000;
     parameter real clock_period = 1/clock_frequency*1e9;
     parameter real baud_rate=9600;
     parameter real baud_period = 1.0/baud_rate*1e9;
