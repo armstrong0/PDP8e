@@ -15,4 +15,8 @@ clean:
 	rm -rf *.vcd
 	rm -rf imux_base
 
+vdent:	
+	~/bin/vdent <imux.v > t.v
+	mv t.v imux.v
+
 

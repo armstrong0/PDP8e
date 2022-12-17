@@ -5,6 +5,7 @@ module ma(input clk,
     input [0:11] ac,
     input [0:11] mq,
     input [0:11] sr,
+	input sw,
     input [4:0] state,
     input addr_loadd,depd,examd,
     input int_in_prog,
@@ -173,7 +174,9 @@ module ma(input clk,
                 else
                     mdout <= mdtmp ;
                 H1: if (addr_loadd == 1'b1)
-                    ma <= sr;
+				    if (sw == 1'b1) ma <= 12'o7777;
+                    else
+                        ma <= sr;
                 else if (depd == 1'b1)
                 begin
                     mdin <= sr;

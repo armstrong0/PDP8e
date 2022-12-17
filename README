@@ -1,11 +1,15 @@
-This read me documents some of the thoughts, trial and tribulations in getting
-this going.  Read with a grain of salt!  It is roughly chronological. At the
-end there is a list things I would like to do...
+The front panel code has been modified so that: when in halt state and a control switch is toggled the run LED comes on for the debounce time.  There is still a problem with the front panel code where the switch is depressed, the run LED comes on BUT that action required in not taken!
+
+The Least Significant Bit (bit 11) of the state display has been reallocated to the EAE state, LED on signifies the "B" mode.
+
+Toggling sw switch up and pressing address load result in octal 7777 being loaded into the memory address register, useful when starting the binary loader - which is loaded in memory during FPGA boot.
+
+The top level Makefile can be used to clean the subdirectoies. Some of the sub directory makefiles have been modified to allow a target of vdent.  This formats the code in that subdirectory.
 
 Hardware is an ICE40HX8K device on an ICEWERKS module bought from robot shop.
 
-Front panel has a self designed graphic... Code to design is in another
-repository.  Also in that repository a set of tools to determine the wiring
+Front panel has a self designed graphic... Code to design it is in another
+repository.  Also in that repository is a set of tools to determine the wiring
 required.  Wiring was mostly done with 30 AWG wirewrap wire.  Switches however
 were wired with 22 AWG copper bus wire.  
 
@@ -39,11 +43,11 @@ The tools required to build this code are a verilog comiler, a verilog
 simulator, a couple of PDP8 tools palbart and macro8x.  The palbart version
 required is: pal-2.13, 03 May 2015.
 
-The FPGA tools used are Icestorm tools set, yosys and nextnpr.  Iverilog wsa
+The FPGA tools used are Icestorm tools set, yosys and nextnpr.  Iverilog was
 used as a simulator and Verilator was used as a linting tool.
 
-The directory integrate3 contains a test bed that will run selected DEC PDP8e
-diagnostics, this was used to debug and verify the design.
+The directory integrate contains a test bed that will run selected DEC PDP8e
+diagnostics, this was used to debug and verify the design.  This directory also contains a script that leads one though loading a diagnostic program onto hardware and then running the test.
 
 The FPGA that wsa targetted is a Lattice Semiconductor ICE40Hx8k.  Very little
 code is targetted at that FPGA, that is the code that sets up the internal pll

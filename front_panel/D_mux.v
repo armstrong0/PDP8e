@@ -7,10 +7,11 @@ module D_mux(
     input [4:0] state,
     input [3:11] state1,
     input [0:11] status,
-    input [0:11] rac,
+    input [0:11] ac,
     input [0:11] mb,
-    input [0:11] rmq,
+    input [0:11] mq,
     input [0:11] io_bus,
+	input sw_active,
     output reg [0:11] dout,
     output reg run_led);
 `include "../parameters.v"
@@ -48,18 +49,11 @@ module D_mux(
 			   FS = 0;
 			   DS = 0;
 			   ES = 0;
-			   HS = 1;
-			   run_led = 0;
+			   HS = 1; if (sw_active == 1) run_led = 1;
+			   else run_led = 0;
 			 end
 		endcase	 
 		      
-//        if(state[3:2] == 2'b00) FS = 1;  else FS = 0;
-//        if(state[3:2] == 2'b01) DS = 1;  else DS = 0;
-//        if(state[3:2] == 2'b10) ES = 1;  else ES = 0;
-//        if(state[3:2] == 2'b11)
-//            run_led = 0;
-//        else
-//            run_led = 1;
     end
 
     always @(posedge clk) begin
@@ -72,11 +66,11 @@ module D_mux(
         else if (dsel[4] == 1)
             dout <= status;
         else if (dsel[3] == 1)
-            dout <= rac;
+            dout <= ac;
         else if (dsel[2] == 1)
             dout <= mb ;
         else if (dsel[1] == 1)
-            dout <= rmq;
+            dout <= mq;
         else if (dsel[0] == 1)
             dout <= io_bus;
         else

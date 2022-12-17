@@ -69,8 +69,8 @@ module top (input clk,
     wire trigger,addr_loadd,extd_addrd,depd,examd,contd,cleard;
     wire [0:11] pc;
     wire [0:11] ma;
-    wire [0:11] ac,ac_input,rac,me_bus;
-    wire [0:11] rmq;
+    wire [0:11] ac,ac_input,me_bus;
+    wire [0:11] mq;
     wire [0:11] instruction,mdout;
     wire link;
     wire isz_skip,sskip;
@@ -84,6 +84,7 @@ module top (input clk,
     wire UI;
     reg [0:11] rsr;
     wire EAE_mode,EAE_loop,EAE_skip;
+    wire sw_active;
 
 
 
@@ -120,8 +121,9 @@ module top (input clk,
         .instruction (instruction),
         .pc (pc),
         .ma (ma),
-        .ac (rac),
-        .mq (rmq),
+        .ac (ac),
+        .mq (mq),
+		.sw (sw),
         .sr (rsr),
         .DF (DF),
         .IF (IF),
@@ -145,14 +147,14 @@ module top (input clk,
         .skip (skip),
         .isz_skip (isz_skip),
         .eskip (eskip)
-		);
+    );
 
     state_machine SM(.clk (clk100),
         .reset (reset),
         .state (state),
         .instruction (instruction),
-		.EAE_loop (EAE_loop),
-		.EAE_mode (EAE_mode),
+        .EAE_loop (EAE_loop),
+        .EAE_mode (EAE_mode),
         .int_req (irq),
         .int_inh (int_inh),
         .int_ena (int_ena),
@@ -171,16 +173,15 @@ module top (input clk,
         .mdout (mdout),
         .input_bus (ac_input),
         .ac (ac),
-        .rac (rac),
         .l (link),
         .gtf (gtf),
         .UF (UF),
         .UI (UI),
         .EAE_mode (EAE_mode),
         .EAE_loop (EAE_loop),
-		.EAE_skip (EAE_skip),
+        .EAE_skip (EAE_skip),
         .sr (rsr),
-        .rmq (rmq));
+        .mq (mq));
 
     oper2 oper21(.clk100 (clk100),
         .state (state),
@@ -194,7 +195,7 @@ module top (input clk,
         .clear (cleard),
         .state (state),
         .instruction (instruction),
-        .ac (rac),
+        .ac (ac),
         .serial_bus (serial_data_bus),
         .rx (rx),
         .tx (tx),
@@ -205,14 +206,15 @@ module top (input clk,
     D_mux DM(.clk (clk100),
         .reset (reset),
         .dsel (dsel),
-        .state1 ( {instruction[0:2],2'b00,sw,3'b000}),
+        .state1 ( {instruction[0:2],2'b00,sw,2'b00,EAE_mode} ),
         .status ({link,gtf,irq,1'b0,int_ena,{UF,IF,DF}}),
-        .rac (rac),
+        .ac (ac),
         .mb (mdout),
-        .rmq (rmq),
+        .mq (mq),
         .io_bus (display_bus),
         .dout (ds),
         .state (state),
+        .sw_active (sw_active),
         .run_led (run));
 
     front_panel FP(.clk (clk100),
@@ -232,19 +234,20 @@ module top (input clk,
         .depd (depd),
         .examd (examd),
         .contd (contd),
-        .triggerd (trigger));
+        .triggerd (trigger),
+        .sw_active (sw_active));
 
     imux IM(.clk (clk100),
         .reset (reset),
         .state (state),
         .instruction (instruction),
-        .ac (rac),
+        .ac (ac),
         .mem_reg_bus (me_bus),
         .serial_data_bus (serial_data_bus),
         .in_bus (ac_input),
         .bus_display (display_bus),
-		.EAE_skip (EAE_skip),
-		.EAE_mode (EAE_mode),
+        .EAE_skip (EAE_skip),
+        .EAE_mode (EAE_mode),
         .sskip (sskip),
         .mskip (mskip),
         .skip (eskip));
@@ -254,7 +257,7 @@ module top (input clk,
         .instruction (instruction),
         .mdout (mdout),
         .sr (rsr),
-        .rac (rac),
+        .ac (ac),
         .state (state),
         .clear (cleard),
         .extd_addrd (extd_addrd),

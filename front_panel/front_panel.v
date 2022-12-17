@@ -9,6 +9,7 @@ module front_panel (input clk,
     input cont,
     input sing_step,
     input halt,
+	output reg sw_active,
     output triggerd,cleard , extd_addrd , addr_loadd , depd , examd, contd
 );
 
@@ -33,6 +34,7 @@ module front_panel (input clk,
     begin
         trigger1 = (trig_state == Wait) &&
         ( clear | extd_addr | addr_load | dep | exam | cont );
+		if (trig_state == Delay) sw_active = 1; else sw_active = 0; 
     end
 
     assign cont_c = (cont & (sing_step | halt));

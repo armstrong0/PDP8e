@@ -23,4 +23,11 @@ clean:
 	rm -rf *vcd
 	rm -rf state_design
 	rm -rf AMC
+	rm -rf obj_dir/
+
+vdent:
+	~/bin/vdent < state_machine.v > t.v
+	mv t.v state_machine.v
+	
+	
 

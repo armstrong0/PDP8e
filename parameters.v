@@ -1,41 +1,47 @@
 // state machine encoding
-parameter     F0 = 5'b00000, 
+parameter     F0 = 5'b00000,
               FW = 5'b00001,
               F1 = 5'b00010,
-			  F2 = 5'b00011, 
-			  F3 = 5'b00100,
+              F2 = 5'b00011,
+              F3 = 5'b00100,
 
-              D0 = 5'b00101, 
+              D0 = 5'b00101,
               DW = 5'b00110,
-			  D1 = 5'b00111, 
-			  D2 = 5'b01000, 
-			  D3 = 5'b01001,
+              D1 = 5'b00111,
+              D2 = 5'b01000,
+              D3 = 5'b01001,
 
               E0 = 5'b01010,
               EW = 5'b01011,
-			  E1 = 5'b01101,
-			  E2 = 5'b01110,
-			  E3 = 5'b01111,
+              E1 = 5'b01101,
+              E2 = 5'b01110,
+              E3 = 5'b01111,
 
               H0 = 5'b10000,
               HW = 5'b10001,
-			  H1 = 5'b10010, 
-			  H2 = 5'b10011, 
-			  H3 = 5'b10100,
+              H1 = 5'b10010,
+              H2 = 5'b10011,
+              H3 = 5'b10100,
 
-			  EAE0 = 5'b10101,
-			  EAE1 = 5'b10110,
-			  EAE2 = 5'b10111,
+              EAE0 = 5'b10101,
+              EAE1 = 5'b10110,
+              EAE2 = 5'b10111,
               EAE3 = 5'b11000,
-			  EAE4 = 5'b11001,
-			  EAE5 = 5'b11010;
+              EAE4 = 5'b11001,
+              EAE5 = 5'b11010,
+			  UNK0 = 5'b11011,
+			  UNK1 = 5'b11100,
+			  UNK2 = 5'b11101,
+			  UNK3 = 5'b11110,
+			  UNK4 = 5'b11111;
 
 
 // instruction encodings
 parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
           DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
           OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
-          JMPI = 4'b1011, JM = 2'b10;
+          JMPI = 4'b1011, JM = 2'b10, DAD = 12'o7443,
+          DLD=12'o7763,   DST=12'o7445;
 
 `ifndef SIM
     //parameter real clock_frequency    =  62250000;

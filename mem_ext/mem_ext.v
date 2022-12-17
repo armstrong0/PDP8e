@@ -8,7 +8,7 @@ module mem_ext
     input [0:11] instruction,
     input [0:11] mdout,
     input [0:11] sr,
-    input [0:11] rac,
+    input [0:11] ac,
     input [4:0] state,
     input clear,
     input extd_addrd,
@@ -72,13 +72,13 @@ module mem_ext
                         else UI <= 1'b1;
                         12'o6204: if (UF == 1'b0) UI <= 1'b0;  // CUI
                         12'o6214: if (UF == 1'b0)
-                            me_bus <= rac | {6'o00,DF,3'o0} ;// RDF
+                            me_bus <= ac | {6'o00,DF,3'o0} ;// RDF
                         else UI <= 1'b1;
                         12'o6224: if (UF == 1'b0)
-                            me_bus <= rac | {6'o00,IF,3'o0} ;// RIF
+                            me_bus <= ac | {6'o00,IF,3'o0} ;// RIF
                         else UI <= 1'b1;
                         12'o6234: if (UF == 1'b0)
-                            me_bus <= rac | {5'o00,savereg} ;// RIB
+                            me_bus <= ac | {5'o00,savereg} ;// RIB
                         else UI <= 1'b1;
                         12'b1111?????010, // HLT
                         12'b1111?????100, // OSR LAS 
@@ -118,7 +118,7 @@ module mem_ext
                         end
                         12'o6005:if (UF == 1'b0) //RTF
                         begin
-                            {UB,IB,DF} <= rac[5:11];
+                            {UB,IB,DF} <= ac[5:11];
                             int_delay <= 1;
                             int_inh <= 1;
                         end

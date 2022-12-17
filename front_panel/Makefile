@@ -21,3 +21,11 @@ view_front_st: front_st.vcd
 
 clean:
 	rm -rf front_design front_st  *.vcd
+
+	
+vdent:
+	~/bin/vdent <front_panel.v > t.v
+	mv t.v front_panel.v
+	~/bin/vdent <D_mux.v > t.v
+	mv t.v D_mux.v
+

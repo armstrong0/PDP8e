@@ -13,4 +13,8 @@ clean:
 	rm -rf pc_design
 	rm -rf pc_results.vcd
 
+vdent:
+	~/bin/vdent <pc.v > t.v
+	mv t.v pc.v
+
 

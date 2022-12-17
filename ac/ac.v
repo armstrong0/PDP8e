@@ -16,8 +16,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
     output reg EAE_loop,
     output reg EAE_skip,
     output reg [0:11] ac,
-    output reg [0:11] rac,
-    output reg [0:11] rmq);
+    output reg [0:11] mq);
 
     reg [0:11] ac_tmp,mq;
     reg [0:4] sc;
@@ -43,7 +42,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
         if (reset|clear)
         begin
             ac <= 12'o0000;
-            rac <= 12'o0000;
             mq <= 12'o0000;
             l <= 1'b0;
             gtf <= 1'b0;
@@ -60,8 +58,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
         end
         case (state)
             F0: begin // set up for EAE DPIC DAD DPSZ DCM
-                rac <= ac;
-                rmq <= mq;
                 if (ac == 12'o0000) AC_ALL_0 <= 1; else AC_ALL_0 <= 0;
                 if (ac == 12'o7777) AC_ALL_1 <= 1; else AC_ALL_1 <= 0;
                 if (mq == 12'o0000) MQ_ALL_0 <= 1; else MQ_ALL_0 <= 0;
@@ -320,7 +316,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 {l,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
             end
 
-            H0:rac <= ac;
+            H0:;
             HW:;
             H1: if (clear == 1)
             begin

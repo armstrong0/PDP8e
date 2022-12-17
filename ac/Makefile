@@ -23,3 +23,8 @@ view_cla: cla_results.vcd
 clean:
 	rm -rf *_results
 	rm -rf *.vcd
+
+vdent:
+	~/bin/vdent <ac.v > t.v
+	mv t.v ac.v
+
