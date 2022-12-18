@@ -6,6 +6,7 @@ function prompt ()
 {
 echo "If CPU is running: Switch Halt to ON and then OFF"
 echo "Set Switch Register (SR) to 7777, press Addr Load, press Clear then Cont."
+echo "IF USING the SW to set the bootloader start address MAKE SURE sr bit 0 is up"
 read -p "Press any key"
 echo "Set SR to 0200, press Addr Load"
 
@@ -182,6 +183,8 @@ echo "Set SR to 5000, press Clear, then Cont"
 echo "Test B only with SR = 5003"
 echo "Test A only with SR = 5002"
 echo "Test both modes with SR=5000"
+echo "If doing a partial test a CR LF is printed at the end of each pass"
+echo "If doing a full A/B test KE8 is printed at the end of each pass"
 echo "All tests should run in less than one minute"
 echo "Stop the test once satisfied, close minicom"
 
