@@ -31,6 +31,9 @@ echo "8) Random-DCA"
 echo "9) Random-JMP"
 echo "10) Random-JMP-JMS"
 echo "11) Memory Extension / Time share control"
+echo "12) EAE test 1 - all but multiply and divide"
+echo "13) EAE multiply and divide"
+echo "14) EAE with extended memory"
 
 echo -n "Enter the number of a test: "
 read selection
@@ -39,14 +42,18 @@ case $selection in
 
 1) prompt
 sendtape $diag_dir/dhkaf-a-pb 
-echo "Set SR=7777, then press Clear, Cont"
+#sendtape $diag_dir/MAINDEC-8E-D0AB-InstTest-1.pdf 
+echo "Set SR=7777, press Addr Load, then press Clear, Cont"
+echo "Once loading is complete set SR=0200,"
+echo "press Addr Load"
+echo "Set SR=7777, then press Clear and Cont"
+read -p "Press any key to continue"
 echo "CPU should stop at 0147.  AC should be 0000"
 echo "Press Cont"
 term_hex
-echo "A bell charactor 87 is typed every 1440 passes of the test"
+echo "A bell charactor 87 (07) is typed every 1440 passes of the test"
 read -p "Press any key to continue"
 sleep 1
-echo "if the CPU is not stopped we have run many passes of the whole test"
 ;;
 
 2) prompt
@@ -54,14 +61,16 @@ echo "if the CPU is not stopped we have run many passes of the whole test"
 echo "Set SR=7777, then press Clear, Cont"
 read -p "Press any key"
 echo "Set SR=0200 Press AL,CL,CO"
+term_hex
+echo "A bell charactor 87 (07) is typed every 1500 passes of the test"
+read -p "Press any key to continue"
 sleep 1
-echo " if the CPU is not stopped we have run many passes of the whole test"
 ;;
 3) prompt
 echo "Starting Adder Tests requires about 4 minutes to run, examine terminal for errors"
  sendtape $diag_dir/MAINDEC-8E-D0CC-AddTest.pt  
 sleep 1
-echo "Starting Minicom Terminal program, it will start over this"
+echo "Starting Minicom Terminal program"
 sleep 1
 mate-terminal -e minicom  &
 echo "Set SR=0200 Press Addr Load"
@@ -161,7 +170,28 @@ echo "Set SR to 0001, (one extended bank)  press Clear, then Cont"
 echo "Minicom will show 87 (or 07) - each is a bell which signifies one complete pass, close minicom"
 ;;
 
- *) echo "Invalid response enter a number between 1 and 11"
+12) prompt
+echo "Testing EAE mode A and B except multiply and divide"
+sendtape $diag_dir/MAINDEC-8E-D0LB-PB
+#sendtape $diag_dir/MAINDEC-8E-D0LA-EAE-Test1.pt
+echo "Starting Minicom Terminal program, it will start centered on the screen"
+sleep 1
+mate-terminal -e minicom  &
+echo "Set SR=0200 Press Addr Load"
+echo "Set SR to 5000, press Clear, then Cont"
+echo "Test B only with SR = 5003"
+echo "Test A only with SR = 5002"
+echo "Test both modes with SR=5000"
+echo "All tests should run in less than one minute"
+echo "Stop the test once satisfied, close minicom"
+
+;;
+13) promt
+;;
+14)
+promt
+;;
+ *) echo "Invalid response enter a number between 1 and 13"
 
 esac
  
