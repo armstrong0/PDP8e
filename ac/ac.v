@@ -129,12 +129,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'b11111??????0:           //oper2 cla
                 ac <= 12'o0000;
 				// oper3
-                12'b111100011001: EAE_mode <= 1;  //SWAB 7431
-                12'b111100100111:                 //SWBA 7447
-                begin
-                    EAE_mode <= 0;
-                    gtf <= 0;
-                end
                 12'b111110111001:   // 7671:// skip if mode B
                 begin
                     ac <= 12'o0000;
@@ -282,6 +276,12 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     mq <= ~mq + 12'o0001;
                     l <= 1'b0;
                 end
+                12'b111100011001: EAE_mode <= 1'b1;      //SWAB 7431
+                12'b111100100111: if (EAE_mode == 1'b1)  //SWBA 7447
+                begin
+                    EAE_mode <= 0;
+                    gtf <= 0;
+                end
                 12'b1111??1?1111:   // 7457 SAM
                 if (EAE_mode == 1'b1)
                 begin
@@ -360,6 +360,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         end
                         else
                         begin
+						    l <= 1'b0;
                             sc <= mdout[7:11] + 5'd1;
                         end
                     end
@@ -398,6 +399,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         end
                         else
                         begin
+						    l <= ac[0]; 
                             sc <= mdout[7:11] + 5'd1; //valid shift
                         end
                     end
@@ -470,7 +472,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     begin // there are two cases here depending upon some
 					// condition we either add or subtract from a shifted
 					// ac,mq
-					// the maintenacne manual is hard to follow because of
+					// the maintenance manual is hard to follow because of
 					// the ac is stored in normal or complement form depending
 					// on the last operation
 					// we have to remember what the sign bit of the last ac
@@ -524,11 +526,12 @@ module ac (input clk,  // have to rename the mdulate for verilator
                             sc <= sc - 5'd1;
 
                     end
-                    else if (instruction == 12'o7415)   // ASR
+                    else if ((instruction == 12'o7415) ||   // ASR
+                             (instruction == 12'o7417))     // LSR
                     begin
-                        {ac,mq} <=  {ac[0],ac,mq[0:10]};
+                        {ac,mq} <=  {l,ac,mq[0:10]};  // was ac[0] but the setup put ac[0] into l
                         if (EAE_mode == 1'b1) gtf <= mq[11];
-                        l <= ac[0];
+                        //l <= ac[0];
                         if (sc == 5'd1 ) begin
                             EAE_loop <= 0;
                             if (EAE_mode == 1'b1)
@@ -537,19 +540,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         end
                         else sc <= sc - 5'd1;
 
-                    end
-                    else if (instruction == 12'o7417) // LSR
-                    begin
-                        {ac,mq} <=  {1'b0,ac,mq[0:10]};
-                        if (EAE_mode == 1'b1) gtf <= mq[11];
-                        l <= 0;
-                        if (sc == 5'd1 ) begin
-                            EAE_loop <= 0;
-                            if (EAE_mode == 1'b1)
-                                sc <= 5'o37;
-                            else sc <= 5'o0;
-                        end
-                        else sc <= sc - 5'd1;
                     end
                 end
             end
