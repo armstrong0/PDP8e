@@ -1,6 +1,8 @@
-This directory contains the test bed (PDP8e_tb.v) to test the PDP8e contained 
-in the FPGA_image directory.  This test bed uses the top level PDP8e.  There
-are a few changes made using ifdefines: 
+This directory contains code to test the verilog design.  The design is
+simulated by using PDP8e_tb.v.  The design is tested on hardware using the
+script file hw_tests.sh.
+
+The simulation test bed (PDP8e_tb.v) to test the PDP8e contained  in the FPGA_image directory.  This test bed uses the top level PDP8e.  There are a few changes made using ifdefines: 
 
 the PLL is not used in simulation, instead the test bed generates a clock.
 
