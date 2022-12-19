@@ -1,0 +1,18 @@
+	CAM=7621
+	SWAB=7431
+	SWBA=7447
+    DPSZ=7451 
+	swp=7521
+	SCL=7403
+    *200
+	swba
+	scl
+	0010
+	hlt
+
+	
+	
+
+	$
+
+

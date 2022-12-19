@@ -5,7 +5,7 @@ module ma(input clk,
     input [0:11] ac,
     input [0:11] mq,
     input [0:11] sr,
-	input sw,
+    input sw,
     input [4:0] state,
     input addr_loadd,depd,examd,
     input int_in_prog,
@@ -45,15 +45,15 @@ module ma(input clk,
             addr = ma;
         endcase
         case (state)
-            E0,EW,E1,E2,E3,EAE2,EAE3,EAE4,EAE5: 
+            E0,EW,E1,E2,E3,EAE2,EAE3,EAE4,EAE5:
 			// use indirect addressing
             if ((((instruction[0:2] == AND) ||
-                (instruction[0:2] == TAD) ||
-                (instruction[0:2] == ISZ) || // need to add EAE intructions
-                (instruction[0:2] == DCA)) &&
-                (instruction[3] == 1'b1))    // this specifies deferred
-				|| (instruction & 12'b111100000001)== 12'b111100000001) 
-				// EAE mode B indirect
+                            (instruction[0:2] == TAD) ||
+                            (instruction[0:2] == ISZ) || // need to add EAE intructions
+                            (instruction[0:2] == DCA)) &&
+                        (instruction[3] == 1'b1))    // this specifies deferred
+                    || (instruction & 12'b111100000001)== 12'b111100000001)
+                	// EAE mode B indirect
                 EMA = DF;
             else
                 EMA = IF;
@@ -91,13 +91,13 @@ module ma(input clk,
                         mdout <= mdtmp;
                         instruction <= mdtmp;
                     end
-					ma <= pc + 12'o0001;
+                    ma <= pc + 12'o0001; // set up for fetch of immediate operand or address
                 end
-                F1: ; //instruction <= mdout;
+                F1:; //instruction <= mdout;
                 F2: begin
-				         current_page <= pc[0:4];
-						 mdout <= mdtmp;
-					end	 
+                    current_page <= pc[0:4];
+                    mdout <= mdtmp;
+                end
                 F3: begin
                     case(instruction[0:2])
                         0,1,2,3,4,5:
@@ -122,11 +122,18 @@ module ma(input clk,
                     mdin <= mdout + 12'o0001;
                     if (EMA <= MAX_FIELD) write_en <= 1;
                 end
-                D2: if (ma[0:8]  == 9'o001 )
-                    ma <= mdout + 12'o0001;
-                else
-                    ma <= mdout;
-                D3: ;
+                D2: begin
+                    if (ma[0:8]  == 9'o001 )
+                        ma <= mdout + 12'o0001;
+                    else
+                        ma <= mdout;  // set up for DST
+                    mdin <= mq;
+                end
+                D3: if ((instruction & 12'b111100101111) == 12'o7445)
+                begin
+                    mdin <= mq;  // wait state
+                    write_en <= 1'b1;
+                end
                 E0:;
                 EW: begin
                     if (int_in_prog == 1)
@@ -174,42 +181,38 @@ module ma(input clk,
                 else
                     mdout <= mdtmp ;
                 H1: if (addr_loadd == 1'b1)
-				    if (sw == 1'b1) ma <= 12'o7777;
-                    else
-                        ma <= sr;
-                else if (depd == 1'b1)
-                begin
-                    mdin <= sr;
-                    if (EMA <= MAX_FIELD) write_en <= 1;
-                end
-                H2: if ((depd ==1'b1) | (examd == 1'b1))
-                    ma <= ma + 12'o0001;
+                    if (sw == 1'b1) ma <= 12'o7777;
+                    else ma <= sr;
+                    else if (depd == 1'b1)
+                    begin
+                        mdin <= sr;
+                        if (EMA <= MAX_FIELD) write_en <= 1;
+                    end
+                    H2: if ((depd ==1'b1) | (examd == 1'b1))
+                        ma <= ma + 12'o0001;
                 H3:;
 				// EAE accesses
-				EAE2: begin 
-				    if((instruction & 12'b111100101111) == 12'o7445)  // DST
-				    begin
-					    mdin <= ac;
-						write_en <= 1'b1;
-					end	
-                    else if (EMA > MAX_FIELD)
+                EAE2:begin
+                    if  (EMA > MAX_FIELD)
                         mdout <= 12'o0000;
                     else
                         mdout <= mdtmp;
-					end
-				EAE3:ma <= ma + 1;	
-						
-				EAE4:if((instruction & 12'b111100101111) == 12'o7445)  // DST
-				    begin
-					    mdin <= mq;
-						write_en <= 1'b1;
-					end	
-
-                    else if (EMA > MAX_FIELD)
+                    ma <= ma +1;
+                end
+                EAE3:;
+                EAE4:begin
+                    if  ((instruction & 12'b111100101111) == 12'o7445)  // DST
+                    begin
+                        mdin <= ac;
+                        write_en <= 1'b1;
+                    end
+                end
+                EAE5:begin
+                    if (EMA > MAX_FIELD)
                         mdout <= 12'o0000;
                     else
                         mdout <= mdtmp;
-
+                end
                 default:;
             endcase
         end

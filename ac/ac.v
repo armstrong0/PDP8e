@@ -18,7 +18,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
     output reg [0:11] ac,
     output reg [0:11] mq);
 
-    reg [0:11] ac_tmp,mq;
+    reg [0:11] ac_tmp;
     reg [0:4] sc;
     reg il;  // intermediate link used in EAE DAD and  SAM
     wire forbidden;
@@ -139,8 +139,10 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 begin
 				if ( (ac|mq) == 12'o0000) EAE_skip <= 1;
                 end
-                12'b1111??0?0011:   //7403 SCL
-                if (EAE_mode == 1'b0) EAE_skip <= 1;
+                12'b1111??0?0011: if (EAE_mode == 1'b0)  // 7403 SCL
+                begin
+                    EAE_skip <= 1;
+                end
                 12'b1111??0?0111,   //7407 DIV
                 12'b1111??0?0101,   //7405 MUY
                 12'b1111??0?1011,   //7413 SHL
@@ -152,7 +154,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
                 12'b111100001001:   //7411 NMI can't be combined
                 EAE_loop <= 1;
-
+                12'b1111??1?1111:   // 7457 SAM first phase
+                {il,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'b1;
 
                 default:
                 begin
@@ -224,19 +227,21 @@ module ac (input clk,  // have to rename the mdulate for verilator
 				// ac may have already been cleared if it
 				// needs to be.  some of the other micro op combinations don't
 				// make sense
+				//
+                12'b1111??0?0011: if (EAE_mode == 1'b0)  // 7403 SCL
+                begin
+                    sc <= ~mdout[7:11];
+                end
+                else   //7403 ACS
+                begin 
+				    sc <= ac[7:11];
+                    ac <= 12'o0000;
+                end
+                12'b1111??0?0111,   //7407 DIV
                 12'b111100100001:   ac <= ac | {7'b0,sc }; //SCA These two
 				// instructions mean the same thing in mode A or B
 				// the previous phase may have done things to the AC and MQ
 				// as indicated by the question marks...
-                12'b1111??0?0011: if (EAE_mode == 1'b0)  // 7403 SCL
-                begin
-                    sc <= ~mdout[7:11];
-                    EAE_skip <= 1;
-                end
-                else   //7403 ACS
-                begin sc <= ac[7:11];
-                    ac <= 12'o0000;
-                end
                 12'b1111?1111011:   //DPIC 7573
                 if (mq == 12'o7777)
                 begin
@@ -282,11 +287,18 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     EAE_mode <= 0;
                     gtf <= 0;
                 end
-                12'b1111??1?1111:   // 7457 SAM
+                12'b1111??1?1111:   // 7457 SAM second phase
                 if (EAE_mode == 1'b1)
                 begin
-                    {gtf,ac } <= {mq[0],mq} + ~{ac[0],ac} + 13'b1;
+                    l <= il;
+                    ac <= ac_tmp;
+					sc <= 5'b10111;  // dont know why...
+                    case ({ac_tmp[0],ac[0],mq[0]})
+                        3'b000,3'b010,3'b011,3'b110: gtf <= 1'b1;
+                        3'b001,3'b100,3'b101,3'b111: gtf <= 1'b0;
+                    endcase
                 end
+
                 default:
                 begin
                     ac <= ac;

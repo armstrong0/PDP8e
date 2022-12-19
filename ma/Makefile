@@ -59,4 +59,7 @@ clean:
 	rm -rf *design
 	rm -rf *.vcd
 
+vdent:
+	~/bin/vdent <ma.v > t.v
+	mv t.v ma.v
 
