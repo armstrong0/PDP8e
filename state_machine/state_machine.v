@@ -38,40 +38,37 @@ module state_machine(input clk,
                 FW: state <= F1;
                 F1: state <= F2;
                 F2: casez (instruction)
-				    12'b1111??0?0101:   //7405 MUY
-					  if (EAE_mode == 1'b0) state <= EAE0;
-					  else state <= D0; 
-				    12'b1111??0?0111:   //7407 DIV
-					  if (EAE_mode == 1'b0) state <= EAE0;
-					  else state <= D0;   
-				    12'b111100001001,   //7411 NMI
-				    12'b1111??0?1011,   //7413 SHL
-				    12'b1111??0?1101,   //7415 ASR
-				    12'b1111??0?1111:   //7417 LSR
-                         state <= EAE0;
-					12'b1111??1?0011,   // DAD
-				//	12'b111111110001,   // DLD if AC/MQ cleared then DAD
-				//	becomes DLD 
-					12'b1111??1?0101:   // DST
-					     state <= D0;
-					
-					// 12'b1111??1?0001,   // NOP
-					12'b1111??0?0011,   // SCL or ACS normal flow
-					12'b1111??1?0111,   // SWBA       normal flow
-					12'b1111??0?0001,   // NOP        normal flow
-				    12'b111100011001,   // SWAB
-					12'b1111??1?1001,   // DPSZ       normal flow
-					12'b1111?1111011,   // DPIC       normal flow
-					12'b1111?1111101,   // DCM        normal flow
-					12'b1111??1?1111:   // SAM        normal flow
-                        state <= F3;
-				    default:
-					    state <= F3;
-					endcase	 
+                    12'b1111??0?0101,   //7405 MUY
+                    12'b1111??0?0111:   //7407 DIV
+                    if (EAE_mode == 1'b0) state <= EAE0;
+                    else state <= D0;
+                    12'b111100001001,   //7411 NMI
+                    12'b1111??0?1011,   //7413 SHL
+                    12'b1111??0?1101,   //7415 ASR
+                    12'b1111??0?1111:   //7417 LSR
+                    state <= EAE0;
+                    12'b1111??1?0011,   // DAD become DLD if ac/mq cleared
+                    12'b1111??1?0101:   // DST
+                    if (EAE_mode == 1'b1) state <= D0;
+					else state <= 
+
+                    12'b1111??0?0001,   // NOP        normal flow
+                    12'b1111??0?0011,   // SCL or ACS normal flow
+
+                    12'b1111??1?0111,   // SWBA       normal flow
+                    12'b1111??1?1001,   // DPSZ       normal flow
+                    12'b1111?1111011,   // DPIC       normal flow
+                    12'b1111?1111101,   // DCM        normal flow
+                    12'b1111??1?1111,   // SAM        normal flow
+                    12'b111100011001:   // SWAB
+                    state <= F3;
+                    default:
+                    state <= F3;
+                endcase
                 F3: if ((instruction[0:1] == 2'b11) || // IOT & OPER
                         (instruction[0:3] == 4'b1010)) // JMP D
                 begin
-					if (halt == 1)
+                    if (halt == 1)
                         state <= H0;
                     else if (({instruction[0:3],instruction[10:11]} == 6'b111110) //halt
                             && (UF == 1'b0))
@@ -112,10 +109,10 @@ module state_machine(input clk,
                         state <= F0;
                 end
                 else  // if EAE instruction
-				    if ((instruction & 12'b111100000001 ) == 12'b111100000001)
-					  state <= EAE2;
-                    else
-                      state <= E0;
+                if ((instruction & 12'b111100000001 ) == 12'b111100000001)
+                    state <= EAE2;
+                else
+                    state <= E0;
 
                 // execute cycle
                 E0: if (~single_step |  cont )
@@ -145,20 +142,20 @@ module state_machine(input clk,
                 H1: state <= H2;
                 H2: state <= H3;
                 H3: state <= H0;
-                
-				EAE0: state <= EAE1;
+
+                EAE0: state <= EAE1;
                 EAE1: if (EAE_loop == 1) state <= EAE1;
-                      else state <= F3;
-				EAE2: state <= EAE3;
-				      // need to vector off to EAE0 if MUL or DIV
-					  // if we reached this it is a mode B EAE instruction
-					  // only MUL and DIV have bit 6 set 0 here. 
-				EAE3: if(instruction[6] == 1'b0) state <= EAE0;
-				      else state <= EAE4;
-				EAE4: state <= EAE5;
-				EAE5: state <= E3;   // back to normal processing
-                
-				default: state <= H0;
+                else state <= F3;
+                EAE2: state <= EAE3;
+				// need to vector off to EAE0 if MUL or DIV
+				// if we reached this it is a mode B EAE instruction
+				// only MUL and DIV have bit 6 set 0 here.
+                EAE3: if(instruction[6] == 1'b0) state <= EAE0;
+                else  state <= EAE4;
+                EAE4: state <= EAE5;
+                EAE5: state <= E3;   // back to normal processing
+
+                default: state <= H0;
             endcase
     end
 endmodule
