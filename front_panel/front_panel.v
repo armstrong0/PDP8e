@@ -9,7 +9,7 @@ module front_panel (input clk,
     input cont,
     input sing_step,
     input halt,
-	output reg sw_active,
+    output reg sw_active,
     output triggerd,cleard , extd_addrd , addr_loadd , depd , examd, contd
 );
 
@@ -20,7 +20,7 @@ module front_panel (input clk,
 
     reg [0:dbnce_nu_bits] trig_cnt;  // the highest order bit is always bit 0 !
     reg trigger1;
-	
+
     assign { triggerd,cleard , extd_addrd , addr_loadd , depd , examd, contd } = switchd;
 
     localparam Wait = 3'b000,
@@ -34,7 +34,7 @@ module front_panel (input clk,
     begin
         trigger1 = (trig_state == Wait) &&
         ( clear | extd_addr | addr_load | dep | exam | cont );
-		if (trig_state == Delay) sw_active = 1; else sw_active = 0; 
+        if (trig_state == Delay) sw_active = 1; else sw_active = 0;
     end
 
     assign cont_c = (cont & (sing_step | halt));
@@ -51,9 +51,9 @@ module front_panel (input clk,
         begin
             case (trig_state)
                 Wait: if ((((state == H0) || (state == HW)) & (trigger1 == 1)) |
-                         ((state == F0) & cont_c) |
-                         ((state == D0) & cont_c) |
-                         ((state == E0) & cont_c))
+                        ((state == F0) & cont_c) |
+                        ((state == D0) & cont_c) |
+                        ((state == E0) & cont_c))
                 begin
                     trig_state <= Trig1 ;
                     switchd <= {1'b1,clear ,extd_addr ,addr_load , dep ,exam, cont };

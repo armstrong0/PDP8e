@@ -81,7 +81,7 @@ module mem_ext
                             me_bus <= ac | {5'o00,savereg} ;// RIB
                         else UI <= 1'b1;
                         12'b1111?????010, // HLT
-                        12'b1111?????100, // OSR LAS 
+                        12'b1111?????100, // OSR LAS
                         12'b1111?????110: if (UF == 1'b1) UI <= 1'b1; // OSR LAS
                         12'b1010????????:  // JMP DIRECT
                         begin

@@ -11,7 +11,7 @@ module D_mux(
     input [0:11] mb,
     input [0:11] mq,
     input [0:11] io_bus,
-	input sw_active,
+    input sw_active,
     output reg [0:11] dout,
     output reg run_led);
 `include "../parameters.v"
@@ -19,41 +19,41 @@ module D_mux(
     reg FS,DS,ES,HS;
 
     always @* begin
-	    case (state)
-		   F0,FW,F1,F2,F3:  
-		     begin
-			   run_led = 1;
-			   FS = 1;
-			   DS = 0;
-			   ES = 0;
-			   HS = 0;
-			 end
-		   D0,DW,D1,D2,D3:
-		     begin
-			   run_led = 1;
-			   FS = 0;
-			   DS = 1;
-			   ES = 0;
-			   HS = 0;
-			 end
-		   E0,EW,E1,E2,E3,EAE0,EAE1,EAE2,EAE3:
-		     begin
-			   run_led = 1;
-			   FS = 0;
-			   DS = 0;
-			   ES = 1;
-			   HS = 0;
-			 end
-		   default:   // all the halt states plus undefined states
-		     begin
-			   FS = 0;
-			   DS = 0;
-			   ES = 0;
-			   HS = 1; if (sw_active == 1) run_led = 1;
-			   else run_led = 0;
-			 end
-		endcase	 
-		      
+        case (state)
+            F0,FW,F1,F2,F3:
+            begin
+                run_led = 1;
+                FS = 1;
+                DS = 0;
+                ES = 0;
+                HS = 0;
+            end
+            D0,DW,D1,D2,D3:
+            begin
+                run_led = 1;
+                FS = 0;
+                DS = 1;
+                ES = 0;
+                HS = 0;
+            end
+            E0,EW,E1,E2,E3,EAE0,EAE1,EAE2,EAE3:
+            begin
+                run_led = 1;
+                FS = 0;
+                DS = 0;
+                ES = 1;
+                HS = 0;
+            end
+            default:   // all the halt states plus undefined states
+            begin
+                FS = 0;
+                DS = 0;
+                ES = 0;
+                HS = 1; if (sw_active == 1) run_led = 1;
+                else run_led = 0;
+            end
+        endcase
+
     end
 
     always @(posedge clk) begin

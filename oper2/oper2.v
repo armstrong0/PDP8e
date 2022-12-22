@@ -5,7 +5,7 @@ module oper2(input clk100,
 			 input [0:11] ac,
 			 input l,
 			 output reg skip);
-// instruction neeeds to be hooked to mdout for valid results
+
 `include "../parameters.v"
     reg ac_zero;
     always @(posedge clk100)

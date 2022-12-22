@@ -38,30 +38,67 @@ module state_machine(input clk,
                 FW: state <= F1;
                 F1: state <= F2;
                 F2: casez (instruction)
+				    12'b1111??0?0001:;  //NOP
+					12'b1111??0?0011:   //SCL ACS
+					begin
+					    if (EAE_mode == 1'b0) EAE_skip <= 1'b1;
+						state <= EAE0;
+                    end
                     12'b1111??0?0101,   //7405 MUY
                     12'b1111??0?0111:   //7407 DIV
-                    if (EAE_mode == 1'b0) state <= EAE0;
-                    else state <= D0;
-                    12'b111100001001,   //7411 NMI
+					begin
+					    EAE_skip <= 1'b1;
+                    	if (EAE_mode == 1'b0) state <= EAE0;
+                    	else state <= D0;
+					end	
+                    12'b111100001001: state <= EAE0;  //7411 NMI
                     12'b1111??0?1011,   //7413 SHL
                     12'b1111??0?1101,   //7415 ASR
                     12'b1111??0?1111:   //7417 LSR
-                    state <= EAE0;
-                    12'b1111??1?0011,   // DAD become DLD if ac/mq cleared
-                    12'b1111??1?0101:   // DST
-                    if (EAE_mode == 1'b1) state <= D0;
-					else state <= 
+					begin
+						EAE_skip <= 1'b1;
+	                    state <= EAE0;
+					end
 
-                    12'b1111??0?0001,   // NOP        normal flow
-                    12'b1111??0?0011,   // SCL or ACS normal flow
-
-                    12'b1111??1?0111,   // SWBA       normal flow
-                    12'b1111??1?1001,   // DPSZ       normal flow
-                    12'b1111?1111011,   // DPIC       normal flow
-                    12'b1111?1111101,   // DCM        normal flow
-                    12'b1111??1?1111,   // SAM        normal flow
-                    12'b111100011001:   // SWAB
-                    state <= F3;
+                    12'b1111??1?0001:;  // SCL both A and B
+					12'b1111??1?0011:   // SCA SCL / DAD - DLD
+					begin 
+					   EAE_skip <= 1'b1;
+					   if EAE_mode == 1'b0) state <= F3;
+					   else state <= D0;
+					end
+                    12'b1111??1?0101:   // SCA - MUL   DST
+					begin 
+					   EAE_skip <= 1'b1;
+					   if EAE_mode == 1'b0) state <= EAE0;
+					   else state <= D0;
+					end
+                    12'b1111??1?0111:   // SCA - DIV SWBA
+					begin 
+					   if EAE_mode == 1'b0)
+					   begin
+					   	state <= EAE0;
+					   	EAE_skip <= 1'b1;
+					   end
+					   else state <= F3;
+					end
+                    12'b1111??1?1001:   // SCA - NMI DPSZ
+					if (EAE_mode == 1'b0) state <= EAE0;
+					else
+					begin
+					   if ((ac | mq) == 12'o0000) EAE_skip <= 1'b1;
+					   state <= F3;
+                    12'b1111?1111011,   // SCA - SHL DPIC 
+                    12'b1111?1111101,   // SCA - ASR DCM  
+                    12'b1111??1?1111:   // SCA - LSR SAM 
+					begin 
+					   if EAE_mode == 1'b0)
+					   begin
+					   	state <= EAE0;
+					   	EAE_skip <= 1'b1;
+					   end
+					   else state <= F3;
+					end
                     default:
                     state <= F3;
                 endcase

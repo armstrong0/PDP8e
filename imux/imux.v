@@ -63,8 +63,8 @@ module imux(
             12'o600?: skip = mskip ;
 	        // EAE instructions that use the next word as
 	        // an operand, ???? stands for normal MQ ops
-			12'b1111???????1:  // EAE ops
-			    skip = EAE_skip;
+            12'b1111???????1:  // EAE ops
+            skip = EAE_skip;
             //12'b1111????0011,  // 7403 SCL
 			//12'b1111????0101,  // 7405 MUL
             //12'b1111????0111,  // 7407 DIV
