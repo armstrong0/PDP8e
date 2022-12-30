@@ -1,0 +1,30 @@
+/ Basic EAE test
+/ this is to tes the 8 basic EAE ops that a standard PDP8e has
+
+CAM=7621
+
+* 100
+A, 5252
+b, 2525
+
+*200
+	cla
+	tad a
+	7401  /
+	7601  / 7601
+	tad a
+	mql   / 7421 mq should have 5252 ac should be 0
+	tad b / ac should be 2525
+	MQA   / 7501  or ac and mq into AC
+	SWP   / 7521  swap AC and MQ
+	CAM   / 7621 clear ac and mq
+	tad a
+	swp
+	tad b
+	ACL   / 7701 load MQ into AC
+	CLA SWP / 7721 load AC from MQ then clear MQ
+
+	hlt
+$
+
+

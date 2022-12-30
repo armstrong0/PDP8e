@@ -1,3 +1,5 @@
+`define EAE
+
 // state machine encoding
 parameter     F0 = 5'b00000,
               FW = 5'b00001,
@@ -22,26 +24,28 @@ parameter     F0 = 5'b00000,
               H1 = 5'b10010,
               H2 = 5'b10011,
               H3 = 5'b10100,
-
+`ifdef EAE
               EAE0 = 5'b10101,
               EAE1 = 5'b10110,
               EAE2 = 5'b10111,
               EAE3 = 5'b11000,
               EAE4 = 5'b11001,
               EAE5 = 5'b11010,
-			  UNK0 = 5'b11011,
-			  UNK1 = 5'b11100,
+			  F2A  = 5'b11011,
+			  F2B  = 5'b11100,
 			  UNK2 = 5'b11101,
 			  UNK3 = 5'b11110,
 			  UNK4 = 5'b11111;
-
+`endif
 
 // instruction encodings
 parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
           DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
           OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
           JMPI = 4'b1011, JM = 2'b10, DAD = 12'o7443,
-          DLD=12'o7763,   DST=12'o7445;
+          DLD=12'o7663,   DST=12'o7445,
+		  SHL = 12'o7413, ASR = 12'o7415, LSR = 12'o7417,
+		  MUL = 12'o7405, DIV = 12'o7407, NMI = 12'o7411;
 
 `ifndef SIM
     //parameter real clock_frequency    =  62250000;

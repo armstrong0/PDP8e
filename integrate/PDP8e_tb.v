@@ -306,6 +306,12 @@ module PDP8e_tb;
                 $dumpfile("Serial_test.vcd");
                 $dumpvars(0,address,UUT);
                 $readmemh("Diagnostics/d2ab.hex",UUT.MA.ram.mem,0,8191);
+				end
+				
+            13: begin
+                $dumpfile("EAE_test.vcd");
+                $dumpvars(0,address,UUT);
+                $readmemh("Diagnostics/D0LB.hex",UUT.MA.ram.mem,0,8191);
             end
 
         endcase
@@ -444,6 +450,20 @@ module PDP8e_tb;
 				//wait(UUT.state == H0);
                 #10000000000 $finish;
             end
+			13: begin
+			    sr <= 12'o0115;
+                #500 `pulse1(addr_load);
+				sr <= 12'o2525;
+				#500 `pulse1(dep);
+				sr <= 12'o4667;
+                #500 `pulse1(addr_load);
+				sr <= 12'o5003;
+                #500 `pulse1(clear);
+                #500 `pulse1(cont);
+				#10000 $finish;
+			end
+
+
         endcase
 
     end

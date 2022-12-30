@@ -65,15 +65,6 @@ module imux(
 	        // an operand, ???? stands for normal MQ ops
             12'b1111???????1:  // EAE ops
             skip = EAE_skip;
-            //12'b1111????0011,  // 7403 SCL
-			//12'b1111????0101,  // 7405 MUL
-            //12'b1111????0111,  // 7407 DIV
-            //12'b1111????1011,  // 7413 SHL
-            //12'b1111????1101,  // 7415 ASR
-            //12'b1111????1111:  // 7417 LSR
-			//     skip = EAE_skip;
-		    //	12'o7451,          // DPSZ
-            //    12'o7451: skip = EAE_skip;  // CAM DPSZ
             12'o603?,12'o604?: skip = sskip;
             12'o625?: skip = mskip;
             default: skip = 0;

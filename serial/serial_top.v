@@ -12,7 +12,7 @@ module serial_top(
     input [0:11] ac,
     input rx,
     input clear,
-	input UF,
+    input UF,
     output reg [0:11] serial_bus,  //from the point of view of the CPU
     output tx,
 	/* verilator lint_off SYMRSVDWORD */
@@ -36,17 +36,17 @@ module serial_top(
     end
 
 `include "../parameters.v"
- 
-   tx TX(.clk100 (clk),
-	    .reset (reset),
-		.clear (clear),
+
+    tx TX(.clk100 (clk),
+        .reset (reset),
+        .clear (clear),
         .char (ac),
         .load (load_tx),
         .clear_flag (clear_tx),
         .set_flag (set_tx),
-	    .tx (tx),
-		.flag (tx_flag)
-		);
+        .tx (tx),
+        .flag (tx_flag)
+    );
 
 
     rx rx1(.reset (reset),
@@ -61,7 +61,7 @@ module serial_top(
     always @(posedge clk) begin
 
         if ((flag == 1) && (sint_ena ==1)) interrupt <= 1;
-            else interrupt <= 0;
+        else interrupt <= 0;
         if (state == F1)
         begin
             skip <= 0;
@@ -109,13 +109,13 @@ module serial_top(
                 12'o6044: if (UF == 1'b0) load_tx <= 1;//TCP Load buffer, print
                 12'o6045:;// SPI Skip if printer interrupt = 1
                 12'o6046: // TLS Load buffer, print and clear the printer flag
-	         	if (UF == 1'b0)
-                 begin
+                if (UF == 1'b0)
+                begin
                     load_tx <= 1;
                     clear_tx <= 1;
                 end
                 12'o6007: //CAF
-	         	if (UF == 1'b0)
+                if (UF == 1'b0)
                 begin
                     clear_tx <= 1;
                     clear_rx <= 1;

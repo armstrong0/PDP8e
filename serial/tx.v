@@ -60,7 +60,7 @@ module tx( input clk100 ,
                         begin
                             state <= START;
                             period_cntr <= tx_term_cnt[13:0];
-							flag <= 0;
+                            flag <= 0;
                         end
                         else begin
                             state <= IDLE;
@@ -80,19 +80,19 @@ module tx( input clk100 ,
                     begin
                         period_cntr <= tx_term_cnt[13:0];
                         state <= state + 4'b0001;
-						if (state == BIT7)
-						   flag <= 1;
+                        if (state == BIT7)
+                            flag <= 1;
                     end
-					STOP1: begin
+                    STOP1: begin
 `ifdef ONESTOP
-                    state <= IDLE;
-					period_cntr <= 14'd16;
+    state <= IDLE;
+    period_cntr <= 14'd16;
 `else
-                    state <= STOP2;
-					period_cntr <= tx_term_cnt[13:0];
-`endif					
+    state <= STOP2;
+    period_cntr <= tx_term_cnt[13:0];
+`endif
 
-					end
+                    end
                     STOP2: begin // we are done set up for the next
                         state <= IDLE; // loaded might be set but idle will
 						// sort it out very quickly

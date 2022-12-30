@@ -14,7 +14,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
     output reg gtf,
     output reg EAE_mode,
     output reg EAE_loop,
-    output reg EAE_skip,
     output reg [0:11] ac,
     output reg [0:11] mq);
 
@@ -25,11 +24,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
     reg tmp;
 
 `include "../parameters.v"
-    assign forbidden = ( (EAE_mode == 1) &&
-				   ((instruction == 12'b111101111011) || //7573 DPIC
-				    (instruction == 12'b111111111011) || //7773 CLA DPIC
-				    (instruction == 12'b111101111101) || //7575 DCM
-				    (instruction == 12'b111111111101))); //7775 CLA DCM
 
 
     always @(posedge clk)
@@ -42,7 +36,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
             gtf <= 1'b0;
             EAE_mode <= 0;
             EAE_loop <= 0;
-            EAE_skip <= 0;
             sc <= 5'o00;
         end
         else
@@ -54,29 +47,28 @@ module ac (input clk,  // have to rename the mdulate for verilator
         case (state)
             F0: begin // set up for EAE DPIC DAD DPSZ DCM
                 EAE_loop <= 0;
-                EAE_skip <= 0;
                 if (EAE_mode == 1'b0) gtf <= 1'b0;  // gtf must be 0 in mode A
             end
             FW:;
-            F1: begin
-                casez (instruction)
+            F1:
+            casez (instruction)
 			    // oper1 instructions
-                    12'b11100000????:  begin ac <= ac;       l <=  l; end // nop
-                    12'b11100001????:  begin ac <= ac;       l <= ~l; end // cml
-                    12'b11100010????:  begin ac <= ~ac;      l <=  l; end // cma
-                    12'b11100011????:  begin ac <= ~ac;      l <= ~l; end // cml cma
-                    12'b11100100????:  begin ac <= ac;       l <=  0; end // cll
-                    12'b11100101????:  begin ac <= ac;       l <=  1; end // cll cml
-                    12'b11100110????:  begin ac <= ~ac;      l <=  0; end // cll cma
-                    12'b11100111????:  begin ac <= ~ac;      l <=  1; end // cll cml cma
-                    12'b11101000????:  begin ac <= 12'o0000; l <=  l; end // CLA
-                    12'b11101001????:  begin ac <= 12'o0000; l <= ~l; end // cla cml
-                    12'b11101010????:  begin ac <= 12'o7777; l <=  l; end // cla cma
-                    12'b11101011????:  begin ac <= 12'o7777; l <= ~l; end // cla cma cml
-                    12'b11101100????:  begin ac <= 12'o0000; l <=  0; end // cla cll
-                    12'b11101101????:  begin ac <= 12'o0000; l <=  1; end // cla cll cml
-                    12'b11101110????:  begin ac <= 12'o7777; l <=  0; end // cla cll cma
-                    12'b11101111????:  begin ac <= 12'o7777; l <=  1; end // cla cll cma cml
+                12'b11100000????:  begin ac <= ac;       l <=  l; end // nop
+                12'b11100001????:  begin ac <= ac;       l <= ~l; end // cml
+                12'b11100010????:  begin ac <= ~ac;      l <=  l; end // cma
+                12'b11100011????:  begin ac <= ~ac;      l <= ~l; end // cml cma
+                12'b11100100????:  begin ac <= ac;       l <=  0; end // cll
+                12'b11100101????:  begin ac <= ac;       l <=  1; end // cll cml
+                12'b11100110????:  begin ac <= ~ac;      l <=  0; end // cll cma
+                12'b11100111????:  begin ac <= ~ac;      l <=  1; end // cll cml cma
+                12'b11101000????:  begin ac <= 12'o0000; l <=  l; end // CLA
+                12'b11101001????:  begin ac <= 12'o0000; l <= ~l; end // cla cml
+                12'b11101010????:  begin ac <= 12'o7777; l <=  l; end // cla cma
+                12'b11101011????:  begin ac <= 12'o7777; l <= ~l; end // cla cma cml
+                12'b11101100????:  begin ac <= 12'o0000; l <=  0; end // cla cll
+                12'b11101101????:  begin ac <= 12'o0000; l <=  1; end // cla cll cml
+                12'b11101110????:  begin ac <= 12'o7777; l <=  0; end // cla cll cma
+                12'b11101111????:  begin ac <= 12'o7777; l <=  1; end // cla cll cma cml
 
                 //oper3 instructions
                 // below are the instructoions that are part of the base
@@ -89,89 +81,67 @@ module ac (input clk,  // have to rename the mdulate for verilator
 				// happen in the following phases.
 
                     //12'b111100?0???1:;  //NOP  caught by default
-                    12'b111100?1???1:  //MQL
-                    begin
-                        mq <=ac;
-                        ac <= 12'o0000;
-                    end
-                    12'b111101?0???1:  ac <= ac | mq;  //MQA
-                    12'b111101?1???1: if  (!forbidden ) //SWP
-                    begin
-                        mq <= ac;
-                        ac <= mq;
-                    end
-                    12'b111110?0???1:  ac <= 12'o0000;  //CLA
-                    12'b11111001???1:  // CAM
-                    begin
-                        mq <= 12'o0000;
-                        ac <= 12'o0000;
-                    end
-                    12'b111111?0???1: ac <= mq;        // ACL
-                    12'b111111?1???1: if (forbidden)   // CLA SWP
-                    begin
-                        mq <= 12'o0000;
-                        ac <= mq;
-                    end
-                    else //CLA SWP
-                    begin
-                        ac <= mq;
-                        mq <= 12'o0000;
-                    end
-                    default: begin
-                        ac <= ac;
-                        l <= l;
-                        gtf <= gtf;
-                    end
-                endcase
-            end
-            F2: casez (instruction)
+                12'b111100?1???1:  //MQL
+                begin
+                    mq <= ac;
+                    ac <= 12'o0000;
+                end
+                12'b111101?0???1: ac <= ac | mq;  //MQA
+                12'b111101?1???1:  //SWP
+                begin
+                    mq <= ac;
+                    ac <= mq;
+                end
+                12'b111110?0???1:  ac <= 12'o0000;  //CLA
+                12'b111110?1???1:  // CAM
+                begin
+                    mq <= 12'o0000;
+                    ac <= 12'o0000;
+                end
+                12'b111111?0???1: ac <= mq;        // ACL
+                12'b111111?1???1:    // CLA SWP
+                begin
+                    mq <= 12'o0000;
+                    ac <= mq;
+                end
+                default: begin
+                    ac <= ac;
+                    l <= l;
+                    gtf <= gtf;
+                end
+            endcase
+
+            F2:  // Non-EAE mode
+            casez (instruction)
                 12'b1110???????1:           //oper1 IAC
                 {l,ac} <= {l,ac} + 13'o00001;
                 12'b11111??????0:           //oper2 cla
                 ac <= 12'o0000;
-				// oper3
-				// test for SCA
-                12'b1111??1????1:
-                if (EAE_mode == 1'b0 ) //SCA in mode A
-                    ac <= ac | {7'b0,sc };
+                default:;
+            endcase
+            F2A: // EAE A mode
+            if (instruction[6] == 1'b1 ) //SCA in mode A
+                ac <= ac | {7'b0,sc };
 
-                else if ((instruction & 12'b111100101111) == 12'b111100101111)
-                     // 7457 SAM first phase
-                    {il,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'b1;
-                else if ((instruction & 12'b111100101111) == 12'b111110111001)
-                     // 7671:  skip if mode B
-                begin
-                    ac <= 12'o0000;
-                    mq <= 12'o0000;
-                    EAE_skip <= 1;
-                end
-                else if ((instruction & 12'b111100101111) == 12'b111100101001)
-                     //7451 DPSZ
-                begin
-                    if ((ac|mq) == 12'o0000) EAE_skip <= 1;
-                end
-                12'b1111??0?0011: if (EAE_mode == 1'b0)  // 7403 SCL
-                    EAE_skip <= 1;
-                12'b1111??0?0111,   //7407 DIV
-                12'b1111??0?0101,   //7405 MUY
-                12'b1111??0?1011,   //7413 SHL
-                12'b1111??0?1101,   //7415 ASR
-                12'b1111??0?1111:   //7417 LSR
-                begin
-                    EAE_skip <= 1;
-                    EAE_loop <= 1;
-                end
-                12'b111100001001:   //7411 NMI can't be combined
+            else if (instruction == 12'b111100001001)   //7411 NMI can't be combined
                 EAE_loop <= 1;
 
-                default:
-                begin
-                    ac <= ac;
-                    l <= l;
-                    mq <= mq;
-                end
-            endcase
+            else begin
+                ac <= ac;
+                l <= l;
+                mq <= mq;
+            end
 
+            F2B: //EAE Mode B
+            if ((instruction & 12'b111100101111) == 12'b111100101111)
+                 // 7457 SAM first phase
+                {il,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'b1;
+            else if ((instruction & 12'b111100101111) == 12'b111110111001)
+                 // 7471:  skip if mode B
+            begin
+                ac <= 12'o0000;
+                mq <= 12'o0000;
+            end
 
             F3: casez(instruction)
 				//  all 6000 series instructions need to be inhibited in user
@@ -247,45 +217,47 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'b1111??1?0001: if (EAE_mode == 1'b1)
                     ac <= ac | {7'b0,sc };           //SCA  B mode
                 12'b1111?1111011: if (EAE_mode == 1'b1)  //DPIC 757n
-                begin
-                    if (mq == 12'o7777)
+                begin // note an earlier phase has swapped ac and mq
+                    if (ac == 12'o7777)
                     begin
                         mq <= 12'o0000;
-                        if (ac == 12'o7777)
+                        if (mq == 12'o7777)
                         begin
                             ac <= 12'o0000;
                             l <= 1'b1;
                         end
                         else
                         begin
-                            ac <= ac +12'o0001;
+                            ac <= mq +12'o0001;
                             l <= 1'b0;
                         end
                     end
                     else
                     begin
-                        mq <= mq +12'o0001;
+                        mq <= ac +12'o0001;
+                        ac <= mq;
                         l <= 1'b0;
                     end
                 end
                 12'b1111?1111101: if (EAE_mode == 1'b1)   //DCM 7575
-                begin
-                    if (mq == 12'o0000)
+                begin // note an earlier phase has swapped ac and mq
+                    if (ac == 12'o0000)
                     begin  // two's compliment of 0000 is 0000 and a carry
-                        if (ac == 12'o0000)
-                        begin
+                        if (mq == 12'o0000)
+                        begin // no need to swap they are both 0000
                             l <= 1'b1;
                         end
                         else
                         begin
                             l <= 1'b0;
-                            ac <= ~ac + 12'o0001;
+                            ac <= ~mq + 12'o0001;
+                            mq <= ac;
                         end
                     end
                     else
                     begin
-                        mq <= ~mq + 12'o0001;
-                        ac <= ~ac;
+                        mq <= ~ac + 12'o0001;
+                        ac <= ~mq;
                         l <= 1'b0;
                     end
                 end
@@ -339,7 +311,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 gtf <= 1'b0;
                 EAE_mode <= 0;
                 EAE_loop <= 0;
-                EAE_skip <= 0;
                 sc <= 5'o00;
             end
             H3:;
@@ -381,12 +352,18 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         begin
                             l <= 1'b0;
                             sc <= mdout[7:11] + 5'd1;
+                            EAE_loop <= 1'b1;
                         end
                     end
                     else if (mdout[7:11] >= 5'd25 )
-                        	// B Mode  then no need to shift
-                        	// but the link needs to be cleared
+                    begin
+                        // B Mode  then no need to shift
+                        // but the link needs to be cleared
                         l <= 1'b0;
+                        ac <= 12'd0;
+                        mq <= 12'd0;
+                        if (instruction == LSR ) gtf <= 1'b0;
+                    end
                     else if  (mdout[7:11] == 5'd0  )
                     begin
                         sc <= 5'o37;
@@ -397,6 +374,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     begin
                         sc <= mdout[7:11];
                         l <= 1'b0;
+                        EAE_loop <= 1'b1;
                     end
 
                     12'o7415:  //ASR
@@ -423,6 +401,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         begin
                             l <= ac[0];
                             sc <= mdout[7:11] + 5'd1; //valid shift
+                            EAE_loop <= 1'b1;
                         end
                     end
                     else  //mode B
@@ -455,6 +434,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     begin
                         sc <= mdout[7:11];
                         l <= ac[0];
+                        EAE_loop <= 1'b1;
                     end
 
                     12'o7411:   // NMI
@@ -466,15 +446,23 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     begin
                         sc <= 5'd0;
                         EAE_loop <= 0;
+                        if (EAE_mode == 1'b1)
+                            ac <= 12'o0000;
                     end
                     else
                     begin
                         sc <= 5'o0;
                         l <= ac[0];
+                        EAE_loop <= 1'b1;
                     end
                     default:;
 
                 endcase
+                if ((EAE_mode == 1'b0) && (instruction[6] == 1'b1)) // SCA)
+                begin
+                    ac <= ac | {7'o00, sc };
+                    EAE_loop <= 1'b0;
+                end
             end
             EAE1:begin  // iteration state
                 if (EAE_loop == 1)

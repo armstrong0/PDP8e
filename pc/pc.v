@@ -24,8 +24,9 @@ module pc(
             pc <= pc;
         case (state)
             F0:;
+            FW:;
             F1:;
-            F2: begin
+            F2A,F2B,F2: begin
                 skip_pc <= pc + 12'o0002;
                 next_pc <= pc + 12'o0001;
             end
@@ -54,7 +55,10 @@ module pc(
                     next_pc <= ma +12'o0001;
                 else if ((instruction[0:2] == ISZ) && (isz_skip == 1'b1))
                     next_pc <= next_pc + 12'o0001;
-            E3: pc <= next_pc;
+            E3: if (eskip == 1'b1)
+                pc <= skip_pc;
+            else
+                pc <= next_pc;
             H0,H1,H2: ;
             H3: pc <= ma;  // sync the pc with the ma
             default:;

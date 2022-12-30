@@ -94,6 +94,8 @@ module ma(input clk,
                     ma <= pc + 12'o0001; // set up for fetch of immediate operand or address
                 end
                 F1:; //instruction <= mdout;
+                F2A,
+                F2B,
                 F2: begin
                     current_page <= pc[0:4];
                     mdout <= mdtmp;

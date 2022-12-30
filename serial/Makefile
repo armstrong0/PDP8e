@@ -1,8 +1,8 @@
-all: tx view_rx view_top view_top1 top_tx
+all: view_tx view_rx view_top
 
-top_tx: serial_top.v serial_tb.v
-	iverilog -DSIM serial_top.v serial_tb.v -o top_tx
-	vvp top_tx
+top: serial_top.v serial_tb.v
+	iverilog -DSIM serial_top.v serial_tb.v -o top
+	vvp top
 
 
 tx: tx.v tx_tb.v ../parameters.v
@@ -12,42 +12,32 @@ tx: tx.v tx_tb.v ../parameters.v
 
 rx: rx.v rx_tb.v ../parameters.v
 	iverilog rx.v rx_tb.v -o rx 
-
-rx.vcd: rx
 	vvp rx -fst
-
-top_design: serial_top.v serial_tb.v ../parameters.v
-	iverilog serial_top.v serial_tb.v -o top_design
-
-top1_design: serial_top.v serial1_tb.v ../parameters.v
-	iverilog serial_top.v serial1_tb.v -o top1_design
-
-top_tx.vcd: top_design
-	vvp top_design
-
-top1.vcd:top1_design
-	vvp top1_design
 	
-view_tx: top_tx
+view_tx: tx
 	gtkwave top_tx.vcd top_tx.gtkw & 
 
-view_rx:rx.vcd 
+view_rx:rx 
 	gtkwave rx.vcd rx_rx.gtkw	&
 
 view_top: top_tx.vcd
 	gtkwave top_tx.vcd top.gtkw &
 
-view_top1: top1.vcd
-	gtkwave top1.vcd top.gtkw &
 
-top_tx : top_tx.vcd
-	gtkwave top_tx.vcd
+vdent: rx.v tx.v serial_top.v
+	~/bin/vdent < rx.v > t.v
+	mv t.v rx.v
+	~/bin/vdent < tx.v > t.v
+	mv t.v tx.v
+	~/bin/vdent <serial_top.v > t.v
+	mv t.v serial_top.v
 	
 clean: 
 	rm -f *vcd
 	rm -f brg
 	rm -f tx
 	rm -f rx
+	rm -r *.vcd
 	rm -f *design
 	rm -rf top_tx
 	
