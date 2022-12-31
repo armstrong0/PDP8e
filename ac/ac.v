@@ -465,10 +465,9 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 end
             end
             EAE1:begin  // iteration state
-                if (EAE_loop == 1)
-                begin
-				  // MUL
-                    if (instruction == 12'o7405)
+                case (instruction & 12'b111100001111)
+                    12'o7405: //MUL
+                    if (EAE_loop == 1'b1)
                     begin
                         sc <= sc - 5'd1;
                         if (mq[11] == 1'b1)
@@ -483,8 +482,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
 
                         if (sc == 5'd1) EAE_loop <= 0;
                     end
-					// DIV
-                    else if (instruction == 12'o7407)
+                    12'o7407:  // DIV
                     begin // there are two cases here depending upon some
 					// condition we either add or subtract from a shifted
 					// ac,mq
@@ -493,34 +491,36 @@ module ac (input clk,  // have to rename the mdulate for verilator
 					// on the last operation
 					// we have to remember what the sign bit of the last ac
 					// was so we can patch up mq
-                        if (sc == 5'o1) // last iteration
-                        begin
-                            if (ac[0] == 1'b1)
-                                ac <= ac + mdout;
-                            mq <= {mq[1:11],1'b0};
-                        end
-                        else if (ac[0] == 1'b0)
-                        begin
-                            ac <={ac[1:11],mq[0]} - mdout;
-                            mq[0:10] <= mq[1:11];
-                            if (sc == 5'o14)
-                                mq[11] <= 1'b0;
+                        if (EAE_loop == 1'b1)
+                            if (sc == 5'o1) // last iteration
+                            begin
+                                if (ac[0] == 1'b1)
+                                    ac <= ac + mdout;
+                                mq <= {mq[1:11],1'b0};
+                            end
+                            else if (ac[0] == 1'b0)
+                            begin
+                                ac <={ac[1:11],mq[0]} - mdout;
+                                mq[0:10] <= mq[1:11];
+                                if (sc == 5'o14)
+                                    mq[11] <= 1'b0;
+                                else
+                                    mq[11] <= 1'b1;
+                            end
                             else
-                                mq[11] <= 1'b1;
-                        end
-                        else
-                        begin
-                            ac <={ac[1:11],mq[0]} + mdout;
-                            mq[0:10] <= mq[1:11];
-                            mq[11] <= 1'b0;
-                        end
-                        il <= ac[0]; //set up for next iteration
+                            begin
+                                ac <={ac[1:11],mq[0]} + mdout;
+                                mq[0:10] <= mq[1:11];
+                                mq[11] <= 1'b0;
+                            end
+                            il <= ac[0]; //set up for next iteration
                         tmp <= il ^ ac[0];
                         sc <= sc - 5'd1;
                         if (sc == 5'd1)  EAE_loop <= 1'b0;
                     end
 
-                    else if (instruction == 12'o7411) //NMI
+                    12'o7411:  // must be exact
+                    if ((instruction == 12'o7411) && (EAE_loop == 1'b1)) //NMI
                     begin
                         {l,ac,mq} <= {ac,mq,1'b0};
                         sc <= sc + 5'd1;
@@ -530,7 +530,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                                     && (mq == 12'o0)))
                             EAE_loop <= 0;  // we are finished
                     end
-                    else if (instruction == 12'o7413)  // SHL
+                    12'o7413:  // SHL
+                    if (EAE_loop == 1'b1)
                     begin
                         {l,ac,mq} <= {ac,mq,1'b0};
                         if (sc == 5'd1 ) begin
@@ -542,12 +543,12 @@ module ac (input clk,  // have to rename the mdulate for verilator
                             sc <= sc - 5'd1;
 
                     end
-                    else if ((instruction == 12'o7415) ||   // ASR
-                            (instruction == 12'o7417))     // LSR
+                    12'o7415,   // ASR
+                    12'o7417:   // LSR
+                    if (EAE_loop == 1'b1)
                     begin
-                        {ac,mq} <=  {l,ac,mq[0:10]};  // was ac[0] but the setup put ac[0] into l
+                        {ac,mq} <=  {l,ac,mq[0:10]};
                         if (EAE_mode == 1'b1) gtf <= mq[11];
-                        //l <= ac[0];
                         if (sc == 5'd1 ) begin
                             EAE_loop <= 0;
                             if (EAE_mode == 1'b1)
@@ -557,7 +558,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         else sc <= sc - 5'd1;
 
                     end
-                end
+
+                endcase
             end
             EAE2:;
             EAE3: if (instruction == DAD)  //DAD

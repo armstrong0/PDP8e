@@ -115,7 +115,7 @@ module state_machine(input clk,
                     state <= F3;
                 endcase
 
-                F2B: casez (instruction)
+                F2B: casez (instruction) // mode B
 
                     12'b110000000110:
                     if (gtf == 1'b1) EAE_skip <= 1;
@@ -126,10 +126,10 @@ module state_machine(input clk,
                     12'b1111??0?0111:   //7407 DIV
                     begin
                         EAE_skip <= 1'b1;
-                        state <= EAE0;
+                        state <= D0;
                     end
                     12'b111100001001:
-                    state <= EAE0;  //7411 NMI
+                    state <= EAE0;      //7411 NMI
                     12'b1111??0?1011,   //7413 SHL
                     12'b1111??0?1101,   //7415 ASR
                     12'b1111??0?1111:   //7417 LSR
@@ -145,8 +145,8 @@ module state_machine(input clk,
                         EAE_skip <= 1'b1;
                         state <= D0;
                     end
-                    12'b1111??1?0111:   // SWBA 7447
-                    state <= F3;
+                     // 12'b1111??1?0111:   // SWBA 7447 taken care of in F2
+                     // state <= F3;
                     12'b1111??1?1001:   // DPSZ 7451
                     begin
                         if ((ac | mq) == 12'o0000) EAE_skip <= 1'b1;

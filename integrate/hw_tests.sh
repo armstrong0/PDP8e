@@ -189,10 +189,26 @@ echo "All tests should run in less than one minute"
 echo "Stop the test once satisfied, close minicom"
 
 ;;
-13) promt
+13) prompt
+echo "Testing EAE mode A and B multiply and divide"
+sendtape $diag_dir/MAINDEC-8E-D0MB-PB
+echo "Starting Minicom Terminal program, it will start centered on the screen"
+sleep 1
+mate-terminal -e minicom  &
+echo "Set SR=0200 Press Addr Load"
+echo "Set SR to 0000, press Clear, then Cont"
+echo "Program will halt at 0201, press Cont"
+echo "Test B only with SR = 0003"
+echo "Test A only with SR = 0002"
+echo "Test both modes with SR=0000"
+echo "If doing a partial test a CR LF is printed at the end of each pass"
+echo "If doing a full A/B test KE8 is printed at the end of each pass"
+echo "All tests should run in less than one minute"
+echo "Program end halt is at 0251"
+echo "Stop the test once satisfied, close minicom"
+
 ;;
-14)
-promt
+14) prompt
 ;;
  *) echo "Invalid response enter a number between 1 and 13"
 

@@ -37,7 +37,7 @@ clean:
 	rm -f brg
 	rm -f tx
 	rm -f rx
-	rm -r *.vcd
+	rm -f *.vcd
 	rm -f *design
 	rm -rf top_tx
 	

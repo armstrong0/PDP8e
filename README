@@ -1,3 +1,5 @@
+The design now pass EAE test1.  Next up in MUY and DVI.
+
 The front panel code has been modified so that: when in halt state and a control switch is toggled the run LED comes on for the debounce time.  There is still a problem with the front panel code where the switch is depressed, the run LED comes on BUT that action required in not taken!
 
 The Least Significant Bit (bit 11) of the state display has been reallocated to the EAE state, LED on signifies the "B" mode.

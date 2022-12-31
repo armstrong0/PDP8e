@@ -60,6 +60,10 @@ t13.o: ../FPGA_image/PDP8e.v PDP8e_tb.v
 	iverilog -DSIM ../FPGA_image/PDP8e.v PDP8e_tb.v -o t13.o -PPDP8e_tb.test_sel=13
 	vvp t13.o -fst
 
+t14.o: ../FPGA_image/PDP8e.v PDP8e_tb.v 
+	iverilog -DSIM ../FPGA_image/PDP8e.v PDP8e_tb.v -o t14.o -PPDP8e_tb.test_sel=14
+	vvp t14.o -fst
+
 t1: t1.o  
 	# rm -f t1.o
 	# gtkwave instruction_test_pt1.vcd PDP8e.gtkw & 
@@ -105,6 +109,9 @@ t12: t12.o
 	gtkwave Serial_test.vcd t12.gtkw &
 
 t13: t13.o
+	gtkwave EAE_test.vcd PDP8e.gtkw &
+	
+t14: t14.o
 	gtkwave EAE_test.vcd PDP8e.gtkw &
 	
 

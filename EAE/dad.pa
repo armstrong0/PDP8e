@@ -35,7 +35,7 @@
 		  // see if double load with auto increment
 	dad	  
     0100 
-	cam dad
+	cla swp dad  // cam doesn't do what is needed
 	0100
 	dad
 	0100

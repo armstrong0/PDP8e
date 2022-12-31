@@ -313,6 +313,11 @@ module PDP8e_tb;
                 $dumpvars(0,address,UUT);
                 $readmemh("Diagnostics/D0LB.hex",UUT.MA.ram.mem,0,8191);
             end
+            14: begin
+                $dumpfile("EAE_test.vcd");
+                $dumpvars(0,address,UUT);
+                $readmemh("Diagnostics/D0MB.hex",UUT.MA.ram.mem,0,8191);
+            end
 
         endcase
         #0 halt <= 1;
@@ -453,9 +458,22 @@ module PDP8e_tb;
 			13: begin
 			    sr <= 12'o0115;
                 #500 `pulse1(addr_load);
-				sr <= 12'o2525;
+				sr <= 12'o2525; // set mode B
 				#500 `pulse1(dep);
 				sr <= 12'o4667;
+                #500 `pulse1(addr_load);
+				sr <= 12'o5003;
+                #500 `pulse1(clear);
+                #500 `pulse1(cont);
+				#10000 $finish;
+			end
+
+			14: begin
+			    sr <= 12'o0115;
+                #500 `pulse1(addr_load);
+				sr <= 12'o2525; // set mode B
+				#500 `pulse1(dep);
+				sr <= 12'o1264;
                 #500 `pulse1(addr_load);
 				sr <= 12'o5003;
                 #500 `pulse1(clear);
