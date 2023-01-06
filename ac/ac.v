@@ -20,8 +20,10 @@ module ac (input clk,  // have to rename the mdulate for verilator
     reg [0:11] ac_tmp;
     reg [0:4] sc;
     reg il;  // intermediate link used in EAE DAD and  SAM
-    wire forbidden;
     reg tmp;
+
+    wire [0:11] div_temp;
+    assign div_temp = ac  - mdout;
 
 `include "../parameters.v"
 
@@ -315,6 +317,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
             end
             H3:;
             //   EAE stuff
+
+
             EAE0:begin   // set up state
                 case (instruction & 12'b111100001111)
 				    // MUL
@@ -325,15 +329,21 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     end
 					// DIV
                     12'o7407: begin
-                        if (mdout < ac)  // this may need to be <=
+                        if (div_temp[0] == 1'b0) // divide overflow
                         begin
-                            EAE_loop <= 1'b0;  // divide overflow terminate
-                            sc <= 5'd0;
+                            l <= 1'b1;
+                            sc <= 5'd1;
+                            EAE_loop <= 1'b0;
+                            mq <= {mq[1:11], 1'b1};
                         end
                         else
                         begin
                             EAE_loop <= 1'b1;
-                            sc <= 5'd13;
+                            sc <= 5'd1;
+                            l <= 1'b0;
+                            il <= 1'b1;
+                            mq <= {mq[1:11], 1'b1};
+                            ac <= div_temp[0:11];
                         end
                     end
                     12'o7413, // SHL
@@ -484,15 +494,13 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     end
                     12'o7407:  // DIV
                     begin // there are two cases here depending upon some
-					// condition we either add or subtract from a shifted
-					// ac,mq
-					// the maintenance manual is hard to follow because of
-					// the ac is stored in normal or complement form depending
-					// on the last operation
-					// we have to remember what the sign bit of the last ac
-					// was so we can patch up mq
-                        if (EAE_loop == 1'b1)
-                            if (sc == 5'o1) // last iteration
+                    // condition, we either add or subtract from a shifted
+                    // ac,mq. The maintenance manual is hard to follow because
+                    // the ac is stored in normal or complement form depending
+                    // on the last operation
+                        if (l == 1'b0)   // no overflow
+                        begin
+                            if (sc == 5'o14) // last iteration
                             begin
                                 if (ac[0] == 1'b1)
                                     ac <= ac + mdout;
@@ -501,22 +509,16 @@ module ac (input clk,  // have to rename the mdulate for verilator
                             else if (ac[0] == 1'b0)
                             begin
                                 ac <={ac[1:11],mq[0]} - mdout;
-                                mq[0:10] <= mq[1:11];
-                                if (sc == 5'o14)
-                                    mq[11] <= 1'b0;
-                                else
-                                    mq[11] <= 1'b1;
+                                mq <= {mq[1:11], 1'b1};
                             end
                             else
                             begin
                                 ac <={ac[1:11],mq[0]} + mdout;
-                                mq[0:10] <= mq[1:11];
-                                mq[11] <= 1'b0;
+                                mq <= {mq[1:11],1'b0};
                             end
-                            il <= ac[0]; //set up for next iteration
-                        tmp <= il ^ ac[0];
-                        sc <= sc - 5'd1;
-                        if (sc == 5'd1)  EAE_loop <= 1'b0;
+                            sc <= sc + 5'd1;
+                            if (sc == 5'd11)  EAE_loop <= 1'b0;
+                        end
                     end
 
                     12'o7411:  // must be exact
