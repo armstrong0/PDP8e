@@ -127,6 +127,7 @@ module mem_ext
                             int_ena   <= 0;
                             int_delay <= 0;
                             UF <= 0;
+                            UB <= 0;
                             UI <= 0;
                         end
                         else UI <= 1'b1;
@@ -204,8 +205,15 @@ module mem_ext
                 end
                 H2: if (clear == 1)
                 begin
+                    IF <= 3'o0;
+                    IB <= 3'o0;
+                    DF <= 3'o0;
+                    SF <= 6'o0;
+                    UF <= 0;
+
                     int_ena <= 0;
                     int_delay <= 0;
+                    UB <= 0;
                 end
                 H3:;
                 default:;

@@ -1,4 +1,4 @@
-common to both mode
+common to both modes
 ASC SCL 7403
 MUL MUY 7405
 DVI 7407
@@ -22,38 +22,43 @@ MAINDEC-8E-DOMB replaced by maindec-8e-dhkec
 MAINDEC-8E-DORA replaced by maindec-8e-dhkea
 
 from test part 1
-skb  (skip if mode b) 7671 DPSZ  CLA MQL 
+skb  (skip if mode b) 7671 DPSZ CLA MQL 
 
 Some EAE instructions will complete in the fetch machine cycle
 Some EAE instructions will complete in the fetch machine cycle BUT extend it.
-Some EAE instructions will complete in the Defered cycle BUT extend it.
-Some EAE instructions will require F,D and multiple E cycles.
+Some EAE instructions will require F,D and E cycles.
+For display purposes the extra EAE states are mapped into either F or E.
 
-One could (heavily) modify the state machine to keep track of this OR put
-hooks in the state machine to allow another state machine: EAE_state_machine,
-to sequence the EAE instructions.  To do this the main state machine needs
-slight modification to allow it to relinquish control.  I think the latter
-approach is better.
+The state machine has been modified to add states unique to EAE execution.
+These are indicated as EAExx, where xx is a number.  The F2 state has been
+split into three, F2, F2A and F2B.  F2A and F2B handle A and B modes
+respectively.  The state_machine uses the instruction and EAE_mode and
+EAE_loop to determine what the next state is.
 
-Need to take each instruction and determine which sequence it follows.
+
+State EAE0 is used to initialize conditions for shift, normalize, multiply and
+divide.  This leads to EAE1 state.  State EAE1 is used for shift, normalize,
+multiply and divide.  The exit from EAE1 is controlled by a signal called
+EAE_loop, depending upon conditions, the state EAE1 may be entered even when
+there is noting to be done.  It is also probably that an extra unneeded EAE1
+state will happen at the end of an instruction.
 
 All mode A instruction execute in F, some use the the next word (SCL,SHL ASR
 LSR ASL MUL DVI) MA modified to provide this without any extra states)
-SHL,ASR,LSR MUL DVI, and NMI - need extra states to complete, want to make it
-loop in F3
+SHL,ASR,LSR MUL DVI, and NMI - need extra states to complete. After the extra
+states are complete F3 is entered.
 
-7403, 7405, 
-
-August 12 I had put all of the logic in the ac module with the xeception of
+I had put all of the logic in the ac module with the exception of 
 small mods in ma and mods in the state_machine.  I broke the thing, it is more
 difficult than I thought to keep everything straight.  I am going to put out
 EAE control and put it in a new module.  I have to leave the operations in ac
 as they operate on registers owned by the ac module (ac, mq, l, gtf)
 
-I currently have standard oper3 instructions executing in F1.  Some of these
-operations are forbidden if some of the EAE operations are performed like NMI.
+I had originally currently had standard oper3 instructions executing in F1.
+Some of these operations are "forbidden" if some of the EAE operations are
+performed like NMI.HOWEVER it truns out that one should just let them execute
+and deal with the consequences.
+
 The operations have a defined order and the normal MQ ops are 1 and 2 with the
 extended ops third...
 
-So I could move the standard ops to F2 and decode what to do in F1 or add some 
-decoding into F1 

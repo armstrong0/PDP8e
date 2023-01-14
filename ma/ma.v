@@ -49,7 +49,7 @@ module ma(input clk,
 			// use indirect addressing
             if ((((instruction[0:2] == AND) ||
                             (instruction[0:2] == TAD) ||
-                            (instruction[0:2] == ISZ) || // need to add EAE intructions
+                            (instruction[0:2] == ISZ) ||
                             (instruction[0:2] == DCA)) &&
                         (instruction[3] == 1'b1))    // this specifies deferred
                     || (instruction & 12'b111100000001)== 12'b111100000001)
