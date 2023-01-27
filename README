@@ -1,12 +1,14 @@
-The design now pass EAE test1.  Next up in MUY and DVI.
+The design now pass all three EAE tests, so a complete EAE implementation.  All hardware tests have been re-run and pass.  See status in integrate.
+
+There is a problem with the serial port, if the halt switch is set, it is possible that the serial transmitter was in the middle of a character, leaving the line is the spacing state, this messes up the receiving uart.
 
 The front panel code has been modified so that: when in halt state and a control switch is toggled the run LED comes on for the debounce time.  There is still a problem with the front panel code where the switch is depressed, the run LED comes on BUT that action required in not taken!
 
 The Least Significant Bit (bit 11) of the state display has been reallocated to the EAE state, LED on signifies the "B" mode.
 
-Toggling sw switch up and pressing address load result in octal 7777 being loaded into the memory address register, useful when starting the binary loader - which is loaded in memory during FPGA boot.
+Toggling the "sw" switch up and pressing address load result in octal 7777 being loaded into the memory address register, useful when starting the binary loader - which is loaded in memory during FPGA boot.
 
-The top level Makefile can be used to clean the subdirectoies. Some of the sub directory makefiles have been modified to allow a target of vdent.  This formats the code in that subdirectory.
+The top level Makefile can be used to clean the subdirectories. Some of the sub directory makefiles have been modified to allow a target of vdent.  This formats the code in that subdirectory.
 
 Hardware is an ICE40HX8K device on an ICEWERKS module bought from robot shop.
 
@@ -17,20 +19,20 @@ were wired with 22 AWG copper bus wire.
 
 Almost all of the circuitry is on the Icewerks modules.  Exceptions are the
 LED's and associated current limiting resistors, toggle switches, rotary
-dispaly select switch and a USB to TTL serial module.  Two 33 ufd caps were,
+display select switch and a USB to TTL serial module.  Two 33 ufd caps were,
 placed between 3.3 volt and ground on the switch busses.  3 30 AWG wires were
 used to connect the ICEWERKS module ground to the switch ground.  Only 1 30
 AWG wire is used to hook up 3.3 Volts.
 
-Yellow LED's required - address 15, data dispaly 12, run 1 and display selected
+Yellow LED's required - address 15, data display 12, run 1 and display selected
 indicator 6.  Total 34.  Current limit resistor value is: 220 ohms.
 
 The display switch was problematic, it was not clear where the switch was
 positioned so LEDs were added.  The wiper of the switch is tied to 3.3 V, The
 six poles are connected to their respect ICEWERKS module pins, pull down
-resitors (18 k - not critical) go from each pole to ground.  Also from pole a
+resistors (18 k - not critical) go from each pole to ground.  Also from pole a
 wire goes to the anode of the associated display LED.  The cathodes of the
-LED's are all tied together and then routed through a 220 ohm resitor to
+LED's are all tied together and then routed through a 220 ohm resistor to
 ground.  Thus the only one LED lights and it indicates with switch positions
 is select.  
 
@@ -38,40 +40,40 @@ is select.
 This repository contains the Verilog code for the FPGA and test code to verify
 code correctness.  
 
-The design is paritioned into pieces, each piece has its own directory.  In
+The design is partitioned into pieces, each piece has its own directory.  In
 some directories test code exists to test that module.  
 
-The tools required to build this code are a verilog comiler, a verilog
+The tools required to build this code are a verilog compiler, a verilog
 simulator, a couple of PDP8 tools palbart and macro8x.  The palbart version
 required is: pal-2.13, 03 May 2015.
 
 The FPGA tools used are Icestorm tools set, yosys and nextnpr.  Iverilog was
 used as a simulator and Verilator was used as a linting tool.
 
-The directory integrate contains a test bed that will run selected DEC PDP8e
+The directory "integrate" contains a test bed that will run selected DEC PDP8e
 diagnostics, this was used to debug and verify the design.  This directory also contains a script that leads one though loading a diagnostic program onto hardware and then running the test.
 
-The FPGA that wsa targetted is a Lattice Semiconductor ICE40Hx8k.  Very little
-code is targetted at that FPGA, that is the code that sets up the internal pll
-: pll.v the remaining (and vast majority ) code is generic.
+The FPGA that was targeted is a Lattice Semiconductor ICE40Hx8k.  Very little
+code is targeted at that FPGA, that is the code that sets up the internal pll
+: pll.v the remaining (and vast majority ) code is generic.  A hardware wait state has been added so that memory reads take 2 states, I think this is necessary because the 8k x 12 memory is made of 4 kilobit block ram.  This necessitates lots of levels of logic after the memories in order to select the correct memory.  
 
 The directory FPGA_IO_test contains code useful in testing out wiring.
 Entering the directory and typing make should build an FPGA image that can be
-burned into the ICEWERKS module using the command make burn.
+burned into the ICEWERKS module using the command "make burn".
 
-The build the FPGA, enter the directory FPGA_image and type make.  If make is
+To build the FPGA, enter the directory FPGA_image and type make.  If make is
 successful, then the image can be burned into the flash device on the ICEWERKS
 module using: make burn.
 
 This to do:
 1.) implement USER mode. DONE July 20
 
-2.) implement EAE
+2.) implement EAE Done January 26, 2023
 
 3.) implement a real time clock
 
 4.) implement an emulated RK05 disk array using an SD card - take a look at
-Rob Doyle's PDP8 implentation on opencores!
+Rob Doyle's PDP8 implantation on opencores!
 
 5.) retarget to a ICE40up5k part - which has enough RAM to implement the full
 32K words of memory (actually could implement 128 K as in the PDP8a).  However
