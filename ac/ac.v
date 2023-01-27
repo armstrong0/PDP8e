@@ -174,9 +174,9 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     {link,gtf} <= ac[0:1];
                 12'o6007: if (UF == 1'b0)  //CAF
                 begin
-                    ac <= 12'o0000;
+                    ac   <= 12'o0000;
                     link <= 1'b0;
-                    gtf <= 1'b0;  //added this Jan 25 2022
+                    gtf  <= 1'b0;
                     EAE_mode <= 0;
                     EAE_loop <= 0;
                 end
@@ -316,8 +316,9 @@ module ac (input clk,  // have to rename the mdulate for verilator
             E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
             else if (instruction == DAD)  //DAD
                 {link,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
-            else if (instruction == DLD)
+            else if ((instruction == DLD) || (instruction ==CAMDAD)) //
                 ac <= mdout;
+
 
             H0:;
             HW:;
@@ -336,7 +337,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
             //   EAE stuff
 
 
-            EAE0:begin   // set up state
+            EAE0,EAEMD0:
+            begin   // set up state
                 case (instruction & 12'b111100001111)
 				    // MUL
                     12'o7405:
@@ -491,7 +493,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     EAE_loop <= 1'b0;
                 end
             end
-            EAE1:begin  // iteration state
+            EAE1,EAEMD1:
+            begin  // iteration state
                 case (instruction & 12'b111100001111)
                     12'o7405: //MUL
                     if (EAE_loop == 1'b1)
@@ -576,11 +579,11 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 endcase
             end
             EAE2:;
-            EAE3: if (instruction == DAD)  //DAD
+            EAE3:;
+            EAE4: if (instruction == DAD)  //DAD
                 {il,mq } <= {1'b0,mq} + {1'b0,mdout};
-            else if (instruction == DLD)
+            else if ((instruction == DLD)||(instruction == CAMDAD))
                 mq <= mdout;
-            EAE4:;
             EAE5:;
             default:;
         endcase

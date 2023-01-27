@@ -87,50 +87,54 @@ echo "Starting Basic JMP - JMS tests"
  sendtape $diag_dir/MAINDEC-8E-D0IB-Basic-JMP-JMS.pt 
 echo "Set SR=0200 Press Addr Load"
 echo "Press Clear, then COnt"
-echo "If program is still running after 5 seconds it has executed 1000's of tests"
+term_hex
+echo "A bell charactor 07/87 will be typed ever few seconds."
 echo "To restore the bootloader, halt the CPU, set the SR to 704, press Addr Load"
 echo "Press Clear and then continue, if it stops at 736 the bootloader is restored"
  ;;
 5) prompt
-echo "Starting Random TAD Tests T will typed every 4096 TAD's"
+echo "Starting Random TAD Tests"
  sendtape $diag_dir/MAINDEC-8E-D0EB-Random-TAD.pt sleep 1
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
+echo "T will typed every 4096 TAD's"
 echo "Set SR=0200 Press Addr Load"
 echo "Set SR to 0000, press Clear, then Cont"
 echo "Stop the test once satisfied, close minicom"
 ;;
 
 6) prompt
-echo "Starting Random TAD Tests A will typed every 4096 ANDs,"
+echo "Starting Random AND Tests"
 echo "alternates between two memory regions"
  sendtape $diag_dir/MAINDEC-8E-D0DB-Random-AND.pt
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
+echo "A will typed every 4096 ANDs"
 echo "Set SR=0200 Press Addr Load"
 echo "Set SR to 0000, press Clear, then Cont"
 echo "Stop the test once satisfied, at least two, close minicom"
  ;;
 7) prompt
-echo "Starting Random ISZ Tests FC will typed 32000 tests"
+echo "Starting Random ISZ Tests"
  sendtape $diag_dir/MAINDEC-8E-D0FC-Random-ISZ.pt
  echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
+echo "FC will typed 32000 tests"
 echo "Set SR=0200 Press Addr Load"
 echo "Set SR to 0000, press Clear, then Cont"
 echo "Stop the test once satisfied, at least two, close minicom"
 
  ;;
 8) prompt
-echo "Starting Random DCA Tests, 10 seconds is sufficent, 07 will be printed each pass"
-
+echo "Starting Random DCA Tests"
  sendtape $diag_dir/MAINDEC-8E-D0GC-Random-DCA.pt 
 echo "Starting Minicom Terminal program, in HEX mode, it will start centered on the screen"
 sleep 1
 mate-terminal -e "minicom --displayhex" &
+echo "07 will be printed every 27000 passes"
 echo "Set SR=0200 Press Addr Load"
 echo "Set SR to 0000, press Clear, then Cont"
 echo "Minicom will show 87 - each is a bell which signifies ~27000 tests, close minicom"
@@ -138,25 +142,25 @@ echo "Minicom will show 87 - each is a bell which signifies ~27000 tests, close 
 
  ;;
 9)  prompt
-echo "Starting Random JMP tests, HC will be typed every 72000 tests"
+echo "Starting Random JMP tests"
 sendtape $diag_dir/MAINDEC-8E-D0HC-Random-JMP.pt 
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
+echo "HC will be typed every 72000 tests"
 echo "Set SR=0200 Press Addr Load"
 echo "Set SR to 0000, press Clear, then Cont"
-echo "Stop the test once satisfied, close minicom"
 
 ;;
 10)  prompt
-echo "Starting Random JMP JMS tests, JB will be typed every 61000 tests"
+echo "Starting Random JMP JMS tests"
 sendtape $diag_dir/MAINDEC-8E-D0JB-Random-JMP-JMS.pt
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
+echo "JB will be typed every 61000 tests"
 echo "Set SR=0200 Press Addr Load"
 echo "Set SR to 0000, press Clear, then Cont"
-echo "Stop the test once satisfied, close minicom"
 
 
 ;;
@@ -213,7 +217,7 @@ echo "Stop the test once satisfied, close minicom"
 14) prompt
 echo "Testing EAE Extended Memory"
 echo "Exercises B mode instructions that use extended memory"
-sendtape $diag_dir/dhkea-b-pb
+sendtape $diag_dir/maindec-08-dhkea-e-pb
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &

@@ -45,18 +45,18 @@ module ma(input clk,
             addr = ma;
         endcase
         case (state)
-            E0,EW,E1,E2,E3,EAE2,EAE3,EAE4,EAE5:
+            E0,EW,E1,E2,E3:
 			// use indirect addressing
-            if ((((instruction[0:2] == AND) ||
-                            (instruction[0:2] == TAD) ||
-                            (instruction[0:2] == ISZ) ||
-                            (instruction[0:2] == DCA)) &&
-                        (instruction[3] == 1'b1))    // this specifies deferred
-                    || (instruction & 12'b111100000001)== 12'b111100000001)
-                	// EAE mode B indirect
+            if (((instruction[0:2] == AND) ||
+                        (instruction[0:2] == TAD) ||
+                        (instruction[0:2] == ISZ) ||
+                        (instruction[0:2] == DCA)) &&
+                    (instruction[3] == 1'b1))   // this bit specifies deferred
                 EMA = DF;
             else
                 EMA = IF;
+            D3,EAEMD0,EAEMD1,EAE2,EAE3,EAE4,EAE5:
+            EMA = DF;
             default: EMA = IF;
         endcase
     end
@@ -130,12 +130,8 @@ module ma(input clk,
                     else
                         ma <= mdout;  // set up for DST
                     mdin <= mq;
-                end
-                D3: if ((instruction & 12'b111100101111) == 12'o7445)
-                begin
-                    mdin <= mq;  // wait state
-                    write_en <= 1'b1;
-                end
+                end //  the next part is wrong
+                D3:;
                 E0:;
                 EW: begin
                     if (int_in_prog == 1)
@@ -195,26 +191,31 @@ module ma(input clk,
                 H3:;
 				// EAE accesses
                 EAE2:begin
+                    if ((instruction & 12'b111100101111) == DST)
+                    begin
+                        mdin <= mq;
+                        write_en <= 1'b1;
+                    end
                     if  (EMA > MAX_FIELD)
                         mdout <= 12'o0000;
                     else
                         mdout <= mdtmp;
+
+                end
+                EAE3: begin
                     ma <= ma +1;
+                    mdin <= ac;
                 end
-                EAE3:;
-                EAE4:begin
-                    if  ((instruction & 12'b111100101111) == 12'o7445)  // DST
-                    begin
-                        mdin <= ac;
-                        write_en <= 1'b1;
-                    end
+
+                EAE4:if  ((instruction & 12'b111100101111) == DST)
+                begin
+                    mdin <= ac;
+                    write_en <= 1'b1;
                 end
-                EAE5:begin
-                    if (EMA > MAX_FIELD)
-                        mdout <= 12'o0000;
-                    else
-                        mdout <= mdtmp;
-                end
+                EAE5:if (EMA > MAX_FIELD)
+                    mdout <= 12'o0000;
+                else
+                    mdout <= mdtmp;
                 default:;
             endcase
         end

@@ -70,6 +70,7 @@ module mem_ext
                             me_bus <= { 2'b00,irq,1'b0,(int_ena|int_delay),
                                 savereg};//GTF
                         else UI <= 1'b1;
+                        12'o6007: if (UF == 1'b1) UI <= 1'b1;  // trap CAF
                         12'o6204: if (UF == 1'b0) UI <= 1'b0;  // CUI
                         12'o6214: if (UF == 1'b0)
                             me_bus <= ac | {6'o00,DF,3'o0} ;// RDF
@@ -127,7 +128,7 @@ module mem_ext
                             int_ena   <= 0;
                             int_delay <= 0;
                             UF <= 0;
-                            UB <= 0;
+                            // UB <= 0;
                             UI <= 0;
                         end
                         else UI <= 1'b1;

@@ -312,12 +312,17 @@ module PDP8e_tb;
                 $dumpfile("EAE_test.vcd");
                 $dumpvars(0,address,UUT);
                 $readmemh("Diagnostics/D0LB.hex",UUT.MA.ram.mem,0,8191);
-            end
+                end
             14: begin
                 $dumpfile("EAE_test.vcd");
                 $dumpvars(0,address,UUT);
                 $readmemh("Diagnostics/D0MB.hex",UUT.MA.ram.mem,0,8191);
-            end
+                end
+            15: begin
+                $dumpfile("EAE_EME_test.vcd");
+                $dumpvars(0,address,UUT);
+                $readmemh("Diagnostics/dhkea.hex",UUT.MA.ram.mem,0,8191);
+                end
 
         endcase
         #0 halt <= 1;
@@ -427,14 +432,15 @@ module PDP8e_tb;
                 #150000000  $finish;
             end
             11:begin
-                sr <= 12'o2200;  //test 14
+                sr <= 12'o2600;  //test 15
                 #1000 ;
                 `pulse(addr_load);
                 sr <= 12'o0001; // simulation has 8k, reads 0000 for
 				// non-exsistant memory
                 #1000 `pulse(cont);
                 // #1000  `pulse(cont);
-                #5000000 $finish;
+                #18000 $finish;
+                //#5000000 $finish;
             end
             12: begin
                 # 100 $display("in test 12"); ;
@@ -480,6 +486,14 @@ module PDP8e_tb;
                 #500 `pulse1(cont);
 				#10000 $finish;
 			end
+			15: begin
+				sr <= 12'o0200;
+                #500 `pulse1(addr_load);
+                #500 `pulse1(clear);
+                #500 `pulse1(cont);  // have to fake out the uart
+				#100000 $finish;
+				end
+
 
 
         endcase

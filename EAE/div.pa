@@ -1,0 +1,73 @@
+	CAM=7621
+	SWAB=7431
+    DPSZ=7451 
+	MUL=7405
+	DIV=7407
+	swp=7521
+    *100
+	K0221, 0221
+	K1234, 1234
+	K4567, 4567
+    K0100, 0100
+	K7776, 7776
+	K7777, 7777
+
+	*200
+	cam
+    div
+	7777
+	cam
+	tad K0221  // 221 / 14 = 14 r 1
+	swp
+	div  //
+	0014
+	cam  // ac mq 0
+	div
+	0000  // divide by 0  should overflow
+    cam 
+	div
+	7777
+	cam
+	cll cla cma  // 7777 / 7777
+	div 
+	7777  // divide by 7777 should NOT
+	cam
+	div
+	7776
+	cam
+	div
+	7777
+	cam
+	iac
+	swp
+	div
+	7777
+	cam
+	iac
+	div
+	7777
+ 7000
+ 7000
+ 7000
+ swab
+    cam 
+	div
+	k7777
+
+    hlt
+	
+//	cam mul
+//	0000
+//	swab
+//	cam
+//	tad k1234
+//	swp
+//	mul
+//	k0100
+//	cam
+//	div
+//	k7776
+//	hlt
+	$
+
+
