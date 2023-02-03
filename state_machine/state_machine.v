@@ -240,14 +240,11 @@ module state_machine(input clk,
                 EAE0: state <= EAE1;
                 EAE1: if (EAE_loop == 1) state <= EAE1;
                 else state <= F3;
-                EAEMD0: state <= EAEMD1;
-                EAEMD1: if (EAE_loop == 1) state <= EAEMD1;
-                else state <= F3;
                 EAE2: state <= EAE3;
 				// need to vector off to EAE0 if MUL or DIV
 				// if we reached this it is a mode B EAE instruction
 				// only MUL and DIV have bit 6 set 0 here.
-                EAE3: if(instruction[6] == 1'b0) state <= EAEMD0;
+                EAE3: if(instruction[6] == 1'b0) state <= EAE0;
                 else  state <= EAE4;
                 EAE4: state <= EAE5;
                 EAE5: state <= E3;   // back to normal processing

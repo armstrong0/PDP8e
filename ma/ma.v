@@ -55,7 +55,7 @@ module ma(input clk,
                 EMA = DF;
             else
                 EMA = IF;
-            D3,EAEMD0,EAEMD1,EAE2,EAE3,EAE4,EAE5:
+            D3,EAE2,EAE3,EAE4,EAE5:
             EMA = DF;
             default: EMA = IF;
         endcase
