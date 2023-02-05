@@ -14,11 +14,17 @@ module state_machine(input clk,
     input EAE_mode,
     input EAE_loop,
     input gtf,
+    input db_write, db_read,   // data break write is to disk read is from disk
     output reg EAE_skip,
     output reg int_in_prog,
     output reg [4:0] state);
 
+    wire db;
+    reg [4:0] next_state;
+
 `include "../parameters.v"
+
+    assign db = (db_write| db_read);
 
     always @(posedge clk)
     begin
@@ -175,12 +181,28 @@ module state_machine(input clk,
                         int_in_prog <= 1;
                         state <= E0;
                     end
+                    else if (db == 1'b1)
+                    begin
+                        next_state <= F0; // rememeber where we were going
+                        state <= DB0;
+                    end
                     else state <= F0;
                 end
                 else if (instruction[3] == 1) // defer cycle/
-                    state <= D0;
-                else
-                    state <= E0;
+                    if (db == 1'b1)
+                    begin
+                        next_state <= D0;
+                        state <= DB0;
+                    end
+                    else
+                        state <= D0;
+                    else if (db == 1'b1)
+                    begin
+                        next_state <= E0;
+                        state <= DB0;
+                    end
+                    else
+                        state <= E0;
 
                 D0: if (~single_step |  cont )
                     state <= DW;
@@ -248,6 +270,11 @@ module state_machine(input clk,
                 else  state <= EAE4;
                 EAE4: state <= EAE5;
                 EAE5: state <= E3;   // back to normal processing
+                // data break
+                DB0: state <= DB1;
+                DB1: if (db_write == 1'b1) state <= DB2;
+                else state <= next_state;  // data break read from disk
+                DB2: state <= next_state;
 
                 default: state <= H0;
             endcase

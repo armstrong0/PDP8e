@@ -33,10 +33,10 @@ parameter     F0 = 5'b00000,
               EAE5 = 5'b11010,
 			  F2A  = 5'b11011,
 			  F2B  = 5'b11100,
-			  UNK2 = 5'b11101,
-			  UNK3 = 5'b11110,
-			  UNK4 = 5'b11111;
 `endif
+			  DB0 = 5'b11101,  // data break states
+			  DB1 = 5'b11110,
+			  DB2 = 5'b11111;
 
 // instruction encodings
 parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,

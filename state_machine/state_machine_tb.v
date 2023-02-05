@@ -25,6 +25,8 @@ wire [4:0] stateo;
 wire int_in_prog;
 reg EAE_loop,EAE_mode;
 reg UF;
+reg db_read,db_write;
+
 
 state_machine SM1(.clk (clk),
           .reset (rst),
@@ -37,6 +39,8 @@ state_machine SM1(.clk (clk),
 		  .EAE_mode (EAE_mode),
 		  .EAE_loop (EAE_loop),
 		  .UF (UF),
+		  .db_read (db_read),
+		  .db_write (db_write),
 	      .int_ena (int_ena),
 	      .int_req (int_req),
 		  .int_inh (int_inh),
@@ -95,6 +99,8 @@ int_req <= 0;
 int_ena <= 0;
 int_inh <= 1;
 trigger <= 0;
+db_read <= 0;
+db_write <= 0;
 
 #500 rst <= 0;
   address <= 1;  // first addess is the reset state

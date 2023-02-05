@@ -1,17 +1,17 @@
 [*]
 [*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Sun Aug 28 20:33:51 2022
+[*] Sun Feb  5 00:40:39 2023
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/state_machine/state_test.vcd"
-[dumpfile_mtime] "Sun Aug 28 20:33:14 2022"
-[dumpfile_size] 32567
+[dumpfile_mtime] "Sun Feb  5 00:38:16 2023"
+[dumpfile_size] 33212
 [savefile] "/home/armstrong/Desktop/PDP8e/state_machine/state.gtkw"
-[timestart] 0
-[size] 1678 969
+[timestart] 7583000
+[size] 1674 969
 [pos] -1 -1
-*-20.393517 3565400 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-15.393517 7740950 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] state_machine_tb.
-[sst_width] 207
+[sst_width] 214
 [signals_width] 166
 [sst_expanded] 1
 [sst_vpaned_height] 282
@@ -19,8 +19,11 @@
 state_machine_tb.clk
 state_machine_tb.cont
 state_machine_tb.halt
-@29
 state_machine_tb.sing_step
+state_machine_tb.SM1.db_read
+state_machine_tb.SM1.db_write
+@29
+state_machine_tb.SM1.db
 @30
 state_machine_tb.op[0:11]
 @28
