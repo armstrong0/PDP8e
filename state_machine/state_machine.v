@@ -37,12 +37,14 @@ module state_machine(input clk,
 
                 // fetch cycle
                 F0: begin
-                    if (~single_step | cont)
+                    if (single_step & ~cont)
+                        state <= F0;
+                    else if (halt & ~cont)
+                        state <= H0;
+                    else
                         state <= FW;
-                    else state <= F0;
                     int_in_prog <= 0;
                     EAE_skip <= 1'b0;
-
                 end
                 FW: state <= F1;
                 F1: casez (instruction & 12'b111100101111)
@@ -168,12 +170,15 @@ module state_machine(input clk,
                 F3: if ((instruction[0:1] == 2'b11) || // IOT & OPER
                         (instruction[0:3] == 4'b1010)) // JMP D
                 begin
-                    if (halt == 1)
-                        state <= H0;
-                    else if (({instruction[0:3],instruction[10:11]} == 6'b111110) //halt
+                    if (({instruction[0:3],instruction[10:11]} == 6'b111110) //halt
                             && (UF == 1'b0))
                          // halt instruction, not in user mode
                         state <= H0;
+                    else if (db == 1'b1)
+                    begin
+                        next_state <= F0; // rememeber where we were going
+                        state <= DB0;
+                    end
                     else if  ((int_req & int_ena & ~int_inh )
                             && (instruction != 12'o6002))
                          //this solves the ion/iof/ion/iof problem
@@ -181,14 +186,10 @@ module state_machine(input clk,
                         int_in_prog <= 1;
                         state <= E0;
                     end
-                    else if (db == 1'b1)
-                    begin
-                        next_state <= F0; // rememeber where we were going
-                        state <= DB0;
-                    end
                     else state <= F0;
                 end
                 else if (instruction[3] == 1) // defer cycle/
+                begin
                     if (db == 1'b1)
                     begin
                         next_state <= D0;
@@ -196,13 +197,14 @@ module state_machine(input clk,
                     end
                     else
                         state <= D0;
-                    else if (db == 1'b1)
-                    begin
-                        next_state <= E0;
-                        state <= DB0;
-                    end
-                    else
-                        state <= E0;
+                end
+                else if (db == 1'b1) // next cycle is execute
+                begin
+                    next_state <= E0;
+                    state <= DB0;
+                end
+                else
+                    state <= E0;
 
                 D0: if (~single_step |  cont )
                     state <= DW;
@@ -214,19 +216,34 @@ module state_machine(input clk,
                 //  if it is a jmp I then F0 is the desired state
                 D3: if (instruction[0:3] == 4'b1011)
                 begin
-                    if (int_req & int_ena & ~int_inh)
+                    if (db == 1'b1)
+                    begin
+                        next_state <= F0;
+                        state <= DB0;
+                    end
+                    else if (int_req & int_ena & ~int_inh)
                     begin
                         int_in_prog <= 1;
                         state <= E0;
                     end
-                    else if (halt == 1)
-                        state <= H0;
                     else
                         state <= F0;
                 end
-                else  // if EAE instruction
+                else  // if EAE instruction - execute
                 if ((instruction & 12'b111100000001 ) == 12'b111100000001)
-                    state <=   EAE2;
+                begin if (db == 1'b1)
+                    begin
+                        next_state <= EAE2;
+                        state <= DB0;
+                    end
+                    else
+                        state <=   EAE2;
+                end
+                else if (db == 1'b1) // not EAE
+                begin
+                    next_state <= E0;
+                    state <= DB0;
+                end
                 else
                     state <= E0;
 
@@ -238,18 +255,24 @@ module state_machine(input clk,
                 EW: state <= E1;
                 E1: state <= E2;
                 E2: state <= E3;
-                E3: if (halt == 1)
-                    state <= H0;
-                else if (int_in_prog == 1)
-                    state <= F0;
-                else if(int_req & int_ena & ~int_inh )
+                E3:
+                if(int_req & int_ena & ~int_inh & ~int_in_prog ) // test for interrupt
                 begin
                     int_in_prog <= 1;
                     state <= E0;
+                    if (db == 1'b1)
+                    begin
+                        next_state <= E0;
+                        state <= DB0;
+                    end
+                end
+                else if (db == 1'b1)
+                begin
+                    next_state <= F0;
+                    state <= DB0;
                 end
                 else
                     state <= F0;
-
 
                 H0: state <= HW;
                 HW: if (trigger & ~cont) state <= H1;

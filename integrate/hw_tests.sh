@@ -43,7 +43,6 @@ case $selection in
 
 1) prompt
 sendtape $diag_dir/dhkaf-a-pb 
-#sendtape $diag_dir/MAINDEC-8E-D0AB-InstTest-1.pdf 
 echo "Set SR=7777, press Addr Load, then press Clear, Cont"
 echo "Once loading is complete set SR=0200,"
 echo "press Addr Load"

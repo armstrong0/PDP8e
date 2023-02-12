@@ -85,6 +85,9 @@ module top (input clk,
     reg [0:11] rsr;
     wire EAE_mode,EAE_loop,EAE_skip;
     wire sw_active;
+	wire db_read,db_write;
+	assign db_read = 1'b0; // force to be logic zero until we get a driver!
+	assign db_write = 1'b0; 
 
 
 
@@ -163,6 +166,8 @@ module top (input clk,
         .int_inh (int_inh),
         .int_ena (int_ena),
         .int_in_prog (int_in_prog),
+		.db_write (db_write),
+		.db_read (db_read),
         .UF (UF),
         .halt (halt),
         .single_step (single_step),

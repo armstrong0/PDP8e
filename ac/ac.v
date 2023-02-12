@@ -337,7 +337,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             //   EAE stuff
 
 
-            EAE0: :
+            EAE0:
             begin   // set up state
                 case (instruction & 12'b111100001111)
 				    // MUL
@@ -576,6 +576,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
 
                     end
 
+                    default:;
                 endcase
             end
             EAE2:;

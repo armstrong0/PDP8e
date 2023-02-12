@@ -1,7 +1,7 @@
 all:  t1 t1.1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12
 
 t1.o: ../FPGA_image/PDP8e.v PDP8e_tb.v
-	iverilog -DSIM ../FPGA_image/PDP8e.v PDP8e_tb.v -o t1.o -PPDP8e_tb.test_sel=1
+	iverilog -DSIM -Wall ../FPGA_image/PDP8e.v PDP8e_tb.v -o t1.o -PPDP8e_tb.test_sel=1
 	vvp t1.o -fst
 
 t1.1.o: ../FPGA_image/PDP8e.v PDP8e_tb.v

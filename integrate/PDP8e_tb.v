@@ -228,7 +228,7 @@ module PDP8e_tb;
             1: begin
                 $dumpfile("instruction_test_pt1.vcd");
                 $dumpvars(0,address,sr,clear,cont,UUT.reset,UUT.state,UUT.instruction,UUT.ac,UUT.cont,UUT.MA.mdout,UUT.link,UUT.skip);
-                $readmemh( "Diagnostics/D0AB.hex", UUT.MA.ram.mem,0,4095);
+                $readmemh( "Diagnostics/dhkaf-a.hex", UUT.MA.ram.mem,0,4095);
             end
             1.1: begin
                 $dumpfile("instruction_test_pt1.1.vcd");
@@ -239,7 +239,7 @@ module PDP8e_tb;
                 $dumpfile("instruction_test_pt2.vcd");
                 $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac,UUT.link,UUT.skip,UUT.irq,UUT.int_ena,UUT.int_inh,UUT.ac_input,UUT.mdout,UUT.int_in_prog,UUT.s_interrupt,UUT.MA.mdin,UUT.MA.write_en,UUT.isz_skip);
                 $dumpvars(0,UUT);
-                $readmemh("Diagnostics/D0BB.hex",UUT.MA.ram.mem,0,4095);
+                $readmemh("Diagnostics/dhkag-a.hex",UUT.MA.ram.mem,0,4095);
             end
 
             2.1: begin
