@@ -187,12 +187,11 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'o6032: if (UF == 1'b0)
                     ac <= 0;
                 else ac <=ac;
-                12'o6744,  // DISK DCHP read disk address
                 12'o6034: if (UF == 1'b0)
                     ac <= ac | input_bus;
                 else ac <= ac;
                 12'o6036,12'o6214,12'o6224,12'o6234,  //extended memory
-                12'o6744:   // DISK status read
+                12'o6745:   // DISK status read
                 if (UF == 1'b0)
                     ac <= input_bus;
                 else ac <= ac;

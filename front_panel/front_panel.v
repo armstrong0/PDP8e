@@ -16,47 +16,57 @@ module front_panel (input clk,
 `include "../parameters.v"
     wire cont_c;
     reg [0:6] switchd;
+    reg [0:5] switchl;
     reg [0:2] trig_state;
 
     reg [0:dbnce_nu_bits] trig_cnt;  // the highest order bit is always bit 0 !
     reg trigger1;
 
-    assign { triggerd,cleard , extd_addrd , addr_loadd , depd , examd, contd } = switchd;
+    assign { triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd } = switchd;
 
-    localparam Wait = 3'b000,
+    localparam Latch = 3'b110,
+	      Wait  = 3'b000,
           Trig1 = 3'b001,
           Trig2 = 3'b010,
      	  Trig3 = 3'b011,
           Delay = 3'b100,
           Reenable = 3'b101;
 
-    always @*
-    begin
-        trigger1 = (trig_state == Wait) &&
-        ( clear | extd_addr | addr_load | dep | exam | cont );
-        if (trig_state == Delay) sw_active = 1; else sw_active = 0;
-    end
 
-    assign cont_c = (cont & (sing_step | halt));
+    assign cont_c = (cont & sing_step );
 
     always @(posedge clk)
     begin
         if (reset)
         begin
-            trig_state <= Wait;
-            switchd <= 7'b0000000;
+            trig_state <= Latch;
+            switchd <= 7'b00000000;
+            switchl <= 6'b0000000;
             trig_cnt <= 0;
+            sw_active <= 1'b0;
         end
         else
         begin
             case (trig_state)
+                Latch:
+                begin
+                    switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont };// latch inputs
+                    if (switchl == 6'b000000)
+                        trig_state <= Latch;
+                    else
+                    begin
+                        trig_state <= Wait;
+                        trigger1 <= 1'b1;
+                    end
+                end
                 Wait: if ((((state == H0) || (state == HW)) & (trigger1 == 1)) |
                         ((state == F0) & cont_c) |
                         ((state == D0) & cont_c) |
                         ((state == E0) & cont_c))
                 begin
                     trig_state <= Trig1 ;
-                    switchd <= {1'b1,clear ,extd_addr ,addr_load , dep ,exam, cont };
+                    switchd <= {trigger1,switchl};
+                    switchl <= 6'b000000;
                 end
                 Trig1: begin
                     trig_state <= Trig2;
@@ -74,15 +84,17 @@ module front_panel (input clk,
                 Delay: if (trig_cnt[0] == 1)
                 begin
                     trig_state <= Reenable;
+                    sw_active <= 1'b0;
                 end
                 else
                 begin
                     trig_state <= Delay;
+                    sw_active <= 1'b1;
                     switchd <= 7'b0000000;
                 end
 
-                Reenable: trig_state <= Wait;
-                default: trig_state <= Wait;
+                Reenable: trig_state <= Latch;
+                default: trig_state <= Latch;
 
             endcase
             if (trig_state == Trig1)
