@@ -24,7 +24,7 @@
 
 /* verilator lint_off LITENDIAN */
 
-module top (input clk,
+module PDP8e (input clk,
     output reg led1,output reg led2,
     output runn,
     output [0:2] EMAn,
@@ -85,9 +85,9 @@ module top (input clk,
     reg [0:11] rsr;
     wire EAE_mode,EAE_loop,EAE_skip;
     wire sw_active;
-	wire db_read,db_write;
-	assign db_read = 1'b0; // force to be logic zero until we get a driver!
-	assign db_write = 1'b0; 
+    wire db_read,db_write;
+    assign db_read = 1'b0; // force to be logic zero until we get a driver!
+    assign db_write = 1'b0;
 
 
 
@@ -126,7 +126,7 @@ module top (input clk,
         .ma (ma),
         .ac (ac),
         .mq (mq),
-		.sw (sw),
+        .sw (sw),
         .sr (rsr),
         .DF (DF),
         .IF (IF),
@@ -156,18 +156,18 @@ module top (input clk,
         .reset (reset),
         .state (state),
         .instruction (instruction),
-		.ac (ac),
-		.mq (mq),
+        .ac (ac),
+        .mq (mq),
         .EAE_loop (EAE_loop),
         .EAE_mode (EAE_mode),
         .EAE_skip (EAE_skip),
-		.gtf (gtf),
+        .gtf (gtf),
         .int_req (irq),
         .int_inh (int_inh),
         .int_ena (int_ena),
         .int_in_prog (int_in_prog),
-		.db_write (db_write),
-		.db_read (db_read),
+        .db_write (db_write),
+        .db_read (db_read),
         .UF (UF),
         .halt (halt),
         .single_step (single_step),
