@@ -49,7 +49,6 @@ module front_panel_st_tb;
 
         $dumpfile("front_st.vcd");
         $dumpvars(0,UUT);
-		//clk,reset,clear,extd_addr,addr_load,dep,exam,state,sing_step,cont,cleard , extd_addrd , addr_loadd , depd , examd,contd,halt,instruction,UUT.trigger1,UUT.cont_c);
 
         clk = 0;
         forever

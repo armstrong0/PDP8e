@@ -34,8 +34,6 @@ module front_panel_tb;
 
         $dumpfile("front_panel.vcd");
         $dumpvars(0,UUT);
-		//clk,reset,clear,extd_addr,addr_load,dep,exam,state,sing_step,cont,cleard ,extd_addrd,addr_loadd,depd,examd,contd,UUT.trigger1,UUT.trig_state,UUT.trig_cnt);
-
         clk = 0;
         forever
             #10  clk = ~clk;
@@ -50,23 +48,20 @@ module front_panel_tb;
         exam <= 0;
         sing_step <= 0;
         cont <= 0;
+		sing_step <= 0;
         state <= H0;
 
         #15 reset <= 1;
         #25 reset <= 0;
         #24 clear <= 1;
         #100 clear <= 0;
-//#50 state <= F0;
         #20 cont <= 1;
         #20 cont <=0;
-//#440 sing_step <= 1;
         #355 extd_addr <= 1;
         #80 extd_addr <= 0;
         #500 addr_load <= 1;
         #50 addr_load <= 0;
 
-//#60 sing_step <= 0;
-//#225 state <= H0;
         #500 exam <= 1;
         #25 exam <= 0;
         #50 exam <= 1;

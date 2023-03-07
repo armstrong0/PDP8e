@@ -1,8 +1,8 @@
 `define SIM
 `timescale 1 ns / 10 ps
-// assumes about a 58 MHz clock
-`define clock_period = 18;
-`define pulse(arg) #1 ``arg <=1 ; #(4*clock_period) ``arg <= 0
+// assumes about a 100 MHz clock
+`define clock_period = 10;
+`define pulse(arg) #1 ``arg <=1 ; #(3*clock_period) ``arg <= 0
 
 
 
@@ -26,6 +26,12 @@ wire int_in_prog;
 reg EAE_loop,EAE_mode;
 reg UF;
 reg db_read,db_write;
+reg  DB;
+
+always @(posedge clk)
+begin
+  DB <= (stateo == DB0) | (stateo == DB1) | (stateo == DB2);
+end
 
 
 state_machine SM1(.clk (clk),
@@ -46,11 +52,6 @@ state_machine SM1(.clk (clk),
 		  .int_inh (int_inh),
 	      .int_in_prog (int_in_prog));
 
-ram mem (.din (din),
-         .addr (address[12:0]),
-		 .write_en (write_en),
-		 .clk (clk),
-		 .dout (opt));
 
 
 `include "../parameters.v"
@@ -71,22 +72,10 @@ always begin
 end
 
   
-// code to load instructions in to op (instruction register)
- always @(posedge clk)
- begin
- if ((stateo == F0)  && (~sing_step|cont) && (loaded == 1))
-   begin
-      op <= opt;
-	 // $display(op);
-	  address <= address + 1;
-   end
-
- end
-
 
  initial begin
- $dumpfile("state_test.vcd");
- $dumpvars(0,SM1);
+ $dumpfile("DB.vcd");
+ $dumpvars(0,clk,rst,DB,SM1);
  rst <= 1;
  EAE_loop <= 0;
  EAE_mode <= 0;
@@ -102,58 +91,42 @@ trigger <= 0;
 db_read <= 0;
 db_write <= 0;
 
-#500 rst <= 0;
-  address <= 1;  // first addess is the reset state
-  data_file = $fopen("ops.txt", "r");
-  if (data_file == `NULL) begin
-    $display("data_file handle was NULL");
-    $finish;
-  end
-  
-  while (!$feof(data_file)) begin
-      dummy = $fscanf(data_file,"%o \n",temp);
-	  $displayo(temp[11:0]);
-	  din <= temp[11:0];
-	  write_en <= 1;
-	  #30 ;
-	  write_en <= 0;
-	  address <= address +1;
-  end
-  $fclose(data_file); 
-  address <= 0;
-  
-#50 loaded <= 1;
-
+#50 rst <= 0;
 #1 halt = 0;
-#20 `pulse(cont);
-#1346 sing_step <= 1;
+sing_step <= 0;
 // the following tests single machine cycles for 1,2 and 3 MC instructions
+op <= 12'o7200;  // path for 6 and 7 IOT and OP opcodesw
+#30 `pulse(cont);
+db_write <=1;
+
+#50 op <= 12'o7402;
+// now do it again with db_read
+db_read <= 1;
+db_write <= 0;
+
+op <= 12'o7200;
+#50 op <= 12'o7402;
+wait(SM1.state == H0);
+op <= 12'o5000; // jump direct
+#60 `pulse(cont);
+wait(SM1.state == DB1);
+wait(DB == 0);
+#50 op <= 12'o7402;
+op <= 12'o5400; // jump indirect
+wait(SM1.state == DB1);
+#50 op <= 12'o7402;
+op <= 12'o1000; // TAD E
+wait(SM1.state == DB1);
+#50 op <= 12'o7402;
+op <= 12'o1400; // TAD I
+wait(SM1.state == DB1);
+#50 op <= 12'o7402;
+
+
 #60 `pulse(cont);
 #60 `pulse(cont);
 #60 `pulse(cont);
 #60 `pulse(cont);
-#60 `pulse(cont);
-#60 `pulse(cont);
-#100 sing_step <= 0;
-#10 int_ena <= 1;
-#1 int_inh <= 0;
-#135 int_req <= 1;
-#100 `pulse(cont);
-#100 `pulse(cont);
-#250 `pulse(cont);
-#225 int_ena <= 0;
-#1 int_req <= 0;
-#50 halt <= 1;
-#200 `pulse(cont);
-#400 `pulse(cont);
-#600 `pulse(cont);
-#200 `pulse(cont);
-#200 `pulse(cont);
-#200 `pulse(cont);
-#200 `pulse(cont);
-#200 `pulse(cont);
-#200 `pulse(cont);
-#200 `pulse(cont);
 #1000 $finish;
 
 

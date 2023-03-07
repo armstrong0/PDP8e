@@ -3,23 +3,41 @@
 
  This set of files when compiled and fitted implements the interface between the CPU and an SD card.  The SD card provides the storage for the 4 RK05 disk packs.  A typical SD card has the ability to store the equivalent of hundreds of RK05 disk images.  
 
- I contemplated writing all my own code for this function.  However Rob Doyle has already implemented this.  I have included the VHDL code that implements it.  The complete source code for the PDP8(x) is available on opencores.
+ I contemplated writing all my own code for this function.  However Rob Doyle
+ has already implemented this.  I have included the VHDL code that implements
+ it.  The complete source code for the PDP8(x) is available on opencores.
 
- Rob has written his code in VHDL.  The CPU that I am putting it into is written in verilog.  It is meant to be fitted into an lattice semiconductor ICE40 FPGA using yosys and nextpnr.  Yosys does not understand VHDL.
+ Rob has written his code in VHDL.  The CPU that I am putting it into is 
+ written in verilog.  It is meant to be fitted into an lattice semiconductor
+ ICE40 FPGA using yosys and nextpnr.  Yosys does not understand VHDL.
 
  So there are a number of options:
- 	1.) Build and install the GHDL plugin for yosys.  (GHDL is an open source compiler for VHDL)
+ 	1.) Build and install the GHDL plugin for yosys.  (GHDL is an open source
+	compiler for VHDL)
 	2.) Hand transcribe VHDL to Verilog.  
-	3.) Hand transcribe VHDL to systemverilog.  Then convert to verilog.  Or install the plugin that allows yosys to process systemverilog.
+	3.) Hand transcribe VHDL to systemverilog.  Then convert to verilog.  Or
+	install the plugin that allows yosys to process systemverilog.
 	4.) ...
 
-I choose option 3.  However there is a program "sv2v" that will convert systemverilog code to verilog code.
+I choose option 3.  However there is a program "sv2v" that will convert 
+systemverilog code to verilog code.
 
 During this adventure I found several other useful programs:
-	Verilator:  It processes systemverilog and does a bangup job of finding errors.
+	Verilator:  It processes systemverilog and does a bangup job of finding 
+	            errors.
 	IVerilog:  With the -g2012 flag iverilog will read systemverilog.
-	Verible:  This is a family of tools that processes verilog and systemverilog in a number of was: formating, linting and others.
+	Verible:  This is a family of tools that processes verilog and 
+	          systemverilog in a number of was: formating, linting and others.
 
-	
+Typical command lines:
+
+verilator -cc  --top-module sd  sdspi_types.svh sd_types.svh sdspi.sv sd.sv 
+verible-verilog-lint sdspi_types.svh sd_types.svh sd.sv
+iverilog -g2012 sdspi_types.svh sd_types.svh sdspi.sv sd.sv
+
+Converting the systemverilog to verilog so that it can be merged into the 
+PDP8e is accomplished with:
+
+sv2v    sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v	
 
 

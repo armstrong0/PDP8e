@@ -1,0 +1,31 @@
+[*]
+[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
+[*] Mon Mar  6 21:30:53 2023
+[*]
+[dumpfile] "/home/armstrong/Desktop/PDP8e/RK8E/sdspi_test.vcd"
+[dumpfile_mtime] "Mon Mar  6 21:30:35 2023"
+[dumpfile_size] 40454
+[savefile] "/home/armstrong/Desktop/PDP8e/RK8E/spi.gtkw"
+[timestart] 0
+[size] 1674 975
+[pos] -1 -1
+*-20.877443 11715000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] spi_tb.
+[sst_width] 214
+[signals_width] 118
+[sst_expanded] 1
+[sst_vpaned_height] 284
+@28
+spi_tb.UUT.spiMISO
+spi_tb.UUT.spiMOSI
+spi_tb.UUT.spiOP[2:0]
+spi_tb.UUT.spiSCLK
+@22
+spi_tb.UUT.spiTXD[0:7]
+@28
+spi_tb.UUT.spiDONE
+spi_tb.UUT.clk
+@29
+spi_tb.UUT.spiCS
+[pattern_trace] 1
+[pattern_trace] 0
