@@ -40,4 +40,6 @@ PDP8e is accomplished with:
 
 sv2v    sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v	
 
+Rob's sd read asserts dma requests, it has all the parts required to interface with the PDP8e FOR THE DATA PATH 
+
 

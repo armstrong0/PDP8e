@@ -20,7 +20,7 @@ bit 5 block length 0 256 words 1 128 words
 
 bits 6:8 extended address
 bits 9:10 drive select
-bit 11 MSB of cyclinder
+bit 11 MSB of cylinder
 
 Current Address Register
  IOT 67x4
@@ -55,7 +55,7 @@ DSKP  67x1 Disk Skip on Flag
 DCLR  67x2 Disk Clear
  ac10 ac11 
     0    0 clear ac and status register  (DCLS)
-	0	 1 clear ac and control STOP   (DCLC
+	0	 1 clear ac and control STOP     (DCLC)
 	1    0 clear ac goto track 0 clear status register
 DLAG  67x3  load address and go
     dar < ac
