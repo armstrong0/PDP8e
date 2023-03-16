@@ -120,13 +120,12 @@ module sdsim;
 
   initial begin
     $dumpfile("sdsim.vcd");
-    $dumpvars(0, state, SD);
+    $dumpvars(0, spiRX,state, SD);
 
 
     clk <= 1'b0;
     reset <= 1'b1;
     c <= 0;
-    //sdCS <= 1'b0;
     sdWP <= 1'b0;
     // read the image file
     $write("Reading Disk Image...");
@@ -140,7 +139,7 @@ module sdsim;
     #30 reset <= 1'b0;
 
 
-    #1000000 $finish;
+    #1500000 $finish;
   end
 
   // SD Interface
@@ -153,7 +152,7 @@ module sdsim;
       state <= stateRESET;
       index <= 0;
     end else begin  //if rising_edge(clk)
-      clkstat <= {clkstat[1], sdSCLK};
+      clkstat <= {clkstat[0], sdSCLK};
 
       if (sdCS == 1'b1) spiRX <= 8'hff;
       else if (clkstat == 2'b01) spiRX <= {spiRX[1:55], sdMOSI};
@@ -228,7 +227,7 @@ module sdsim;
           state <= stateRESET;
         end else if (clkstat == 2'b10) begin
           bitcnt <= bitcnt - 1;
-          spiTX  <= {spiTX[1 : 55], 1'b1};
+          spiTX  <= {spiTX[1:55], 1'b1};
         end
 
         //  stateREAD0:
@@ -312,7 +311,7 @@ module sdsim;
             end
           end else begin
             bitcnt <= bitcnt - 1;
-            spiTX  <= {spiTX[1 : 55], 1'b1};
+            spiTX  <= {spiTX[1:55], 1'b1};
           end
         //   stateWRITE2:
         //   Write 2 CRC bytes plus some busy (zero) tokens
@@ -325,7 +324,7 @@ module sdsim;
             state   <= stateRESET;
           end else begin
             bitcnt <= bitcnt - 1;
-            spiTX  <= spiTX[1 : 55] & 1'b1;
+            spiTX  <= {spiTX[1:55] & 1'b1};
           end
         end
 
