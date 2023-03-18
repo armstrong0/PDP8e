@@ -120,7 +120,7 @@ module sdsim;
 
   initial begin
     $dumpfile("sdsim.vcd");
-    $dumpvars(0, spiRX,state, SD);
+    $dumpvars(0,index,spiRX,state, SD);
 
 
     clk <= 1'b0;
@@ -130,7 +130,7 @@ module sdsim;
     // read the image file
     $write("Reading Disk Image...");
     imageFILE = $fopen("advent.rk05", "rb");
-    c <= $fread(image, imageFILE);
+    c = $fread(image, imageFILE);
     $write("Done Reading Disk Image.");
     $display();
     $write(string'("Read "));
@@ -139,7 +139,7 @@ module sdsim;
     #30 reset <= 1'b0;
 
 
-    #1500000 $finish;
+    #2500000 $finish;
   end
 
   // SD Interface
@@ -159,7 +159,7 @@ module sdsim;
 
       case (state)
         stateRESET:   // do intialization
-                begin
+          begin
           // CMD0:
           if (spiRX[0:7] == 8'h40) begin
             if (clkstat == 2'b10) begin
@@ -216,9 +216,11 @@ module sdsim;
             end
           end  // CMD58:
           else if (spiRX[0:7] == 8'h7a) begin
-            if (clkstat == 2'b10) bitcnt <= 55;
+            if (clkstat == 2'b10) begin
+			bitcnt <= 55;
             spiTX <= 56'hff_00_e0_ff_80_00_ff;
             state <= stateRSP;
+			end
           end
         end
         //   Send Response:
