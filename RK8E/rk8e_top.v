@@ -12,24 +12,24 @@ module rk8e_top(
     input [4:0] state,
     input [0:11] ac,
     output reg [0:11] disk_bus,  //from the point of view of the CPU
-    /* verilator lint_off SYMRSVDWORD */
+	/* verilator lint_off SYMRSVDWORD */
     output reg interrupt,
-    /* verilator lint_on SYMRSVDWORD */
-    output reg data_break_write,
-    output reg data_break_read,
+	/* verilator lint_on SYMRSVDWORD */
+	output reg data_break_write;
+	output reg data_break_read;
     output reg skip);
 
     wire flag;
     wire [0:7] rx_disk_bus;
-    reg [0:11] cmd_reg;  // command register
-    reg [0:11] car;      // current address register
-    reg [0:11] disk_ar;  // disk address  - need one for each disk ?
-    reg [7:0] buffer_address;
-    reg [0:11] status;   // status register
+	reg [0:11] cmd_reg;  // command register
+	reg [0:11] car;      // current address register
+	reg [0:11] disk_ar;  // disk address  - need one for each disk ?
+	reg [7:0] buffer_address;
+	reg [0:11] status;   // status register
 
 
-    // need a write protect for each drive
-    reg [0:3] write_lock;
+	// need a write protect for each drive
+	reg [0:3] write_lock;
 
     reg sint_ena;
 
@@ -77,23 +77,23 @@ module rk8e_top(
         end
         if ((state == F1) && (UF == 1'b0))
             case (instruction)
-                12'o6740:;
-                12'o6741:; // skip if transfer done or error
-                12'o6742:;
-                12'o6743:  // DLAG laod address and go
-                begin
-                    dar <= ac;
-                end
+                12'o6740:
+                12'o6741:; skip if transfer done or error
+                12'o6742:
+				12'o6743:  // DLAG laod address and go
+				begin
+					dar <= ac;
+				end	
                 12'o6744: // load current addressa
-                begin
-                    car <= ac;
-                end
+				begin
+					car <= ac;
+				end	
                 12'o6745:;
                 12'o6746: // load command
-                begin
-                    cmd_reg <= ac;
-                    status <= 12'o0000;
-                end
+				begin
+					cmd_reg <= ac;
+					status <= 12'o0000;
+				end
                 12'o6007: //CAF
                 begin
                     status  <= 12'o0000;

@@ -21,6 +21,11 @@ sim: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh
 	vvp sd.o
 	gtkwave sdsim.vcd sdsim.gtkw
 	
+sim1: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
+	iverilog -g2012 sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
+	vvp sd.o
+	gtkwave sdsim.vcd sdsim.gtkw
+
 clean:
 	rm -rf  *.vcd
 	rm -rf *.v

@@ -255,7 +255,7 @@ module sd
       dmaWR <= 1'b0;
       spiOP <= spiNOP;
 
-      if ((sdOP == sdopABORT) & (state != stateIDLE)) abort <= 1'b1;
+      if ((sdOP == sdopABORT) && (state != stateIDLE)) abort <= 1'b1;
 
       case (state)
 
@@ -276,7 +276,7 @@ module sd
 
         stateINIT00: begin
           timeout <= timeout - 1;
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == nCR) begin
               bytecnt <= 0;
               spiOP   <= spiCSL;
@@ -295,7 +295,7 @@ module sd
 
         stateINIT01: begin
           timeout <= timeout - 1;
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
               state   <= stateINIT02;
@@ -365,7 +365,7 @@ module sd
 
         stateINIT04: begin
           timeout <= timeout - 1;
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
               state   <= stateINIT05;
@@ -505,7 +505,7 @@ module sd
 
         stateINIT08: begin
           timeout <= timeout - 1;
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
               state   <= stateINIT09;
@@ -573,7 +573,7 @@ module sd
 
         stateINIT11: begin
           timeout <= timeout - 1;
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
               state   <= stateINIT12;
@@ -643,7 +643,7 @@ module sd
 
         stateINIT14: begin
           timeout <= timeout - 1;
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
               state   <= stateINIT15;
@@ -799,7 +799,7 @@ module sd
         //
 
         stateREAD01: begin
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
               state   <= stateREAD02;
@@ -824,7 +824,6 @@ module sd
           end else if (spiDONE == 1'b1)
             if (spiRXD == 8'hff)
               if (bytecnt == nCR) begin
-
                 spiOP   <= spiCSH;
                 bytecnt <= 0;
                 err     <= 8'h0c;
@@ -867,14 +866,16 @@ module sd
                 spiTXD  <= 8'hff;
                 bytecnt <= bytecnt + 1;
               end
-            else bytecnt <= 0;
-          if (spiRXD == 8'hfe) state <= stateREAD04;
-          else begin
-            spiOP <= spiCSH;
-            err <= 8'h0f;
-            val <= spiRXD;
-            sdSTATE <= sdstateRWFAIL;
-          end
+            else begin
+              bytecnt <= 0;
+              if (spiRXD == 8'hfe) state <= stateREAD04;
+              else begin
+                spiOP <= spiCSH;
+                err <= 8'h0f;
+                val <= spiRXD;
+                sdSTATE <= sdstateRWFAIL;
+              end
+            end
         end
 
         //
@@ -960,13 +961,15 @@ module sd
             memADDR <= memADDR + 1;
             bytecnt <= 0;
             state   <= stateREAD09;
-          end else if ((bytecnt >= 255) & (sdLEN == 1'b1)) begin
+          end else if ((bytecnt >= 255) && (sdLEN == 1'b1)) begin
             memREQ  <= 1'b0;
             bytecnt <= bytecnt + 1;
             state   <= stateREAD05;
-          end else memADDR <= memADDR + 1;
+          end else begin 
+		  memADDR <= memADDR + 1;
           bytecnt <= bytecnt + 1;
           state   <= stateREAD05;
+		  end
         end
 
         //
@@ -1016,7 +1019,7 @@ module sd
         //
 
         stateWRITE01: begin
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
               state   <= stateWRITE02;
@@ -1173,7 +1176,7 @@ module sd
               bytecnt <= 0;
               memADDR <= memADDR + 1;
               state   <= stateWRITE10;
-            end else if ((bytecnt == 255) & (sdLEN == 1'b1)) begin
+            end else if ((bytecnt == 255) && (sdLEN == 1'b1)) begin
               memREQ  <= 1'b0;
               spiOP   <= spiCSH;
               bytecnt <= bytecnt + 1;
@@ -1264,7 +1267,7 @@ module sd
         //
 
         stateWRITE13: begin
-          if ((spiDONE == 1'b1) | (bytecnt == 0))
+          if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               spiOP   <= spiTR;
               spiTXD  <= 8'hff;
@@ -1304,7 +1307,7 @@ module sd
                 spiTXD  <= 8'hff;
                 bytecnt <= bytecnt + 1;
               end
-            else if ((spiRXD == 8'h00) | (spiRXD == 8'h01)) begin
+            else if ((spiRXD == 8'h00) || (spiRXD == 8'h01)) begin
               spiOP   <= spiTR;
               spiTXD  <= 8'hff;
               bytecnt <= 0;

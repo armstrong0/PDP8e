@@ -15,7 +15,7 @@ bits 0:2
 110 - 110 unused
 
 bit 3 interrupt on done
-bit 4 set done on seak done
+bit 4 set done on seek done
 bit 5 block length 0 256 words 1 128 words
 
 bits 6:8 extended address

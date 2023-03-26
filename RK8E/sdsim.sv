@@ -43,45 +43,25 @@
 */
 
 
-
-module sdsim;
-
   // SDSIM Test Bench Behav
 
-  import sd_types::*;
-
-  sd SD (
-      .clk(clk),
-      .reset(reset),
-      .clear(clear),
-      //.dmaDIN
-      //.dmaDOUT
-      //.dmaADDR
-      //.dmaRD
-      //.dmaWR
-      //.dmaREQ
-      //.dmaGNT
-      .sdMISO(sdMISO),
-      .sdMOSI(sdMOSI),
-      .sdSCLK(sdSCLK),
-      .sdCS(sdCS),
-      .sdOP(sdOP),
-      .sdMEMaddr(sdMEMaddr),
-      .sdDISKaddr(sdDISKaddr),
-      .sdLEN(sdLEN),
-      .sdSTAT(sdSTAT)
+module sdsim (
+      input logic clk,
+      reset,
+      clear,
+      sdCS,
+      sdMOSI,sdSCLK,
+      output logic 
+      sdMISO
   );
 
 
 
   // SPI Simulation
 
-  logic reset, clk, clear, sdCS, sdWP;
-  logic [14:0] sdMEMaddr;
-  sdDISKaddr_t sdDISKaddr;
   typedef logic [0:55] sdCMD_t;
-  sdCMD_t spiRX;  //         : sdCMD_t;
-  sdCMD_t spiTX;  //         : sdCMD_t;
+  sdCMD_t spiRX;  //         
+  sdCMD_t spiTX;  //        
   typedef enum logic [3:0] {
     stateRESET,
     stateRSP,
@@ -95,12 +75,9 @@ module sdsim;
     stateWRITE4
   } state_t;
   state_t         state;
-  logic    [ 5:0] bitcnt;  //        : integer range 0 to 55;
-  logic    [ 8:0] bytecnt;  //       : integer range 0 to 511;
-  logic    [31:0] index;  //         : integer range 0 to 4194303;
-  sdOP_t          sdOP;
-  sdSTAT_t        sdSTAT;
-  logic           sdMISO;
+  logic    [ 5:0] bitcnt;  
+  logic    [ 8:0] bytecnt; 
+  logic    [31:0] index;   
 
 
   //   Disk Registers
@@ -108,38 +85,28 @@ module sdsim;
 
   typedef logic [7:0] byte_t;
 
-  typedef byte_t [3325951:0] image_t;
+  typedef byte_t [512:0] image_t; // reduced the image file size, so gtkwave 
+                                  //doesn't segfault
   image_t image;
   logic [1:0] clkstat;
   integer c;
   int imageFILE;
 
-  always begin
-    #10 clk <= ~clk;
-  end
+    initial begin
 
-  initial begin
-    $dumpfile("sdsim.vcd");
-    $dumpvars(0,index,spiRX,state, SD);
-
-
-    clk <= 1'b0;
-    reset <= 1'b1;
     c <= 0;
-    sdWP <= 1'b0;
+    // sdWP <= 1'b0;
     // read the image file
     $write("Reading Disk Image...");
     imageFILE = $fopen("advent.rk05", "rb");
-    c = $fread(image, imageFILE);
+    c = $fread(image, imageFILE,0,256);
     $write("Done Reading Disk Image.");
     $display();
     $write(string'("Read "));
     $write(c);
     $display(" bytes");
-    #30 reset <= 1'b0;
+	
 
-
-    #2500000 $finish;
   end
 
   // SD Interface
@@ -217,10 +184,10 @@ module sdsim;
           end  // CMD58:
           else if (spiRX[0:7] == 8'h7a) begin
             if (clkstat == 2'b10) begin
-			bitcnt <= 55;
+            bitcnt <= 55;
             spiTX <= 56'hff_00_e0_ff_80_00_ff;
             state <= stateRSP;
-			end
+            end
           end
         end
         //   Send Response:
