@@ -73,6 +73,11 @@ initial begin
   wait (dmaREQ == 1'b1);
   #20 dmaGNT <= 1'b1;
   sdOP <= 3'b000;  // only read one sector
+  wait (dmaREQ == 1'b0);
+  sdLEN <= 1'b1;   // set up to read 1/2 of a sector
+  sdOP <= 3'b010;
+  wait (dmaREQ == 1'b1);
+  sdOP <= 3'b000;  // only read one sector
   #15000000 $finish; 
 
 end

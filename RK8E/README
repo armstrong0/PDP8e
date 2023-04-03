@@ -42,4 +42,7 @@ sv2v    sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v
 
 Rob's sd read asserts dma requests, it has all the parts required to interface with the PDP8e FOR THE DATA PATH 
 
+I now have initialization working, and a 512 byte single sector read.  Note that once the read is started the sdOP that started the read should be set to idle.  There is more testing required: 128 word (256 byte) reads, the write of 256 and 128 words.  Also need to be tested is the action dmaREQ and dmaGNT.  Now once dmaREQ is asserted, dmaGNT is asserted and remains that way.  The dma cycles need to interleave with normal CPU cycles.  Normal CPU cycles fetch, defer and execute are all 5 clock cycles long, the clock is about 70 MHz which makes the cycle time about 71 nanoseconds.  If we run the sd card at 20 MHz then a word will be ready every 1/20*16 =  800 nanoseconds.  We should be fine with that,  However the EAE instructions could take 3 + 24 + 1 clock cycles = 400 microseconds still ok.
+ 
+ It appears that dmaREQ remains asserted for the durration of the operation.  If I want to interleave with CPU cycles I am going to have to do it external to sd.sv...
 

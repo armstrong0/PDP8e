@@ -4,6 +4,12 @@
  * a SD Card. The SD card will hold 4 RK05 disk packs. Each of which holds
  * about 1.6 mega words- roughly 2.4 megabytes.  */
 
+/* ended up adding a comment so this file has a change in it. This is so I can
+ * prevent git from deleting this file!!!  */
+
+/* dba Pril 03, 2023 */
+
+
 module rk8e_top(
     input clk,
     input reset,
