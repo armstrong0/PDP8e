@@ -43,17 +43,17 @@
 */
 
 
-  // SDSIM Test Bench Behav
+// SDSIM Test Bench Behav
 
 module sdsim (
-      input logic clk,
-      reset,
-      clear,
-      sdCS,
-      sdMOSI,sdSCLK,
-      output logic 
-      sdMISO
-  );
+    input  logic clk,
+    reset,
+    clear,
+    sdCS,
+    sdMOSI,
+    sdSCLK,
+    output logic sdMISO
+);
 
 
 
@@ -74,10 +74,10 @@ module sdsim (
     stateWRITE3,
     stateWRITE4
   } state_t;
-  state_t         state;
-  logic    [ 5:0] bitcnt;  
-  logic    [ 8:0] bytecnt; 
-  logic    [31:0] index;   
+  state_t        state;
+  logic   [ 5:0] bitcnt;
+  logic   [ 8:0] bytecnt;
+  logic   [31:0] index;
 
 
   //   Disk Registers
@@ -85,27 +85,27 @@ module sdsim (
 
   typedef logic [7:0] byte_t;
 
-  typedef byte_t [512:0] image_t; // reduced the image file size, so gtkwave 
-                                  //doesn't segfault
+  typedef byte_t [512:0] image_t;  // reduced the image file size, so gtkwave 
+                                   //doesn't segfault
   image_t image;
   logic [1:0] clkstat;
   integer c;
   int imageFILE;
 
-    initial begin
+  initial begin
 
     c <= 0;
     // sdWP <= 1'b0;
     // read the image file
     $write("Reading Disk Image...");
     imageFILE = $fopen("advent.rk05", "rb");
-    c = $fread(image, imageFILE,0,256);
+    c = $fread(image, imageFILE, 0, 256);
     $write("Done Reading Disk Image.");
     $display();
     $write(string'("Read "));
     $write(c);
     $display(" bytes");
-	
+
 
   end
 
@@ -184,9 +184,9 @@ module sdsim (
           end  // CMD58:
           else if (spiRX[0:7] == 8'h7a) begin
             if (clkstat == 2'b10) begin
-            bitcnt <= 55;
-            spiTX <= 56'hff_00_e0_ff_80_00_ff;
-            state <= stateRSP;
+              bitcnt <= 55;
+              spiTX  <= 56'hff_00_e0_ff_80_00_ff;
+              state  <= stateRSP;
             end
           end
         end
@@ -286,10 +286,10 @@ module sdsim (
         //   Write 2 CRC bytes plus some busy (zero) tokens
         stateWRITE2:
         if (clkstat == 2'b10) begin
-          if ((bitcnt == 0) | (sdCS == 1'b1)) begin
-            bitcnt  <= 15;
-            bytecnt <= 0;
-            spiTX   <= 56'h00_ff_ff_ff_ff_ff_ff;
+          if ((bitcnt == 0) || (sdCS == 1'b1)) begin
+            // bitcnt  <= 15;
+            // bytecnt <= 0;
+            // spiTX   <= 56'h00_ff_ff_ff_ff_ff_ff;
             state   <= stateRESET;
           end else begin
             bitcnt <= bitcnt - 1;

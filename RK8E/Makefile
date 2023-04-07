@@ -1,4 +1,4 @@
-all: view_tx verilog format sim
+all: view_tx verilog format sim_read sim_write
 
 view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 	iverilog -g2012 sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
@@ -7,22 +7,24 @@ view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 
 verilog: sd_types.svh sdspi_types.svh sdspi.sv sd.sv
 	~/.local/bin/sv2v    sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v	
+	~/bin/verible-verilog-format sd.v --inplace
+
 
 format:
 	~/bin/verible-verilog-format sd.sv --inplace
 	~/bin/verible-verilog-format sdspi.sv --inplace
 	~/bin/verible-verilog-format sd_types.svh --inplace
 	~/bin/verible-verilog-format sdspi_types.svh --inplace
-	~/bin/verible-verilog-format sd.v --inplace
 	~/bin/verible-verilog-format sdsim.sv --inplace
-
-sim: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh
-	iverilog -g2012 sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv -o sd.o
+	~/bin/verible-verilog-format sd_tb.sv --inplace
+	
+sim_read: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
+	iverilog -g2012 sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
 	vvp sd.o
 	gtkwave sdsim.vcd sdsim.gtkw
-	
-sim1: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
-	iverilog -g2012 sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
+
+sim_write: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
+	iverilog -g2012 -DWRITE sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
 	vvp sd.o
 	gtkwave sdsim.vcd sdsim.gtkw
 

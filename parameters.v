@@ -58,6 +58,17 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
     parameter real baud_period = 1.0/baud_rate*1e9;
     parameter tx_term_cnt = $rtoi(baud_period/clock_period);
 `endif
+// define the slow and fast clocks of the sd card
+// the counts here have to be for 1/2 clock
+// error on the low side, especially for 4 MHz
+// frequencies will not be exact.
+   parameter real slow_spi =  400000;
+   parameter real fast_spi =  4000000; // go to high and the state machines
+   // don't work
+   parameter slow_div = $floor(clock_frequency/(slow_spi*2));
+   parameter fast_div = $floor(clock_frequency/(fast_spi*2));
+
+
 
 `ifdef SIM
 `ifndef TSIM
@@ -76,6 +87,8 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
     parameter tx_term_cnt = $rtoi(baud_period/clock_period);
 `endif
 `endif
+
+
 
 parameter MAX_FIELD = 3'b001;
 

@@ -59,13 +59,12 @@ package sd_types;
   typedef logic [0:6] sdCCRC_t;  // Command CRC
   typedef logic [0:15] sdDCRC_t;  // Data CRC
 
-  typedef enum logic [2:0] {
+  typedef enum logic [1:0] {
     sdopNOP,    // SD NOP
     sdopABORT,  // Abort Read or Write
     sdopRD,     // Read SD disk
-    sdopWR
-  }  // write to disk
-  sdOP_t;
+    sdopWR      // write to disk
+  } sdOP_t;
   typedef enum logic [2:0] {
     sdstateINIT,    // SD Initializing
     sdstateREADY,   // SD Ready for commands

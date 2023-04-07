@@ -72,7 +72,7 @@
 
 //! RK8E Secure Digital Interface Entity
 
-
+`include "../parameters.v" 
 
 module sd
   import sdspi_types::*;
@@ -745,7 +745,7 @@ module sd
             bytecnt <= 1;
           end else if (spiDONE == 1'b1) begin
             bytecnt <= 0;
-            //                      spiOP   <= spiFAST;
+            spiOP   <= spiFAST;
             state   <= stateIDLE;
           end
         end
@@ -965,11 +965,11 @@ module sd
             memREQ  <= 1'b0;
             bytecnt <= bytecnt + 1;
             state   <= stateREAD05;
-          end else begin 
-		  memADDR <= memADDR + 1;
-          bytecnt <= bytecnt + 1;
-          state   <= stateREAD05;
-		  end
+          end else begin
+            memADDR <= memADDR + 1;
+            bytecnt <= bytecnt + 1;
+            state   <= stateREAD05;
+          end
         end
 
         //
@@ -1245,6 +1245,7 @@ module sd
         stateWRITE12: begin
           if (spiDONE == 1'b1)
             if (spiRXD == 8'h00)
+			begin
               if (bytecnt == 65535) begin
                 spiOP   <= spiCSH;
                 bytecnt <= 0;
@@ -1255,6 +1256,7 @@ module sd
                 spiTXD  <= 8'hff;
                 bytecnt <= bytecnt + 1;
               end
+			 end 
             else begin
               bytecnt <= 0;
               state   <= stateWRITE13;
