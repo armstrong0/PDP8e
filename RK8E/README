@@ -11,15 +11,15 @@
  written in verilog.  It is meant to be fitted into an lattice semiconductor
  ICE40 FPGA using yosys and nextpnr.  Yosys does not understand VHDL.
 
- So there are a number of options:
+ So there were a number of options:
  	1.) Build and install the GHDL plugin for yosys.  (GHDL is an open source
 	compiler for VHDL)
 	2.) Hand transcribe VHDL to Verilog.  
-	3.) Hand transcribe VHDL to systemverilog.  Then convert to verilog.  Or
-	install the plugin that allows yosys to process systemverilog.
-	4.) ...
+	3.) Hand transcribe VHDL to systemverilog.  Then convert to verilog.  
+	4.) Install the plugin that allows yosys to process systemverilog.
+	5.) ...
 
-I choose option 3.  However there is a program "sv2v" that will convert 
+I choose option 3.  However there is a program called "sv2v" that will convert 
 systemverilog code to verilog code.
 
 During this adventure I found several other useful programs:
@@ -42,7 +42,12 @@ sv2v    sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v
 
 Rob's sd read asserts dma requests, it has all the parts required to interface with the PDP8e FOR THE DATA PATH 
 
-I now have initialization working, and a 512 byte single sector read.  Note that once the read is started the sdOP that started the read should be set to idle.  There is more testing required: 128 word (256 byte) reads, the write of 256 and 128 words.  Also need to be tested is the action dmaREQ and dmaGNT.  Now once dmaREQ is asserted, dmaGNT is asserted and remains that way.  The dma cycles need to interleave with normal CPU cycles.  Normal CPU cycles fetch, defer and execute are all 5 clock cycles long, the clock is about 70 MHz which makes the cycle time about 71 nanoseconds.  If we run the sd card at 20 MHz then a word will be ready every 1/20*16 =  800 nanoseconds.  We should be fine with that,  However the EAE instructions could take 3 + 24 + 1 clock cycles = 400 microseconds still ok.
- 
- It appears that dmaREQ remains asserted for the durration of the operation.  If I want to interleave with CPU cycles I am going to have to do it external to sd.sv...
+Initialization is working, as is a 512 byte single sector read.  Note that once the read is started the sdOP that started the read should be set to idle.  There is more testing required: 128 word (256 byte) reads, the write of 256 and 128 words.  
 
+Once dmaREQ is asserted, dmaGNT is asserted and remains that way for the remainder of the transaction. The dma cycles need to interleave with normal CPU cycles.  Normal CPU cycles fetch, defer and execute are all 5 clock cycles long, the clock is about 70 MHz which makes the cycle time about 71 nanoseconds.  If we run the sd card at 20 MHz then a word will be ready every 1/20*16 =  800 nanoseconds.  We should be fine with that,  However the EAE instructions could take 3 + 24 + 1 clock cycles = 400 microseconds still ok.
+ 
+DmaREQ remains asserted for the durration of a transaction.  If I want to interleave with CPU cycles I am going to have to do it external to sd.sv...
+
+The clock dividors are calculated in the file parameters.v.  When fast spi was enabled at 20 MHz, the read sector stopped working.  The fast spi has now been turned down to 4 MHz and read began working again.
+
+Wriing a sector does not work, it appears that sdsim is incomplete, never sending the status word back that allows the write to terminate.  For the moment I am going to assume that writes actually work....  (famous last words)
