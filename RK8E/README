@@ -50,4 +50,4 @@ DmaREQ remains asserted for the durration of a transaction.  If I want to interl
 
 The clock dividors are calculated in the file parameters.v.  When fast spi was enabled at 20 MHz, the read sector stopped working.  The fast spi has now been turned down to 4 MHz and read began working again.
 
-Wriing a sector does not work, it appears that sdsim is incomplete, never sending the status word back that allows the write to terminate.  For the moment I am going to assume that writes actually work....  (famous last words)
+Wriing a sector does works, however writing 1/2 a sector does not.

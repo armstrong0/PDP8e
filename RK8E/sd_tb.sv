@@ -78,9 +78,9 @@ module sd_tb;
     dmaGNT <= 1'b0;
 	dmaDIN <= 12'o5252;
 `ifndef WRITE
-    #1600000 sdOP <= 3'b10;  // read
+    #1600000 sdOP <= 3'b010;  // read
 `else
-    #1600000 sdOP <= 3'b11;  // write
+    #1600000 sdOP <= 3'b011;  // write
 `endif
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
@@ -88,16 +88,15 @@ module sd_tb;
     wait (dmaREQ == 1'b0);
     #20 dmaGNT <= 1'b0;
     sdLEN <= 1'b1;  // set up to read 1/2 of a sector
-
 `ifndef WRITE
     sdOP <= 3'b010;
 `else
-    sdOP <= 3'b11;  // write
+    sdOP <= 3'b011;  // write
 `endif
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= 3'b000;  // only read one sector
-    #15000000 $finish;
+    #3000000 $finish;
 
   end
 
