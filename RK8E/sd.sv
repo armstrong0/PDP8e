@@ -1178,7 +1178,10 @@ module sd
               state   <= stateWRITE10;
             end else if ((bytecnt == 255) && (sdLEN == 1'b1)) begin
               memREQ  <= 1'b0;
-              spiOP   <= spiCSH;
+              // the folowing line was commented out as we want CS low to
+              // write the next 128 16 bit zero words and then teminate
+              // normally DBA April 7, 2023
+              // spiOP   <= spiCSH;
               bytecnt <= bytecnt + 1;
               state   <= stateWRITE06;
             end else begin
@@ -1245,7 +1248,7 @@ module sd
         stateWRITE12: begin
           if (spiDONE == 1'b1)
             if (spiRXD == 8'h00)
-			begin
+            begin
               if (bytecnt == 65535) begin
                 spiOP   <= spiCSH;
                 bytecnt <= 0;
@@ -1256,7 +1259,7 @@ module sd
                 spiTXD  <= 8'hff;
                 bytecnt <= bytecnt + 1;
               end
-			 end 
+             end 
             else begin
               bytecnt <= 0;
               state   <= stateWRITE13;

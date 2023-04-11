@@ -96,7 +96,7 @@ module sd_tb;
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= 3'b000;  // only read one sector
-    #3000000 $finish;
+    #1500000 $finish;
 
   end
 
