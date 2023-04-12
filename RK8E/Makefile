@@ -1,4 +1,4 @@
-all: view_tx verilog format sim_read sim_write
+all: view_tx verilog format sim_read sim_write sim_basic
 
 view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 	iverilog -g2012 sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
@@ -27,6 +27,13 @@ sim_write: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
 	iverilog -g2012 -DWRITE sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
 	vvp sd.o
 	gtkwave sdsim.vcd sdsim.gtkw
+
+sim_basic: rk8e_basic_tb.v rk8e_top.v sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv ../state_machine/state_machine.v 
+	iverilog -g2012 rk8e_basic_tb.v rk8e_top.v ../state_machine/state_machine.v sd_types.svh sdspi_types.svh \ 
+	    sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
+	vvp sd.o
+	gtkwave sdsim.vcd sdsim.gtkw
+
 
 clean:
 	rm -rf  *.vcd
