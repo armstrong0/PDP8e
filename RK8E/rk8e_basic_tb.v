@@ -6,10 +6,10 @@
 
 module rk8e_basic_tb;
 
-reg [0:11] din,op,pc;
+reg [0:11] din,op,pc,instruction,ac;
 wire [0:11] opt;
 reg clk;
-reg rst;
+reg reset;
 reg halt;
 reg cont;
 reg sing_step;
@@ -18,7 +18,8 @@ reg int_req;
 reg int_ena;
 reg int_inh;
 reg write_en;
-wire [4:0] stateo;
+wire [0:11] disk_bus;
+wire [4:0] state;
 wire int_in_prog;
 reg EAE_loop,EAE_mode;
 reg UF;
@@ -27,7 +28,7 @@ reg  DB;
 
 always @(posedge clk)
 begin
-  DB <= (stateo == DB0) || (stateo == DB1) || (stateo == DB2);
+  DB <= (state == DB0) || (state == DB1) || (state == DB2);
 end
 
 
@@ -38,7 +39,7 @@ state_machine SM1(.clk (clk),
           .single_step (sing_step),
           .instruction (op),
           .trigger (trigger),
-          .state (stateo),
+          .state (state),
           .EAE_mode (EAE_mode),
           .EAE_loop (EAE_loop),
           .UF (UF),
@@ -49,7 +50,7 @@ state_machine SM1(.clk (clk),
           .int_inh (int_inh),
           .int_in_prog (int_in_prog));
 
-rk8e RK8E {  .clk (clk),
+rk8e RK8 (  .clk (clk),
     .reset (reset),
     .clear (clear),
     .instruction (instruction),
@@ -61,9 +62,9 @@ rk8e RK8E {  .clk (clk),
     .interrupt (interrupt),
     /* verilator lint_on SYMRSVDWORD */
     .data_break_write (data_break_write),
-    .data_break_rea (data_break_read),
+    .data_break_read (data_break_read),
     .skip (skip)
-}
+);
 
 `include "../parameters.v"
 
@@ -84,8 +85,8 @@ end
   
 
  initial begin
- $dumpfile("simb.vcd");
- $dumpvars(0,clk,rst,DB,RK8E,SM1);
+ $dumpfile("sdb.vcd");
+ $dumpvars(0,clk,rst,DB,RK8,SM1);
  reset <= 1;
  EAE_loop <= 0;
  EAE_mode <= 0;
