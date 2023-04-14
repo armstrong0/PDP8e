@@ -29,10 +29,9 @@ sim_write: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
 	gtkwave sdsim.vcd sdsim.gtkw
 
 sim_basic: rk8e_basic_tb.v rk8e_top.v sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv ../state_machine/state_machine.v 
-	iverilog -g2012 rk8e_basic_tb.v rk8e_top.v ../state_machine/state_machine.v sd_types.svh sdspi_types.svh \ 
-	    sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
-	vvp sd.o
-	gtkwave sdsim.vcd sdsim.gtkw
+	iverilog -g2012 rk8e_basic_tb.v rk8e_top.v ../state_machine/state_machine.v sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv  -o sdb.o
+	vvp sdb.o
+	gtkwave sdb.vcd sdsim.gtkw
 
 
 clean:

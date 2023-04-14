@@ -10,15 +10,18 @@
 
 /* dba April 03, 2023 */
 /* dba April 07, 2023 */
+/* dba April 13, 2023 rename rk8e, changed to a sv file */
 
 
-module rk8e_top (
+
+module rk8e (
     input clk,
     input reset,
     input clear,
     input [0:11] instruction,
     input [4:0] state,
     input [0:11] ac,
+	input UF,
     output reg [0:11] disk_bus,  //from the point of view of the CPU
     /* verilator lint_off SYMRSVDWORD */
     output reg interrupt,
@@ -31,7 +34,7 @@ module rk8e_top (
   wire        flag;
   reg  [0:11] cmd_reg;  // command register
   reg  [0:11] car;  // current address register
-  reg  [0:11] disk_ar;  // disk address  - need one for each disk ?
+  reg  [0:11] dar;  // disk address  - need one for each disk ?
   reg  [ 7:0] buffer_address;
   reg  [0:11] status;  // status register
 
@@ -64,10 +67,10 @@ bit 11 cylinder address error = 1
     if ((status[0] == 1'b0) && (cmd_reg[3] == 1'b1)) interrupt <= 1;
     else interrupt <= 0;
     if (state == F1) begin
-      skip <= 0;
+      skip <= 1'b0;
       case (instruction)
         12'o6741: if ((disk_flag == 1'b1) && (UF == 1'b0)) skip <= 1;  //DSKP
-        12'o6745: disk_bus <= status;  //
+        12'o6745: disk_bus <= status;  // DRST
         default:  ;
       endcase
     end
@@ -105,7 +108,7 @@ bit 11 cylinder address error = 1
           car <= ac;
         end
         12'o6745: ;  // DRST clear ac and load the status register
-        12'o6746:   // DLDC load command register
+        12'o6746:    // DLDC load command register
                 begin
           cmd_reg <= ac;
           status  <= 12'o0000;
@@ -133,10 +136,10 @@ bit 11 cylinder address error = 1
         0:  // read data
             // send command to sdcard driver
         ;
-        1: ;  // read all
+        1:; // read all
         2:  // set write protect
         write_lock[cmd_reg[9:10]] <= 1'b1;
-        3: ;  // seek only - a nop with an sdcard
+        3:; // seek only - a nop with an sdcard
         4:  // write data  - check for write lock
         if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
           status[7] <= 1'b1;

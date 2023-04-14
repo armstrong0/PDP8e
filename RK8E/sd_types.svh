@@ -44,13 +44,14 @@
 -- Comments are formatted for doxygen
 --*/
 
+/* translatted from VHDL to SystemVerilog by D.B. Armstrong Apr ,12, 2023 */
+
 // RK8E Secure Digital Interface Type Definition Package
 /* verilator lint_off LITENDIAN */
 package sd_types;
 
   // Types
   typedef logic [0:7] sdBYTE_t;  // Byte
-
   typedef sdBYTE_t [0:5] sdCMD_t;  // SD Commands
   typedef logic sdLEN_t;  // Read/Write Length
   typedef logic [0:14] addr_t;  // 12 bit memory address type
