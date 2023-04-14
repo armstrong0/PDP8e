@@ -30,35 +30,35 @@ reg  DB;
 
 always @(posedge clk)
 begin
-  DB <= (stateo == DB0) | (stateo == DB1) | (stateo == DB2);
+  DB <= (stateo == DB0) || (stateo == DB1) || (stateo == DB2);
 end
 
 
 state_machine SM1(.clk (clk),
           .reset (rst),
-	      .halt (halt),
-	      .cont (cont),
-	      .single_step (sing_step),
+          .halt (halt),
+          .cont (cont),
+          .single_step (sing_step),
           .instruction (op),
-	      .trigger (trigger),
-	      .state (stateo),
-		  .EAE_mode (EAE_mode),
-		  .EAE_loop (EAE_loop),
-		  .UF (UF),
-		  .db_read (db_read),
-		  .db_write (db_write),
-	      .int_ena (int_ena),
-	      .int_req (int_req),
-		  .int_inh (int_inh),
-	      .int_in_prog (int_in_prog));
+          .trigger (trigger),
+          .state (stateo),
+          .EAE_mode (EAE_mode),
+          .EAE_loop (EAE_loop),
+          .UF (UF),
+          .db_read (db_read),
+          .db_write (db_write),
+          .int_ena (int_ena),
+          .int_req (int_req),
+          .int_inh (int_inh),
+          .int_in_prog (int_in_prog));
 
 
 
 `include "../parameters.v"
 
 
-integer               data_file    ; // file handler
-integer               scan_file    ; // file handler
+integer               data_file    ; // file handle
+integer               scan_file    ; // file handle
 integer address;
 integer dummy;
 integer temp;

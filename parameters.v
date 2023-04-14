@@ -1,4 +1,5 @@
 `define EAE
+`define RK8E
 
 // state machine encoding
 parameter     F0 = 5'b00000,
@@ -24,7 +25,8 @@ parameter     F0 = 5'b00000,
               H1 = 5'b10010,
               H2 = 5'b10011,
               H3 = 5'b10100,
-`ifdef EAE
+// these could have been ifdef out but it would make no difference to the
+// resources needed
               EAE0 = 5'b10101,
               EAE1 = 5'b10110,
               EAE2 = 5'b10111,
@@ -33,21 +35,24 @@ parameter     F0 = 5'b00000,
               EAE5 = 5'b11010,
 			  F2A  = 5'b11011,
 			  F2B  = 5'b11100,
-`endif
 			  DB0 = 5'b11101,  // data break states
 			  DB1 = 5'b11110,
 			  DB2 = 5'b11111;
+
 
 // instruction encodings
 parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
           DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
           OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
-          JMPI = 4'b1011, JM = 2'b10, 
-`ifdef EAE		  DAD = 12'o7443,
+          JMPI = 4'b1011, JM = 2'b10 
+`ifdef EAE
+          ,DAD = 12'o7443,
           DLD = 12'o7763, CAMDAD = 12'o7663, DST=12'o7445,
-`endif		  
 		  SHL = 12'o7413, ASR = 12'o7415, LSR = 12'o7417,
 		  MUL = 12'o7405, DIV = 12'o7407, NMI = 12'o7411;
+`else
+;
+`endif		  
 
 `ifndef SIM
     //parameter real clock_frequency    =  62250000;
@@ -62,12 +67,13 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
 // the counts here have to be for 1/2 clock
 // error on the low side, especially for 4 MHz
 // frequencies will not be exact.
+`ifdef RK8E
    parameter real slow_spi =  400000;
-   parameter real fast_spi =  4000000; // go to high and the state machines
+   parameter real fast_spi =  4000000; // go too high and the state machines
    // don't work
    parameter slow_div = $floor(clock_frequency/(slow_spi*2));
    parameter fast_div = $floor(clock_frequency/(fast_spi*2));
-
+`endif
 
 
 `ifdef SIM
