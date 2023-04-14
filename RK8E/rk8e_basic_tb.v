@@ -1,13 +1,10 @@
-`define SIM
 `timescale 1 ns / 10 ps
 // assumes about a 100 MHz clock
-`define clock_period = 10;
 `define pulse(arg) #1 ``arg <=1 ; #(3*clock_period) ``arg <= 0
 
 
 
-
-module state_machine_tb;
+module rk8e_basic_tb;
 
 reg [0:11] din,op,pc;
 wire [0:11] opt;
@@ -52,7 +49,21 @@ state_machine SM1(.clk (clk),
           .int_inh (int_inh),
           .int_in_prog (int_in_prog));
 
-
+rk8e RK8E {  .clk (clk),
+    .reset (reset),
+    .clear (clear),
+    .instruction (instruction),
+    .state (state),
+    .ac (ac),
+	.UF (UF),
+    .disk_bus (disk_bus),  //from the point of view of the CPU
+    /* verilator lint_off SYMRSVDWORD */
+    .interrupt (interrupt),
+    /* verilator lint_on SYMRSVDWORD */
+    .data_break_write (data_break_write),
+    .data_break_rea (data_break_read),
+    .skip (skip)
+}
 
 `include "../parameters.v"
 
@@ -63,7 +74,6 @@ integer address;
 integer dummy;
 integer temp;
 integer loaded;
-`define NULL 0    
 
 
 always begin  
@@ -74,13 +84,12 @@ end
   
 
  initial begin
- $dumpfile("DB.vcd");
- $dumpvars(0,clk,rst,DB,SM1);
- rst <= 1;
+ $dumpfile("simb.vcd");
+ $dumpvars(0,clk,rst,DB,RK8E,SM1);
+ reset <= 1;
  EAE_loop <= 0;
  EAE_mode <= 0;
  UF <= 0;
- loaded <= 0;
  sing_step <=  0;
  cont <= 0;
  pc <= 12'd0;
@@ -91,10 +100,9 @@ trigger <= 0;
 db_read <= 0;
 db_write <= 0;
 
-#50 rst <= 0;
+#50 reset <= 0;
 #1 halt = 0;
 sing_step <= 0;
-// the following tests single machine cycles for 1,2 and 3 MC instructions
 op <= 12'o7200;  // path for 6 and 7 IOT and OP opcodesw
 #30 `pulse(cont);
 db_write <=1;

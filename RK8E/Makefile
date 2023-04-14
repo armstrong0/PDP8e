@@ -5,9 +5,12 @@ view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 	vvp a.out
 	gtkwave sdspi_test.vcd spi.gtkw
 
-verilog: sd_types.svh sdspi_types.svh sdspi.sv sd.sv
+verilog: rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv
 	~/.local/bin/sv2v    sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v	
+	~/.local/bin/sv2v rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v 
 	~/bin/verible-verilog-format sd.v --inplace
+	~/bin/verible-verilog-format rk8e.v --inplace
+
 
 
 format:
