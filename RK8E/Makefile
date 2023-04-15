@@ -1,11 +1,17 @@
-all: view_tx verilog format sim_read sim_write sim_basic
+all: view_tx verilog format sim_read sim_write sim_basic rk8e.v
 
 view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 	iverilog -g2012 sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 	vvp a.out
 	gtkwave sdspi_test.vcd spi.gtkw
 
-verilog: rk8e.v sd.v rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv
+rk8e.v:  rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv
+	~/.local/bin/sv2v rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v 
+	~/bin/verible-verilog-format rk8e.v --inplace
+
+
+
+verilog: rk8e.sv sd.sv rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv
 	~/.local/bin/sv2v sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v	
 	~/.local/bin/sv2v rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v 
 	~/bin/verible-verilog-format sd.v --inplace
@@ -31,15 +37,16 @@ sim_write: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
 	vvp sd.o
 	gtkwave sdsim.vcd sdsim.gtkw
 
-sim_basic: rk8e_basic_tb.v rk8e.v sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv ../state_machine/state_machine.v 
-	iverilog -g2012 rk8e_basic_tb.v rk8e.sv ../state_machine/state_machine.v sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv  -o sdb.o
+sim_basic: rk8e_basic_tb.v rk8e.v sdsim.sv ../state_machine/state_machine.v 
+	iverilog -g2012 rk8e_basic_tb.v rk8e.v ../state_machine/state_machine.v -o sdb.o
 	vvp sdb.o
 	gtkwave sdb.vcd sdsim.gtkw
 
 
 clean:
 	rm -rf  *.vcd
-	rm -rf *.v
+	rm -rf sd.v
+	rm -rf rk8e.v
 	rm -rf a.out
 	rm -rf *.o
 	
