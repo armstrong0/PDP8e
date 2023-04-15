@@ -86,7 +86,7 @@ end
 
  initial begin
  $dumpfile("sdb.vcd");
- $dumpvars(0,clk,rst,DB,RK8,SM1);
+ $dumpvars(0,clk,reset,DB,RK8,SM1);
  reset <= 1;
  EAE_loop <= 0;
  EAE_mode <= 0;

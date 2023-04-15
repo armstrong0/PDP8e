@@ -69,6 +69,7 @@
 // Comments are formatted for doxygen
 //
 */
+/* translated to systemverilog dba April 14, 2023 */
 
 //! RK8E Secure Digital Interface Entity
 

@@ -14,7 +14,9 @@
 
 
 
-module rk8e (
+module rk8e
+  import sd_types::*;
+(
     input clk,
     input reset,
     input clear,
@@ -29,20 +31,49 @@ module rk8e (
     output reg data_break_write,
     output reg data_break_read,
     output reg skip
+	 // Interface to SD Hardware
+    input                      sdMISO,      //! SD Data In
+    output reg                 sdMOSI,      //! SD Data Out
+    output reg                 sdSCLK,      //! SD Clock
+    output reg                 sdCS,        //! SD Chip Select
+
 );
 
   wire        flag;
   reg  [0:11] cmd_reg;  // command register
-  reg  [0:11] car;  // current address register
-  reg  [0:11] dar;  // disk address  - need one for each disk ?
+  reg  [0:11] car;      // current address register
+  reg  [0:11] dar;      // disk address  - need one for each disk ?
   reg  [ 7:0] buffer_address;
-  reg  [0:11] status;  // status register
+  reg  [0:11] status;   // status register
 
 
   // need a write protect for each drive
   reg  [ 0:3] write_lock;
   reg         disk_flag;
   reg         sint_ena;
+
+sd SD (.clk  (clk),
+    .reset   (reset),       //! Clock/Reset
+    .clear   (clear),       //! IOCLR
+    // PDP8 Interface
+    input               [0:11] (dmaDIN),      //! DMA Data Into Disk
+    output reg          [0:11] (dmaDOUT),     //! DMA Data Out of Disk
+    output reg          [0:14] (dmaADDR),     //! DMA Address
+    output reg                 (dmaRD),       //! DMA Read
+    output reg                 (dmaWR),       //! DMA Write
+    output reg                 (dmaREQ),      //! DMA Request
+    input                      (dmaGNT),      //! DMA Grant
+    // Interface to SD Hardware
+    .sdMISO     (sdMISO),      //! SD Data In
+    .sdMOSI     (sdMOSI),      //! SD Data Out
+    .sdSCLK     (sdSCLK),      //! SD Clock
+    .sdCS       (sdCS),        //! SD Chip Select
+    // RK8E Interface
+    input  logic        [ 0:2] (sdOP),        //! SD OP
+    input               [0:14] (sdMEMaddr),   //! Memory Address
+    input  sdDISKaddr_t        (sdDISKaddr),  //! Disk Address
+    input                      (sdLEN),       //! Sector Length
+    output sdSTAT_t            (sdSTAT));       //! Status
 
 
   `include "../parameters.v"
