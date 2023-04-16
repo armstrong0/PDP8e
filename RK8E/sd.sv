@@ -97,7 +97,7 @@ module sd
     output reg                 sdSCLK,      //! SD Clock
     output reg                 sdCS,        //! SD Chip Select
     // RK8E Interface
-    input  logic        [ 0:2] sdOP,        //! SD OP
+    input  sdOP_t              sdOP,        //! SD OP
     input               [0:14] sdMEMaddr,   //! Memory Address
     input  sdDISKaddr_t        sdDISKaddr,  //! Disk Address
     input                      sdLEN,       //! Sector Length

@@ -11,6 +11,8 @@
 /* dba April 03, 2023 */
 /* dba April 07, 2023 */
 /* dba April 13, 2023 rename rk8e, changed to a sv file */
+`include "sd_types.svh"
+`include "sdspi_types.svh"
 
 
 
@@ -30,20 +32,21 @@ module rk8e
     /* verilator lint_on SYMRSVDWORD */
     output reg data_break_write,
     output reg data_break_read,
-    output reg skip
+    output reg skip,
+	input [0:11] dmaDIN,
+	output reg [0:11] dmaDOUT,
 	 // Interface to SD Hardware
-    input                      sdMISO,      //! SD Data In
-    output reg                 sdMOSI,      //! SD Data Out
-    output reg                 sdSCLK,      //! SD Clock
-    output reg                 sdCS,        //! SD Chip Select
+    input          sdMISO,      //! SD Data In
+    output reg     sdMOSI,      //! SD Data Out
+    output reg     sdSCLK,      //! SD Clock
+    output reg     sdCS         //! SD Chip Select
 
 );
 
   wire        flag;
   reg  [0:11] cmd_reg;  // command register
   reg  [0:11] car;      // current address register
-  reg  [0:11] dar;      // disk address  - need one for each disk ?
-  reg  [ 7:0] buffer_address;
+  reg  [0:11] dar;      // disk address  
   reg  [0:11] status;   // status register
 
 
@@ -51,34 +54,41 @@ module rk8e
   reg  [ 0:3] write_lock;
   reg         disk_flag;
   reg         sint_ena;
+  reg dmaGNT;
+  sdOP_t sdOP; 
+  sdDISKaddr_t  sdDISKaddr; //! Disk Address
+  wire   [0:14] dmaADDR;    //! DMA Address
+  wire          dmaRD,dmaWR,dmaREQ;
+  logic [0:14]  sdMEMaddr;  //! Memory Address
+  logic         sdLEN;      //! Sector Length
+  sdSTAT_t      sdSTAT;     //! Status
 
 sd SD (.clk  (clk),
     .reset   (reset),       //! Clock/Reset
     .clear   (clear),       //! IOCLR
     // PDP8 Interface
-    input               [0:11] (dmaDIN),      //! DMA Data Into Disk
-    output reg          [0:11] (dmaDOUT),     //! DMA Data Out of Disk
-    output reg          [0:14] (dmaADDR),     //! DMA Address
-    output reg                 (dmaRD),       //! DMA Read
-    output reg                 (dmaWR),       //! DMA Write
-    output reg                 (dmaREQ),      //! DMA Request
-    input                      (dmaGNT),      //! DMA Grant
+    .dmaDIN  (dmaDIN),      //! DMA Data Into Disk
+    .dmaDOUT (dmaDOUT),     //! DMA Data Out of Disk
+    .dmaADDR (dmaADDR),     //! DMA Address
+    .dmaRD   (dmaRD),       //! DMA Read
+    .dmaWR   (dmaWR),       //! DMA Write
+    .dmaREQ  (dmaREQ),      //! DMA Request
+    .dmaGNT  (dmaGNT),      //! DMA Grant
     // Interface to SD Hardware
     .sdMISO     (sdMISO),      //! SD Data In
     .sdMOSI     (sdMOSI),      //! SD Data Out
     .sdSCLK     (sdSCLK),      //! SD Clock
     .sdCS       (sdCS),        //! SD Chip Select
     // RK8E Interface
-    input  logic        [ 0:2] (sdOP),        //! SD OP
-    input               [0:14] (sdMEMaddr),   //! Memory Address
-    input  sdDISKaddr_t        (sdDISKaddr),  //! Disk Address
-    input                      (sdLEN),       //! Sector Length
-    output sdSTAT_t            (sdSTAT));       //! Status
+    .sdOP        (sdOP),        //! SD OP
+    .sdMEMaddr   (sdMEMaddr),   //! Memory Address
+    .sdDISKaddr  (sdDISKaddr),  //! Disk Address
+    .sdLEN       (sdLEN),       //! Sector Length
+    .sdSTAT      (sdSTAT));     //! Status
 
 
   `include "../parameters.v"
-  /*
-Status Register
+  /* Status Register bit assignment
 bit 0 0= done 1 = busy
 bit 1 0 stationary 1 head in motion  - always 0
 bit 2 unused                         - always 0
@@ -92,7 +102,21 @@ bit 9 data request late = 1          - always 0
 bit 10 drive status error = 1
 bit 11 cylinder address error = 1
 */
+/*  command reg bit assignment
+bit 0:2 command
+bit 3 interrupt on done
+bit 4 set done on seek done
+bit 5 block length 0 256 1 128 words
+bit 6:8 extended address
+bit 9: 10 drive select
+bit 11 msb of cylinder
+*/
+
+  assign sdDISKaddr = {17'd0,cmd_reg[9:11],dar };
+  assign sdMEMaddr = { cmd_reg[6:8],car};
+ 
   assign disk_flag = (status != 12'o0000);
+ 
   always @(posedge clk) begin
 
     if ((status[0] == 1'b0) && (cmd_reg[3] == 1'b1)) interrupt <= 1;
@@ -105,6 +129,9 @@ bit 11 cylinder address error = 1
         default:  ;
       endcase
     end
+	if (dmaREQ == 1'b1) 
+	    dmaGNT <= 1'b1; 
+	else dmaGNT <= 1'b0;
   end
 
 
