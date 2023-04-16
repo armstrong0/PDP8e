@@ -5,7 +5,7 @@
 
 
 module rk8e_basic_tb;
-
+//import sdspi_types::*; 
 reg [0:11] din,op,pc,instruction,ac;
 wire [0:11] opt;
 reg clk;
@@ -30,6 +30,15 @@ always @(posedge clk)
 begin
   DB <= (state == DB0) || (state == DB1) || (state == DB2);
 end
+
+sdsim SDSIM(.clk (clk),
+    .reset (reset),
+    .clear (clear),
+    .sdCS (sdCS),
+    .sdMOSI (sdMOSI),
+    .sdSCLK (sdSCLK),
+    .sdMISO (sdMISO)
+);
 
 
 state_machine SM1(.clk (clk),
