@@ -290,10 +290,10 @@ module sdsim (
             // bitcnt  <= 15;
             // bytecnt <= 0;
             // spiTX   <= 56'h00_ff_ff_ff_ff_ff_ff;
-            state   <= stateRESET;
+            state <= stateRESET;
           end else begin
             bitcnt <= bitcnt - 1;
-            spiTX  <= {spiTX[1:55] , 1'b1};
+            spiTX  <= {spiTX[1:55], 1'b1};
           end
         end
 

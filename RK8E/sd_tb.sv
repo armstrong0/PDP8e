@@ -12,7 +12,7 @@ module sd_tb;
   wire                dmaRD;  //! DMA Read
   wire                dmaWR;  //! DMA Write
   wire                dmaREQ;  //! DMA Request
-  logic        [ 0:2] sdOP;
+  sdOP_t              sdOP;
   logic        [0:14] sdMEMaddr;  //! Memory Address
   sdDISKaddr_t        sdDISKaddr;  //! Disk Address
   logic               sdLEN;  //! Sector Length
@@ -22,9 +22,9 @@ module sd_tb;
   logic        [42:0] sdSTAT;
 
 
-`include "../parameters.v"
+  `include "../parameters.v"
 
-  sd SD (
+sd SD (
       .clk       (clk),
       .reset     (reset),       //! Clock/Reset
       .clear     (clear),       //! IOCLR
@@ -61,8 +61,8 @@ module sd_tb;
   );
 
   always begin
-  #(clock_period/2) clk <= 1;
-  #(clock_period/2) clk <= 0;
+    #(clock_period / 2) clk <= 1;
+    #(clock_period / 2) clk <= 0;
   end
 
   initial begin
@@ -71,31 +71,32 @@ module sd_tb;
 
     clk <= 1'b0;
     #50 reset <= 1'b1;
+    sdOP <= sdopNOP;
     #50 reset <= 1'b0;
     sdDISKaddr <= 32'd0;
     sdMEMaddr <= 15'd0;
     sdLEN <= 1'b0;
     dmaGNT <= 1'b0;
-	dmaDIN <= 12'o5252;
+    dmaDIN <= 12'o5252;
 `ifndef WRITE
-    #1600000 sdOP <= 3'b010;  // read
+    #1600000 sdOP <= sdopRD;  // read
 `else
-    #1600000 sdOP <= 3'b011;  // write
+    #1600000 sdOP <= sdopWR;  // write
 `endif
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
-    sdOP <= 3'b000;  // only read one sector
+    sdOP <= sdopNOP;  // only read one sector
     wait (dmaREQ == 1'b0);
     #20 dmaGNT <= 1'b0;
     sdLEN <= 1'b1;  // set up to read 1/2 of a sector
 `ifndef WRITE
-    sdOP <= 3'b010;
+    sdOP <= sdopRD;
 `else
-    sdOP <= 3'b011;  // write
+    sdOP <= sdopWR;  // write
 `endif
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
-    sdOP <= 3'b000;  // only read one sector
+    sdOP <= sdopNOP;  // only read one sector
     #1500000 $finish;
 
   end
