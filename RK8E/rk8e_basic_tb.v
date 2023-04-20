@@ -26,6 +26,8 @@ reg UF;
 reg db_read,db_write;
 reg  DB;
 
+wire sdCS,sdMOSI,sdMISO,sdSCLK;
+
 always @(posedge clk)
 begin
   DB <= (state == DB0) || (state == DB1) || (state == DB2);
@@ -46,7 +48,7 @@ state_machine SM1(.clk (clk),
           .halt (halt),
           .cont (cont),
           .single_step (sing_step),
-          .instruction (op),
+          .instruction (instruction),
           .trigger (trigger),
           .state (state),
           .EAE_mode (EAE_mode),
@@ -72,7 +74,13 @@ rk8e RK8 (  .clk (clk),
     /* verilator lint_on SYMRSVDWORD */
     .data_break_write (data_break_write),
     .data_break_read (data_break_read),
-    .skip (skip)
+    .skip (skip),
+	     // Interface to SD Hardware
+    .sdMISO    (sdMISO),      //! SD Data In
+    .sdMOSI    (sdMOSI),      //! SD Data Out
+    .sdSCLK    (sdSCLK),      //! SD Clock
+    .sdCS      (sdCS)        //! SD Chip Select
+
 );
 
 `include "../parameters.v"
@@ -111,41 +119,26 @@ db_read <= 0;
 db_write <= 0;
 
 #50 reset <= 0;
-#1 halt = 0;
-sing_step <= 0;
-op <= 12'o7200;  // path for 6 and 7 IOT and OP opcodesw
-#30 `pulse(cont);
-db_write <=1;
-
-#50 op <= 12'o7402;
-// now do it again with db_read
-db_read <= 1;
-db_write <= 0;
-
-op <= 12'o7200;
-#50 op <= 12'o7402;
-wait(SM1.state == H0);
-op <= 12'o5000; // jump direct
 #60 `pulse(cont);
-wait(SM1.state == DB1);
-wait(DB == 0);
-#50 op <= 12'o7402;
-op <= 12'o5400; // jump indirect
-wait(SM1.state == DB1);
-#50 op <= 12'o7402;
-op <= 12'o1000; // TAD E
-wait(SM1.state == DB1);
-#50 op <= 12'o7402;
-op <= 12'o1400; // TAD I
-wait(SM1.state == DB1);
-#50 op <= 12'o7402;
-
-
-#60 `pulse(cont);
-#60 `pulse(cont);
-#60 `pulse(cont);
-#60 `pulse(cont);
-#1000 $finish;
+wait(state == F0);
+instruction <= 12'o6007;  // CAF
+wait (state <= F0);
+ac <= 12'b010_000_000_000;  // write protect drive 0
+instruction <= 12'o6746;
+#100 wait (state <= F0);
+ac <= 12'b010_000_000_010;  // write protect drive 1
+instruction <= 12'o6746;
+#100 wait (state <= F0);
+ac <= 12'b010_000_000_100;  // write protect drive 2
+instruction <= 12'o6746;
+#100 wait (state <= F0);
+ac <= 12'b010_000_000_110;  // write protect drive 3
+instruction <= 12'o6746;
+#100 wait (state == F0);
+ac <= 12'b100_100_000_000;
+instruction <= 12'o6746;
+wait (RK8.status[0] == 1'b0)
+#1000000 $finish;
 
 
 

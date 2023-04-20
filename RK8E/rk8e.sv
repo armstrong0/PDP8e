@@ -63,6 +63,8 @@ module rk8e
   logic         sdLEN;      //! Sector Length
   sdSTAT_t      sdSTAT;     //! Status
 
+  sdSTATE_t     sdstate;
+
 sd SD (.clk  (clk),
     .reset   (reset),       //! Clock/Reset
     .clear   (clear),       //! IOCLR
@@ -118,7 +120,7 @@ bit 11 msb of cylinder
   assign disk_flag = (status != 12'o0000);
  
   always @(posedge clk) begin
-
+    sdstate <= sdSTAT.state;
     if ((status[0] == 1'b0) && (cmd_reg[3] == 1'b1)) interrupt <= 1;
     else interrupt <= 0;
     if (state == F1) begin
@@ -137,25 +139,29 @@ bit 11 msb of cylinder
 
 
   always @(posedge clk) begin
-    if ((reset == 1) || (clear)) begin
+    if ((reset == 1'b1) || (clear == 1'b1)) begin
       status        <= 12'o0000;
       car           <= 12'o0000;
       dar           <= 12'o0000;
       cmd_reg       <= 12'o0000;
+	  sdOP          <= sdopNOP;
       write_lock[0] <= 1'b0;
       write_lock[1] <= 1'b0;
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
     end
+	else begin
 
     if ((state == F1) && (UF == 1'b0))
       case (instruction)
         12'o6740: ;
         12'o6741: ;  // DSKP skip if done or error
-        12'o6742:    // DCLC real RK8e has four options here we will just 
-		             //   clear the status register
+        12'o6742:    // DCLC real RK8e has four options here we only do two
+            if (ac[11] == 1'b0) status <= 12'o0000;
+			else
         begin
           status <= 12'o0000;
+		  sdOP <= sdopABORT;  // stop whatever is in process
         end
         12'o6743:    // DLAG load address and go
                 begin
@@ -178,6 +184,7 @@ bit 11 msb of cylinder
           car           <= 12'o0000;
           dar           <= 12'o0000;
           cmd_reg       <= 12'o0000;
+		  sdOP          <= sdopNOP;
           // with a real rk05 the operator would press a switch on the disk to
           // clear the write protect, we have no switch, so a reset, clear or
           // CAF resets the write protect flag
@@ -209,7 +216,8 @@ bit 11 msb of cylinder
       endcase
     else if ((state == F2) && (UF == 1'b0) && (instruction == 12'o6743))
       if ({cmd_reg[11], dar[0:6]} > 8'd203) status[11] <= 1'b1;
-
+    if (sdstate == sdstateREADY) status[0] <= 1'b0; else status[0] <= 1'b1;
+	end
   end
 endmodule
 
