@@ -122,7 +122,9 @@ db_write <= 0;
 #60 `pulse(cont);
 wait(state == F0);
 instruction <= 12'o6007;  // CAF
-wait (state <= F0);
+// the #100 before the wait is so we progress from state F0 to FW
+// so they all don't collapse to 1 wait
+#100 wait (state <= F0);
 ac <= 12'b010_000_000_000;  // write protect drive 0
 instruction <= 12'o6746;
 #100 wait (state <= F0);
@@ -137,7 +139,13 @@ instruction <= 12'o6746;
 #100 wait (state == F0);
 ac <= 12'b100_100_000_000;
 instruction <= 12'o6746;
-wait (RK8.status[0] == 1'b0)
+#100 wait (state == F0);
+// now try to write to the disk
+ac <= 12'b100_000_000_000;
+instruction <= 12'o6746;
+
+
+#100 wait (RK8.status[0] == 1'b0)
 #1000000 $finish;
 
 

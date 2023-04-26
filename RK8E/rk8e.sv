@@ -106,6 +106,13 @@ bit 11 cylinder address error = 1
 */
 /*  command reg bit assignment
 bit 0:2 command
+	000 read 
+	001 read all
+	010 set write protect
+	011 seek
+	100 write
+	101 write all
+    11x nop
 bit 3 interrupt on done
 bit 4 set done on seek done
 bit 5 block length 0 256 1 128 words
@@ -116,12 +123,11 @@ bit 11 msb of cylinder
 
   assign sdDISKaddr = {17'd0,cmd_reg[9:11],dar };
   assign sdMEMaddr = { cmd_reg[6:8],car};
- 
   assign disk_flag = (status != 12'o0000);
  
   always @(posedge clk) begin
     sdstate <= sdSTAT.state;
-    if ((status[0] == 1'b0) && (cmd_reg[3] == 1'b1)) interrupt <= 1;
+    if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
     else interrupt <= 0;
     if (state == F1) begin
       skip <= 1'b0;
