@@ -71,8 +71,11 @@ parameter AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
    parameter real slow_spi =  400000;
    parameter real fast_spi =  4000000; // go too high and the state machines
    // don't work
-   parameter slow_div = $floor(clock_frequency/(slow_spi*2));
-   parameter fast_div = $floor(clock_frequency/(fast_spi*2));
+   parameter slow_dev = $rtoi(clock_frequency/(slow_spi*2));
+   parameter nu_divcnt_bits = $rtoi($clog2(slow_dev));
+   parameter SlowDiv = slow_dev[nu_divcnt_bits-1:0];
+   parameter fast_dev = $rtoi(clock_frequency/(fast_spi*2));
+   parameter FastDiv = fast_dev[nu_divcnt_bits-1:0];
 `endif
 
 

@@ -1,11 +1,12 @@
 `timescale 1 ns / 10 ps
-// assumes about a 100 MHz clock
+// imports clock period from parameters.v 
 `define pulse(arg) #1 ``arg <=1 ; #(3*clock_period) ``arg <= 0
 
 
 
 module rk8e_basic_tb;
-//import sdspi_types::*; 
+
+
 reg [0:11] din,op,pc,instruction,ac;
 wire [0:11] opt;
 reg clk;
@@ -24,20 +25,19 @@ wire int_in_prog;
 reg EAE_loop,EAE_mode;
 reg UF;
 reg db_read,db_write;
-reg  DB;
+wire break_in_prog;
 
+reg MOSI_enable;
+wire sdMOSIe;
 wire sdCS,sdMOSI,sdMISO,sdSCLK;
 
-always @(posedge clk)
-begin
-  DB <= (state == DB0) || (state == DB1) || (state == DB2);
-end
+assign sdMOSIe = MOSI_enable & sdMOSI;
 
 sdsim SDSIM(.clk (clk),
     .reset (reset),
     .clear (clear),
     .sdCS (sdCS),
-    .sdMOSI (sdMOSI),
+    .sdMOSI (sdMOSIe),
     .sdSCLK (sdSCLK),
     .sdMISO (sdMISO)
 );
@@ -54,8 +54,9 @@ state_machine SM1(.clk (clk),
           .EAE_mode (EAE_mode),
           .EAE_loop (EAE_loop),
           .UF (UF),
-          .db_read (db_read),
-          .db_write (db_write),
+          .db_read (data_break_read),
+          .db_write (data_break_write),
+		  .break_in_prog (break_in_prog),
           .int_ena (int_ena),
           .int_req (int_req),
           .int_inh (int_inh),
@@ -74,6 +75,7 @@ rk8e RK8 (  .clk (clk),
     /* verilator lint_on SYMRSVDWORD */
     .data_break_write (data_break_write),
     .data_break_read (data_break_read),
+	.break_in_prog (break_in_prog),
     .skip (skip),
 	     // Interface to SD Hardware
     .sdMISO    (sdMISO),      //! SD Data In
@@ -103,8 +105,9 @@ end
 
  initial begin
  $dumpfile("sdb.vcd");
- $dumpvars(0,clk,reset,DB,RK8,SM1);
+ $dumpvars(0,clk,reset,RK8,SM1);
  reset <= 1;
+ MOSI_enable <= 1'b1; // set to zero to test initialization failure
  EAE_loop <= 0;
  EAE_mode <= 0;
  UF <= 0;
@@ -143,10 +146,42 @@ instruction <= 12'o6746;
 // now try to write to the disk
 ac <= 12'b100_000_000_000;
 instruction <= 12'o6746;
+#100 wait (RK8.status[7] == 1'b1)
+// write lock error
+instruction <= 12'o6007; // clear the error
+// now try cylinder errors
+// max is o312
+// the car contains the least 7 bits of the cylinder, the msb
+// is bit 11 of the cmd register
+// set bit 11 of the cmd to 0
+instruction <= 12'o6746;
+#100 wait (state == F0);
+// set the car to o1120
+ac <= 12'o1120;
+instruction <= 12'o6743;
+#100 wait (state == F0);
+// should be no error
+// set bit 11 of cmd to 1 still no error
+ac <= 12'o0001;
+instruction <= 12'o6746;
+#100 wait (state == F0);
+// set car to 01130  - should error bit 11 of status should be a 1
+// set cmd bit 11 to zero should result in no error 
 
+#100 wait (RK8.status[0] == 1'b0);
+#100 wait (RK8.sdstate == 3'b001); // ready
 
-#100 wait (RK8.status[0] == 1'b0)
-#1000000 $finish;
+ac <= 12'o0000;
+#100 wait (state == F0);
+ac <= 12'o0000;
+#100 wait (state == F0);
+// try a read
+
+instruction <= 12'o6743;
+#100 wait (state == F0);
+instruction <= 12'o7000;
+
+#2000000 $finish;
 
 
 

@@ -17,6 +17,7 @@ module state_machine(input clk,
     input db_write, db_read,   // data break write is to disk read is from disk
     output reg EAE_skip,
     output reg int_in_prog,
+    output reg break_in_prog,
     output reg [4:0] state);
 
     wire db;
@@ -25,6 +26,7 @@ module state_machine(input clk,
 `include "../parameters.v"
 
     assign db = (db_write| db_read);
+	assign break_in_prog = ((state == DB0) || (state == DB1) || (state == DB2));
 
     always @(posedge clk)
     begin
