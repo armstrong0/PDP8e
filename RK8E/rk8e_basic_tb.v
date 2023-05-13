@@ -7,8 +7,8 @@
 module rk8e_basic_tb;
 
 
-reg [0:11] din,op,pc,instruction,ac;
-wire [0:11] opt;
+reg [0:11] din,op,pc,instruction,ac,mq,sr;
+wire [0:11] opt,mdout;
 reg clk;
 reg reset;
 reg halt;
@@ -19,10 +19,13 @@ reg int_req;
 reg int_ena;
 reg int_inh;
 reg write_en;
-wire [0:11] disk_bus;
+wire [0:11] disk_bus,ma;
 wire [4:0] state;
 wire int_in_prog;
 reg EAE_loop,EAE_mode;
+reg [0:2] DF,IF;
+wire [0:2] EMA;
+wire [0:11] addr;
 reg UF;
 reg db_read,db_write;
 wire break_in_prog;
@@ -61,6 +64,28 @@ state_machine SM1(.clk (clk),
           .int_req (int_req),
           .int_inh (int_inh),
           .int_in_prog (int_in_prog));
+
+
+ma MA (.clk (clk),
+    .reset (reset),
+    .pc (pc),
+    .ac (ac),
+    .mq (mq),
+    .sr (sr),
+    .sw (sw),
+    .state (state),
+     .addr_loadd (addr_loadd),
+	 .depd (depd),
+	 .examd (examd),
+    .int_in_prog (int_in_prog),
+    .IF (IF),
+	.DF (DF),
+    .addr (addr),
+    .EMA (EMA),
+    .isz_skip (isz_skip),
+//    .instruction (instruction),
+    .ma (ma),
+    .mdout (mdout));
 
 rk8e RK8 (  .clk (clk),
     .reset (reset),
@@ -105,7 +130,7 @@ end
 
  initial begin
  $dumpfile("sdb.vcd");
- $dumpvars(0,clk,reset,RK8,SM1);
+ $dumpvars(0,clk,reset,MA,RK8,SM1);
  reset <= 1;
  MOSI_enable <= 1'b1; // set to zero to test initialization failure
  EAE_loop <= 0;
