@@ -30,8 +30,8 @@ module rk8e
     /* verilator lint_off SYMRSVDWORD */
     output reg        interrupt,
     /* verilator lint_on SYMRSVDWORD */
-    output reg        data_break_write,
-    output reg        data_break_read,
+    output reg        data_break,
+    output reg        to_disk,
 	input             break_in_prog,
     output reg        skip,
 	output reg [0:14] dmaAddr,
@@ -136,12 +136,11 @@ bit 11 msb of cylinder
 	begin
 		dmaAddr <= dmaADDR; // register and pass through
 		dmaDout <= dmaDOUT;
-		data_break_write <= 1'b1;
+		data_break <= 1'b1;
 	end	
 	if (break_in_prog == 1'b1) // data break is happening so reset request
 	begin
-		data_break_write <= 1'b0;
-		data_break_read <= 1'b0;
+		data_break <= 1'b0;
 	end
 
     if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
@@ -166,6 +165,8 @@ bit 11 msb of cylinder
       car           <= 12'o0000;
       dar           <= 12'o0000;
       cmd_reg       <= 12'o0000;
+	  data_break    <= 1'b0;
+	  to_disk       <= 1'b0;
       sdOP          <= sdopNOP;
       write_lock[0] <= 1'b0;
       write_lock[1] <= 1'b0;
@@ -188,12 +189,18 @@ bit 11 msb of cylinder
             dar <= ac;
 			if (cmd_reg[0:2] == 3'b000)  // read
 			begin
+			to_disk <= 1'b0;
 			sdOP <= sdopRD;
 			end
 			else if (cmd_reg[0:2] == 3'b101) // write
-			// XXXXX need to check here for write protect
+			// need to check here for write protect
+			if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
+            status[7] <= 1'b1;
+			end
+            else
 			begin
 			sdOP <= sdopWR;
+			to_disk <= 1'b1;
 			end
           end
           12'o6744:    // DLCA load current addressa
@@ -214,6 +221,7 @@ bit 11 msb of cylinder
             dar           <= 12'o0000;
             cmd_reg       <= 12'o0000;
             sdOP          <= sdopNOP;
+			to_disk <= 1'b0;
             // with a real rk05 the operator would press a switch on the disk to
             // clear the write protect, we have no switch, so a reset, clear or
             // CAF resets the write protect flag
@@ -227,20 +235,8 @@ bit 11 msb of cylinder
       else if ((state == F2) && (UF == 1'b0) && (instruction == 12'o6746))  // decode command
 
         case (cmd_reg[0:2])
-          0:  // read data
-              // send command to sdcard driver
-          ;
-          1: ;  // read all
           2:  // set write protect
           write_lock[cmd_reg[9:10]] <= 1'b1;
-          3: ;  // seek only - a nop with an sdcard
-          4:  // write data  - check for write lock
-          if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
-            status[7] <= 1'b1;
-          end else begin  // do write
-            // send command to sdcard driver
-          end
-          5: ;  // write all
           default: ;
         endcase
       else if ((state == F2) && (UF == 1'b0) && (instruction == 12'o6743))

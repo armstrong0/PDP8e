@@ -14,18 +14,19 @@ module state_machine(input clk,
     input EAE_mode,
     input EAE_loop,
     input gtf,
-    input db_write, db_read,   // data break write is to disk read is from disk
+`ifdef RK8E	
+    input data_break,   // data break write is to disk read is from disk
+	input to_disk,
+`endif	
     output reg EAE_skip,
     output reg int_in_prog,
     output reg break_in_prog,
     output reg [4:0] state);
 
-    wire db;
     reg [4:0] next_state;
 
 `include "../parameters.v"
 
-    assign db = (db_write| db_read);
 	assign break_in_prog = ((state == DB0) || (state == DB1) || (state == DB2));
 
     always @(posedge clk)
@@ -176,7 +177,7 @@ module state_machine(input clk,
                             && (UF == 1'b0))
                          // halt instruction, not in user mode
                         state <= H0;
-                    else if (db == 1'b1)
+                    else if (data_break == 1'b1)
                     begin
                         next_state <= F0; // rememeber where we were going
                         state <= DB0;
@@ -192,7 +193,7 @@ module state_machine(input clk,
                 end
                 else if (instruction[3] == 1) // defer cycle/
                 begin
-                    if (db == 1'b1)
+                    if (data_break == 1'b1)
                     begin
                         next_state <= D0;
                         state <= DB0;
@@ -200,7 +201,7 @@ module state_machine(input clk,
                     else
                         state <= D0;
                 end
-                else if (db == 1'b1) // next cycle is execute
+                else if (data_break == 1'b1) // next cycle is execute
                 begin
                     next_state <= E0;
                     state <= DB0;
@@ -218,7 +219,7 @@ module state_machine(input clk,
                 //  if it is a jmp I then F0 is the desired state
                 D3: if (instruction[0:3] == 4'b1011)
                 begin
-                    if (db == 1'b1)
+                    if (data_break == 1'b1)
                     begin
                         next_state <= F0;
                         state <= DB0;
@@ -233,7 +234,7 @@ module state_machine(input clk,
                 end
                 else  // if EAE instruction - execute
                 if ((instruction & 12'b111100000001 ) == 12'b111100000001)
-                begin if (db == 1'b1)
+                begin if (data_break == 1'b1)
                     begin
                         next_state <= EAE2;
                         state <= DB0;
@@ -241,7 +242,7 @@ module state_machine(input clk,
                     else
                         state <=   EAE2;
                 end
-                else if (db == 1'b1) // not EAE
+                else if (data_break == 1'b1) // not EAE
                 begin
                     next_state <= E0;
                     state <= DB0;
@@ -262,13 +263,13 @@ module state_machine(input clk,
                 begin
                     int_in_prog <= 1;
                     state <= E0;
-                    if (db == 1'b1)
+                    if (data_break == 1'b1)
                     begin
                         next_state <= E0;
                         state <= DB0;
                     end
                 end
-                else if (db == 1'b1)
+                else if (data_break == 1'b1)
                 begin
                     next_state <= F0;
                     state <= DB0;
@@ -297,7 +298,7 @@ module state_machine(input clk,
                 EAE5: state <= E3;   // back to normal processing
                 // data break
                 DB0: state <= DB1;
-                DB1: if (db_write == 1'b1) state <= DB2;
+                DB1: if (to_disk == 1'b1) state <= DB2;
                 else state <= next_state;  // data break read from disk
                 DB2: state <= next_state;
 

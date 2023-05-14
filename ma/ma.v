@@ -10,6 +10,8 @@ module ma(input clk,
     input addr_loadd,depd,examd,
     input int_in_prog,
     input [0:2] IF,DF,
+	input [0:14] dmaAddr,
+	input [0:11] dmaDin,
     output reg [0:11] addr,
     output reg [0:2] EMA,
     output reg isz_skip,
@@ -39,10 +41,11 @@ module ma(input clk,
         addr = ma;
         EMA = IF;
         case (state)
-            F0,FW: //,F1,F2,F3:
-            addr = pc;
-            default:
-            addr = ma;
+            F0,FW:       addr = pc;
+`ifdef RK8E
+            DB0,DB1,DB2: addr = dmaAddr[3:14];
+`endif
+            default:     addr = ma;
         endcase
         case (state)
             E0,EW,E1,E2,E3:
@@ -56,7 +59,11 @@ module ma(input clk,
             else
                 EMA = IF;
             D3,EAE2,EAE3,EAE4,EAE5:
-            EMA = DF;
+                EMA = DF;
+`ifdef RK8E
+            DB0,DB1,DB2:
+			EMA = dmaAddr[0:2];
+`endif
             default: EMA = IF;
         endcase
     end
@@ -216,6 +223,11 @@ module ma(input clk,
                     mdout <= 12'o0000;
                 else
                     mdout <= mdtmp;
+`ifdef RK8E
+                DB0,DB1,DB2:;
+	        		
+`endif
+					
                 default:;
             endcase
         end
