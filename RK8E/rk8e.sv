@@ -26,22 +26,22 @@ module rk8e
     input      [ 4:0] state,
     input      [0:11] ac,
     input             UF,
-    output reg [0:11] disk_bus,          //from the point of view of the CPU
+    output reg [0:11] disk_bus,       //from the point of view of the CPU
     /* verilator lint_off SYMRSVDWORD */
     output reg        interrupt,
     /* verilator lint_on SYMRSVDWORD */
     output reg        data_break,
     output reg        to_disk,
-	input             break_in_prog,
+    input             break_in_prog,
     output reg        skip,
-	output reg [0:14] dmaAddr,
+    output reg [0:14] dmaAddr,
     input      [0:11] dmaDIN,
-    output reg [0:11] dmaDout,
+    output reg [0:11] dmaDOUT,
     // Interface to SD Hardware
-    input             sdMISO,            //! SD Data In
-    output reg        sdMOSI,            //! SD Data Out
-    output reg        sdSCLK,            //! SD Clock
-    output reg        sdCS               //! SD Chip Select
+    input             sdMISO,         //! SD Data In
+    output reg        sdMOSI,         //! SD Data Out
+    output reg        sdSCLK,         //! SD Clock
+    output reg        sdCS            //! SD Chip Select
 
 );
 
@@ -60,11 +60,11 @@ module rk8e
   sdOP_t              sdOP;
   sdDISKaddr_t        sdDISKaddr;  //! Disk Address
   wire         [0:14] dmaADDR;  //! DMA Address
-  wire         [0:11] dmaDOUT;
-  wire                dmaRD, dmaWR, dmaREQ;
-  logic        [0:14] sdMEMaddr;  //! Memory Address
-  logic               sdLEN;   //! Sector Length
-  sdSTAT_t            sdSTAT;  //! Status
+//  wire         [0:11] dmaDOUT;
+  wire dmaRD, dmaWR, dmaREQ;
+  logic     [0:14] sdMEMaddr;  //! Memory Address
+  logic            sdLEN;  //! Sector Length
+  sdSTAT_t         sdSTAT;  //! Status
 
   sdSTATE_t        sdstate;
 
@@ -111,12 +111,12 @@ bit 11 cylinder address error = 1
 */
   /*  command reg bit assignment
 bit 0:2 command
-	000 read 
-	001 read all
-	010 set write protect
-	011 seek
-	100 write
-	101 write all
+    000 read 
+    001 read all
+    010 set write protect
+    011 seek
+    100 write
+    101 write all
     11x nop
 bit 3 interrupt on done
 bit 4 set done on seek done
@@ -132,16 +132,14 @@ bit 11 msb of cylinder
 
   always @(posedge clk) begin
     sdstate <= sdSTAT.state;
-	if (dmaWR == 1'b1)
-	begin
-		dmaAddr <= dmaADDR; // register and pass through
-		dmaDout <= dmaDOUT;
-		data_break <= 1'b1;
-	end	
-	if (break_in_prog == 1'b1) // data break is happening so reset request
-	begin
-		data_break <= 1'b0;
-	end
+    if (dmaWR == 1'b1) begin
+      dmaAddr <= dmaADDR;  // register and pass through
+      data_break <= 1'b1;
+    end
+    if (break_in_prog == 1'b1) // data break is happening so reset request
+    begin
+      data_break <= 1'b0;
+    end
 
     if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
     else interrupt <= 0;
@@ -165,8 +163,9 @@ bit 11 msb of cylinder
       car           <= 12'o0000;
       dar           <= 12'o0000;
       cmd_reg       <= 12'o0000;
-	  data_break    <= 1'b0;
-	  to_disk       <= 1'b0;
+	  dmaAddr       <= 15'o00000;
+      data_break    <= 1'b0;
+      to_disk       <= 1'b0;
       sdOP          <= sdopNOP;
       write_lock[0] <= 1'b0;
       write_lock[1] <= 1'b0;
@@ -187,21 +186,18 @@ bit 11 msb of cylinder
           12'o6743:    // DLAG load address and go
                 begin
             dar <= ac;
-			if (cmd_reg[0:2] == 3'b000)  // read
-			begin
-			to_disk <= 1'b0;
-			sdOP <= sdopRD;
-			end
-			else if (cmd_reg[0:2] == 3'b101) // write
-			// need to check here for write protect
-			if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
-            status[7] <= 1'b1;
-			end
-            else
-			begin
-			sdOP <= sdopWR;
-			to_disk <= 1'b1;
-			end
+            if (cmd_reg[0:2] == 3'b000)  // read
+            begin
+              to_disk <= 1'b0;
+              sdOP <= sdopRD;
+            end else if (cmd_reg[0:2] == 3'b101)  // write
+              // need to check here for write protect
+              if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
+                status[7] <= 1'b1;
+              end else begin
+             //   sdOP <= sdopWR;
+                to_disk <= 1'b1;
+              end
           end
           12'o6744:    // DLCA load current addressa
                 begin
@@ -221,7 +217,7 @@ bit 11 msb of cylinder
             dar           <= 12'o0000;
             cmd_reg       <= 12'o0000;
             sdOP          <= sdopNOP;
-			to_disk <= 1'b0;
+            to_disk       <= 1'b0;
             // with a real rk05 the operator would press a switch on the disk to
             // clear the write protect, we have no switch, so a reset, clear or
             // CAF resets the write protect flag
@@ -260,8 +256,7 @@ bit 11 msb of cylinder
           status[10] <= 1'b1;
         end
       endcase
-	  if (sdstate != sdstateREADY)
-	    sdOP <= sdopNOP;  
+      if (sdstate != sdstateREADY) sdOP <= sdopNOP;
 
     end
   end

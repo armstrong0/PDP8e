@@ -83,9 +83,9 @@ module sdsim (
   //   Disk Registers
 
 
-  typedef logic [7:0] byte_t;
+  typedef logic [0:7] byte_t;
 
-  typedef byte_t [512:0] image_t;  // reduced the image file size, so gtkwave 
+  typedef byte_t [0:1047] image_t;  // reduced the image file size, so gtkwave 
                                    //doesn't segfault
   image_t image;
   logic [1:0] clkstat;

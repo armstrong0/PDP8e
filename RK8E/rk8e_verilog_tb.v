@@ -2,7 +2,7 @@
 // imports clock period from parameters.v 
 `define pulse(arg) #1 ``arg <=1 ; #(3*clock_period) ``arg <= 0
 
-
+`include "sdsim.v"
 
 module rk8e_basic_tb;
 

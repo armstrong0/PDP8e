@@ -27,7 +27,6 @@ module state_machine(input clk,
 
 `include "../parameters.v"
 
-	assign break_in_prog = ((state == DB0) || (state == DB1) || (state == DB2));
 
     always @(posedge clk)
     begin
@@ -35,6 +34,7 @@ module state_machine(input clk,
         begin
             state <= H0;
             int_in_prog <= 0;
+			break_in_prog <= 1'b0;
         end
         else case (state)
 
@@ -181,6 +181,7 @@ module state_machine(input clk,
                     begin
                         next_state <= F0; // rememeber where we were going
                         state <= DB0;
+						break_in_prog <= 1'b1;
                     end
                     else if  ((int_req & int_ena & ~int_inh )
                             && (instruction != 12'o6002))
@@ -197,6 +198,7 @@ module state_machine(input clk,
                     begin
                         next_state <= D0;
                         state <= DB0;
+						break_in_prog <= 1'b1;
                     end
                     else
                         state <= D0;
@@ -205,6 +207,7 @@ module state_machine(input clk,
                 begin
                     next_state <= E0;
                     state <= DB0;
+					break_in_prog <= 1'b1;
                 end
                 else
                     state <= E0;
@@ -222,7 +225,8 @@ module state_machine(input clk,
                     if (data_break == 1'b1)
                     begin
                         next_state <= F0;
-                        state <= DB0;
+                        state <= DB0;	
+						break_in_prog <= 1'b1;
                     end
                     else if (int_req & int_ena & ~int_inh)
                     begin
@@ -238,6 +242,7 @@ module state_machine(input clk,
                     begin
                         next_state <= EAE2;
                         state <= DB0;
+						break_in_prog <= 1'b1;
                     end
                     else
                         state <=   EAE2;
@@ -246,6 +251,7 @@ module state_machine(input clk,
                 begin
                     next_state <= E0;
                     state <= DB0;
+					break_in_prog <= 1'b1;
                 end
                 else
                     state <= E0;
@@ -267,12 +273,14 @@ module state_machine(input clk,
                     begin
                         next_state <= E0;
                         state <= DB0;
+						break_in_prog <= 1'b1;
                     end
                 end
                 else if (data_break == 1'b1)
                 begin
                     next_state <= F0;
                     state <= DB0;
+						break_in_prog <= 1'b1;
                 end
                 else
                     state <= F0;
@@ -299,8 +307,14 @@ module state_machine(input clk,
                 // data break
                 DB0: state <= DB1;
                 DB1: if (to_disk == 1'b1) state <= DB2;
-                else state <= next_state;  // data break read from disk
-                DB2: state <= next_state;
+                else begin
+					state <= next_state;  // data break read from disk
+					break_in_prog <= 1'b0;
+					end
+                DB2: begin
+				     state <= next_state;
+					 break_in_prog <= 1'b0;
+				end	 
 
                 default: state <= H0;
             endcase

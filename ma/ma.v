@@ -11,7 +11,8 @@ module ma(input clk,
     input int_in_prog,
     input [0:2] IF,DF,
 	input [0:14] dmaAddr,
-	input [0:11] dmaDin,
+	input [0:11] disk2mem,
+	input to_disk,
     output reg [0:11] addr,
     output reg [0:2] EMA,
     output reg isz_skip,
@@ -224,7 +225,12 @@ module ma(input clk,
                 else
                     mdout <= mdtmp;
 `ifdef RK8E
-                DB0,DB1,DB2:;
+                DB0: if (to_disk == 1'b0)
+				begin
+					mdin <= disk2mem;
+					write_en <= 1'b1;
+				end	
+				DB1,DB2:;
 	        		
 `endif
 					
