@@ -1,4 +1,4 @@
-all: view_tx verilog format sim_read sim_write sim_basic rk8e.v
+all: view_tx verilog format sim_read sim_write sim_basic rk8e.v full_read
 
 view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 	iverilog -g2012 sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
@@ -48,6 +48,15 @@ sim_verilog: rk8e_basic_tb.v rk8e.v sdsim.v ../state_machine/state_machine.v ../
 	iverilog -DSIM rk8e_basic_tb.v rk8e.v ../state_machine/state_machine.v ../ma/ma.v -o sdb.o
 	vvp sdb.o
 	gtkwave sdb.vcd sdsim.gtkw
+
+full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v
+	iverilog -DSIM ../FPGA_image/PDP8e.v PDP8e_tb.v -o sdcard.o 
+	vvp sdcard.o -fst
+	gtkwave SDCard.vcd PDP8e.gtkw &
+
+
+
+
 
 clean:
 	rm -rf  *.vcd
