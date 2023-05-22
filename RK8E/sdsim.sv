@@ -102,7 +102,7 @@ module sdsim (
     c = $fread(image, imageFILE, 0, 256);
     $write("Done Reading Disk Image.");
     $display();
-    $write(string'("Read "));
+    $write("Read ");
     $write(c);
     $display(" bytes");
 

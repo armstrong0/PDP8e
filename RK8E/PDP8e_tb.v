@@ -1,8 +1,8 @@
 `define SIM
 `timescale 1 ns / 10 ps
-`define PULSE(arg) #1 ``arg <=1 ; #140 ``arg <= 0
+`define PULSE(arg) #1 ``arg <=1 ; #(3*clock_period) ``arg <= 0
 
-`define PULSE1(arg) #1 ``arg <=1 ; #1400 ``arg <= 0
+`define PULSE1(arg) #1 ``arg <=1 ; #(10*clock+period) ``arg <= 0
 
 
 module PDP8e_tb;
@@ -31,6 +31,7 @@ module PDP8e_tb;
     wire [0:11] dsn;
     wire tx;
     wire tclk;
+    wire sdMOSI,sdSCLK,sdMISO,sdCS;
 
 `include "../parameters.v"
 
@@ -69,9 +70,24 @@ module PDP8e_tb;
         .contn (~cont),
         .extd_addrn (~extd_addr),
         .addr_loadn (~addr_load),
-        .clearn (~clear)) ;
+        .clearn (~clear),
+		.sdCS (sdCS),
+	    .sdMOSI (sdMOSI),
+        .sdSCLK (sdSCLK),
+        .sdMISO (sdMISO)
+	    );
+		
+sdsim SDSIM(.clk (clk),
+    .reset (reset),
+    .clear (clear),
+    .sdCS (sdCS),
+    .sdMOSI (sdMOSI),
+    .sdSCLK (sdSCLK),
+    .sdMISO (sdMISO)
+);
 
 
+    
 
     initial begin
         #1 $display("clock frequency %f",(clock_frequency)) ;
@@ -82,10 +98,10 @@ module PDP8e_tb;
 
 
         #1 sr <= 12'o0200;  // normal start address
-                $dumpfile("SDCard.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac);
-                $readmemh("Diagnostics/D0JB.hex",UUT.MA.ram.mem,0,4095);
-                sr <= 12'o0004;
+        $dumpfile("SDCard.vcd");
+        $dumpvars(0,address,UUT);
+        //$readmemh("Diagnostics/D0JB.hex",UUT.MA.ram.mem,0,4095);
+        sr <= 12'o0004;
 
         #1 reset <= 1;
         #(clock_period*10) reset <=0;
@@ -104,11 +120,10 @@ module PDP8e_tb;
         #100 halt <= 0;
         #400 ;
 
-                `PULSE(addr_load);
-                sr <= 12'o0004;
-                #(clock_period * 50) `PULSE(cont);
-                `PULSE(cont);
-                #150000000  $finish;
+        `PULSE(addr_load);
+        sr <= 12'o0004;
+        #(clock_period * 50) `PULSE(cont);
+        #10000000  $finish;
 
 
     end
