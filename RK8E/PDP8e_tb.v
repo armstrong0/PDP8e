@@ -82,7 +82,7 @@ module PDP8e_tb;
 
 
         #1 sr <= 12'o0200;  // normal start address
-                $dumpfile("iSDCard.vcd");
+                $dumpfile("SDCard.vcd");
                 $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac);
                 $readmemh("Diagnostics/D0JB.hex",UUT.MA.ram.mem,0,4095);
                 sr <= 12'o0004;

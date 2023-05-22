@@ -14,10 +14,10 @@ module state_machine(input clk,
     input EAE_mode,
     input EAE_loop,
     input gtf,
-`ifdef RK8E	
+`ifdef RK8E    
     input data_break,   // data break write is to disk read is from disk
-	input to_disk,
-`endif	
+    input to_disk,
+`endif    
     output reg EAE_skip,
     output reg int_in_prog,
     output reg break_in_prog,
@@ -34,7 +34,7 @@ module state_machine(input clk,
         begin
             state <= H0;
             int_in_prog <= 0;
-			break_in_prog <= 1'b0;
+            break_in_prog <= 1'b0;
         end
         else case (state)
 
@@ -51,7 +51,7 @@ module state_machine(input clk,
                 end
                 FW: state <= F1;
                 F1: casez (instruction & 12'b111100101111)
-					//12'b1111??0?0001,
+                    //12'b1111??0?0001,
                     12'b111100000011,
                     12'b111100000101,
                     12'b111100000111,
@@ -66,7 +66,7 @@ module state_machine(input clk,
                     12'b111100101011,
                     12'b111100101101,
                     12'b111100101111: // very crude way to specify
-					// any extended EAE operation
+                    // any extended EAE operation
                     begin
                         if (EAE_mode == 1'b0) state <= F2A;
                         else state <= F2B;
@@ -181,7 +181,7 @@ module state_machine(input clk,
                     begin
                         next_state <= F0; // rememeber where we were going
                         state <= DB0;
-						break_in_prog <= 1'b1;
+                        break_in_prog <= 1'b1;
                     end
                     else if  ((int_req & int_ena & ~int_inh )
                             && (instruction != 12'o6002))
@@ -198,7 +198,7 @@ module state_machine(input clk,
                     begin
                         next_state <= D0;
                         state <= DB0;
-						break_in_prog <= 1'b1;
+                        break_in_prog <= 1'b1;
                     end
                     else
                         state <= D0;
@@ -207,7 +207,7 @@ module state_machine(input clk,
                 begin
                     next_state <= E0;
                     state <= DB0;
-					break_in_prog <= 1'b1;
+                    break_in_prog <= 1'b1;
                 end
                 else
                     state <= E0;
@@ -225,8 +225,8 @@ module state_machine(input clk,
                     if (data_break == 1'b1)
                     begin
                         next_state <= F0;
-                        state <= DB0;	
-						break_in_prog <= 1'b1;
+                        state <= DB0;    
+                        break_in_prog <= 1'b1;
                     end
                     else if (int_req & int_ena & ~int_inh)
                     begin
@@ -242,7 +242,7 @@ module state_machine(input clk,
                     begin
                         next_state <= EAE2;
                         state <= DB0;
-						break_in_prog <= 1'b1;
+                        break_in_prog <= 1'b1;
                     end
                     else
                         state <=   EAE2;
@@ -251,7 +251,7 @@ module state_machine(input clk,
                 begin
                     next_state <= E0;
                     state <= DB0;
-					break_in_prog <= 1'b1;
+                    break_in_prog <= 1'b1;
                 end
                 else
                     state <= E0;
@@ -273,14 +273,14 @@ module state_machine(input clk,
                     begin
                         next_state <= E0;
                         state <= DB0;
-						break_in_prog <= 1'b1;
+                        break_in_prog <= 1'b1;
                     end
                 end
                 else if (data_break == 1'b1)
                 begin
                     next_state <= F0;
                     state <= DB0;
-						break_in_prog <= 1'b1;
+                    break_in_prog <= 1'b1;
                 end
                 else
                     state <= F0;
@@ -297,9 +297,9 @@ module state_machine(input clk,
                 EAE1: if (EAE_loop == 1) state <= EAE1;
                 else state <= F3;
                 EAE2: state <= EAE3;
-				// need to vector off to EAE0 if MUL or DIV
-				// if we reached this it is a mode B EAE instruction
-				// only MUL and DIV have bit 6 set 0 here.
+                // need to vector off to EAE0 if MUL or DIV
+                // if we reached this it is a mode B EAE instruction
+                // only MUL and DIV have bit 6 set 0 here.
                 EAE3: if(instruction[6] == 1'b0) state <= EAE0;
                 else  state <= EAE4;
                 EAE4: state <= EAE5;
@@ -308,13 +308,13 @@ module state_machine(input clk,
                 DB0: state <= DB1;
                 DB1: if (to_disk == 1'b1) state <= DB2;
                 else begin
-					state <= next_state;  // data break read from disk
-					break_in_prog <= 1'b0;
-					end
+                    state <= next_state;  // data break read from disk
+                    break_in_prog <= 1'b0;
+                    end
                 DB2: begin
-				     state <= next_state;
-					 break_in_prog <= 1'b0;
-				end	 
+                     state <= next_state;
+                     break_in_prog <= 1'b0;
+                end     
 
                 default: state <= H0;
             endcase

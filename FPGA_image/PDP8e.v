@@ -12,6 +12,9 @@
 `include "../pc/pc.v"
 `include "../ma/ma.v"
 `include "../mem_ext/mem_ext.v"
+`ifdef RK8E
+`include "../RK8E/rk8e.v"
+`endif
 
 `ifndef TSIM
 `include "../state_machine/state_machine.v"
@@ -41,7 +44,11 @@ module PDP8e (input clk,
     input [0:5] dsel,
     input dep, input sw,
     input single_step, input halt, input examn, input contn,
-    input extd_addrn, input addr_loadn, input clearn );
+    input extd_addrn, input addr_loadn, input clearn,
+    input  sdMOSI,
+    output sdMISO,
+    output sdSCLK,sdCS
+    );
     /* I/O */
     wire [0:2] EMA;
     assign EMAn = ~EMA;
@@ -71,7 +78,8 @@ module PDP8e (input clk,
     wire [0:11] ma;
     wire [0:11] ac,ac_input,me_bus;
     wire [0:11] mq;
-    wire [0:11] instruction,mdout;
+    wire [0:11] instruction,mdout,disk2mem;
+	wire [0:14] dmaAddr;
     wire link;
     wire isz_skip,sskip;
     wire int_ena,int_inh,irq;
@@ -85,10 +93,12 @@ module PDP8e (input clk,
     reg [0:11] rsr;
     wire EAE_mode,EAE_loop,EAE_skip;
     wire sw_active;
-    wire db_read,db_write;
-    assign db_read = 1'b0; // force to be logic zero until we get a driver!
-    assign db_write = 1'b0;
-
+`ifdef RK8E    
+    wire data_break,to_disk;
+    wire disk_interrupt,disk_skip;
+    wire break_in_prog;
+    wire [0:11] disk_bus;
+`endif
 
 
     reg [3:0] pll_locked_buf;   // reset circuit by Cliff Wolf
@@ -116,7 +126,32 @@ module PDP8e (input clk,
 
 
 `include "../parameters.v"
-    assign irq = s_interrupt | UI;
+    assign irq = s_interrupt | UI | disk_interrupt;
+
+`ifdef RK8E    
+rk8e RK8E (
+    .clk (clk) ,
+    .reset (reset),
+    .clear (clear),
+    .instruction (instruction) ,
+    .state (state),
+    .ac (ac),
+    .UF (UF),
+	.dmaAddr (dmaAddr),
+    .disk_bus (disk_bus ),
+    .interrupt (disk_interrupt),
+    .data_break (data_break),
+    .to_disk (to_disk ),
+    .break_in_prog (break_in_prog ),
+    .skip (disk_skip) ,
+    .dmaDIN (),
+    .dmaDOUT (disk2mem),
+    .sdMISO (sdMISO),
+    .sdMOSI (sdMOSI),
+    .sdSCLK (sdSCLK),
+    .sdCS (sdCS)
+);
+`endif
 
     ma MA(.clk (clk100),
         .reset (reset),
@@ -136,7 +171,10 @@ module PDP8e (input clk,
         .addr_loadd (addr_loadd),
         .depd (depd),
         .examd (examd),
+		.to_disk (to_disk),
+		.disk2mem (disk2mem),
         .mdout (mdout),
+		.dmaAddr (dmaAddr),
         .isz_skip (isz_skip));
 
     pc PC(.clk (clk100),
@@ -166,8 +204,9 @@ module PDP8e (input clk,
         .int_inh (int_inh),
         .int_ena (int_ena),
         .int_in_prog (int_in_prog),
-        .db_write (db_write),
-        .db_read (db_read),
+		.break_in_prog (break_in_prog),
+        .data_break (data_break),
+        .to_disk (to_disk),
         .UF (UF),
         .halt (halt),
         .single_step (single_step),
@@ -254,10 +293,12 @@ module PDP8e (input clk,
         .serial_data_bus (serial_data_bus),
         .in_bus (ac_input),
         .bus_display (display_bus),
+        .disk_bus (disk_bus),
         .EAE_skip (EAE_skip),
         .EAE_mode (EAE_mode),
         .sskip (sskip),
         .mskip (mskip),
+        .disk_skip (disk_skip),
         .skip (eskip));
 
     mem_ext ME(.clk (clk100),

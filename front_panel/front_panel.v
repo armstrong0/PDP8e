@@ -40,8 +40,8 @@ module front_panel (input clk,
         if (reset)
         begin
             trig_state <= Latch;
-            switchd <= 7'b00000000;
-            switchl <= 6'b0000000;
+            switchd <= 7'b0000000;
+            switchl <= 6'b000000;
             trig_cnt <= 0;
             sw_active <= 1'b0;
         end
