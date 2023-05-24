@@ -35,6 +35,7 @@ module state_machine(input clk,
             state <= H0;
             int_in_prog <= 0;
             break_in_prog <= 1'b0;
+			EAE_skip <= 1'b0;
         end
         else case (state)
 
@@ -306,11 +307,7 @@ module state_machine(input clk,
                 EAE5: state <= E3;   // back to normal processing
                 // data break
                 DB0: state <= DB1;
-                DB1: if (to_disk == 1'b1) state <= DB2;
-                else begin
-                    state <= next_state;  // data break read from disk
-                    break_in_prog <= 1'b0;
-                    end
+                DB1: state <= DB2;
                 DB2: begin
                      state <= next_state;
                      break_in_prog <= 1'b0;

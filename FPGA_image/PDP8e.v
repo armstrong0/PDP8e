@@ -45,9 +45,9 @@ module PDP8e (input clk,
     input dep, input sw,
     input single_step, input halt, input examn, input contn,
     input extd_addrn, input addr_loadn, input clearn,
-    input  sdMOSI,
-    output sdMISO,
-    output sdSCLK,sdCS
+    output  sdMOSI,
+    input   sdMISO,
+    output  sdSCLK,sdCS
     );
     /* I/O */
     wire [0:2] EMA;

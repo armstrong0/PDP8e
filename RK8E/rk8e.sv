@@ -242,13 +242,13 @@ bit 11 msb of cylinder
         sdstateINIT,  // SD Initializing
         sdstateREAD,  // SD Reading
         sdstateWRITE: begin
-          status[0] <= 1'b1;  // SD Writing
-          status[5] <= 1'b1;
+          status[0] <= 1'b0;  // SD Writing
+       //   status[5] <= 1'b1;
         end
         sdstateREADY,  // SD Ready for commands
         sdstateDONE: begin
-          status[0] <= 1'b0;  // SD Done
-          status[5] <= 1'b0;
+          status[0] <= 1'b1;  // SD Done
+       //   status[5] <= 1'b0;
         end
         sdstateINFAIL,  // SD Initialization Failed
         sdstateRWFAIL: begin

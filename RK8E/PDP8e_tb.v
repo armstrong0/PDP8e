@@ -1,8 +1,7 @@
 `define SIM
 `timescale 1 ns / 10 ps
-`define PULSE(arg) #1 ``arg <=1 ; #(3*clock_period) ``arg <= 0
+`define PULSE(arg) #1 ``arg <=1 ; #(20*clock_period) ``arg <= 0
 
-`define PULSE1(arg) #1 ``arg <=1 ; #(10*clock+period) ``arg <= 0
 
 
 module PDP8e_tb;
@@ -117,13 +116,28 @@ sdsim SDSIM(.clk (clk),
         #1 pll_locked <= 0;
         #1 rx <= 1; // marking state
         #100 pll_locked <= 1;
-        #100 halt <= 0;
-        #400 ;
-
+		#5000;
+        sr <= 12'o0026;
         `PULSE(addr_load);
-        sr <= 12'o0004;
-        #(clock_period * 50) `PULSE(cont);
-        #10000000  $finish;
+		#1000 ;
+		sr <= 12'o6741;
+		`PULSE(dep);
+		#1000 ;
+		sr <= 12'o5026;
+		`PULSE(dep);
+		#1000 ;
+		sr <= 12'o6743;
+		`PULSE(dep);
+		#1000 ;
+		sr <= 12'o5030;
+		`PULSE(dep);
+		#1000 ;
+        sr <= 12'o0026;
+        `PULSE(addr_load);
+		#1000 ;
+        `PULSE(cont);
+
+        #30000000  $finish;
 
 
     end
