@@ -85,8 +85,8 @@ module sdsim (
 
   typedef logic [0:7] byte_t;
 
-  typedef byte_t [0:1047] image_t;  // reduced the image file size, so gtkwave 
-                                   //doesn't segfault
+  typedef byte_t [0:3325951] image_t;  // reduced the image file size, so gtkwave 
+                                    //doesn't segfault
   image_t image;
   logic [1:0] clkstat;
   integer c;

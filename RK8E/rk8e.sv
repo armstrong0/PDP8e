@@ -60,7 +60,7 @@ module rk8e
   sdOP_t              sdOP;
   sdDISKaddr_t        sdDISKaddr;  //! Disk Address
   wire         [0:14] dmaADDR;  //! DMA Address
-//  wire         [0:11] dmaDOUT;
+  //  wire         [0:11] dmaDOUT;
   wire dmaRD, dmaWR, dmaREQ;
   logic     [0:14] sdMEMaddr;  //! Memory Address
   logic            sdLEN;  //! Sector Length
@@ -136,21 +136,13 @@ bit 11 msb of cylinder
       dmaAddr <= dmaADDR;  // register and pass through
       data_break <= 1'b1;
     end
-    if (break_in_prog == 1'b1) // data break is happening so reset request
+    if (state == DB2) // data break is happening so reset request
     begin
       data_break <= 1'b0;
     end
 
     if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
     else interrupt <= 0;
-    if (state == F1) begin
-      skip <= 1'b0;
-      case (instruction)
-        12'o6741: if ((disk_flag == 1'b1) && (UF == 1'b0)) skip <= 1;  //DSKP
-        12'o6745: disk_bus <= status;  // DRST
-        default:  ;
-      endcase
-    end
     if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
     else dmaGNT <= 1'b0;
   end
@@ -163,7 +155,7 @@ bit 11 msb of cylinder
       car           <= 12'o0000;
       dar           <= 12'o0000;
       cmd_reg       <= 12'o0000;
-	  dmaAddr       <= 15'o00000;
+      dmaAddr       <= 15'o00000;
       data_break    <= 1'b0;
       to_disk       <= 1'b0;
       sdOP          <= sdopNOP;
@@ -171,84 +163,80 @@ bit 11 msb of cylinder
       write_lock[1] <= 1'b0;
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
-    end else begin
-
-      if ((state == F1) && (UF == 1'b0))
-        case (instruction)
-          12'o6740: ;
-          12'o6741: ;  // DSKP skip if done or error
-          12'o6742:  // DCLC real RK8e has four options here we only do two
-          if (ac[11] == 1'b0) status <= 12'o0000;
-          else begin
-            status <= 12'o0000;
-            sdOP   <= sdopABORT;  // stop whatever is in process
-          end
-          12'o6743:    // DLAG load address and go
-                begin
-            dar <= ac;
-            if (cmd_reg[0:2] == 3'b000)  // read
+    end else if ((state == F1) && (UF == 1'b0)) begin
+      skip <= 1'b0;
+      case (instruction)
+        12'o6740: ;
+        12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
+        12'o6742:  // DCLC real RK8e has four options here we only do two
+        if (ac[11] == 1'b0) status <= 12'o0000;
+        else begin
+          status <= 12'o0000;
+          sdOP   <= sdopABORT;  // stop whatever is in process
+        end
+        12'o6743:    // DLAG load address and go
+          begin
+          dar <= ac;
+          if (cmd_reg[0:2] == 3'b000)  // read
             begin
-              to_disk <= 1'b0;
-              sdOP <= sdopRD;
-            end else if (cmd_reg[0:2] == 3'b101)  // write
-              // need to check here for write protect
-              if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
-                status[7] <= 1'b1;
-              end else begin
-             //   sdOP <= sdopWR;
-                to_disk <= 1'b1;
-              end
-          end
-          12'o6744:    // DLCA load current addressa
-                begin
-            car <= ac;
-          end
-          12'o6745: ;  // DRST clear ac and load the status register
-          12'o6746:    // DLDC load command register
-                begin
-            cmd_reg <= ac;
-            status  <= 12'o0000;
-          end
-          12'o6747: ;  // DMAN not implemented
-          12'o6007:    // CAF
-                begin
-            status        <= 12'o0000;
-            car           <= 12'o0000;
-            dar           <= 12'o0000;
-            cmd_reg       <= 12'o0000;
-            sdOP          <= sdopNOP;
-            to_disk       <= 1'b0;
-            // with a real rk05 the operator would press a switch on the disk to
-            // clear the write protect, we have no switch, so a reset, clear or
-            // CAF resets the write protect flag
-            write_lock[0] <= 1'b0;
-            write_lock[1] <= 1'b0;
-            write_lock[2] <= 1'b0;
-            write_lock[3] <= 1'b0;
-          end
-          default:  ;
-        endcase
-      else if ((state == F2) && (UF == 1'b0) && (instruction == 12'o6746))  // decode command
+            to_disk <= 1'b0;
+            sdOP <= sdopRD;
+          end else if (cmd_reg[0:2] == 3'b101)  // write
+            // need to check here for write protect
+            if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
+              status[7] <= 1'b1;
+            end else begin
+              //   sdOP <= sdopWR;
+              to_disk <= 1'b1;
+            end
+        end
+        12'o6744: car <= ac;  // DLCA load current addressa
+        12'o6745: disk_bus <= status;  // DRST
+        12'o6746: // DLDC load command register
+          begin
+          cmd_reg <= ac;
+          status  <= 12'o0000;
+        end
+        12'o6747: ;  // DMAN not implemented
+        12'o6007:    // CAF
+          begin
+          status        <= 12'o0000;
+          car           <= 12'o0000;
+          dar           <= 12'o0000;
+          cmd_reg       <= 12'o0000;
+          sdOP          <= sdopNOP;
+          to_disk       <= 1'b0;
+          // with a real rk05 the operator would press a switch on the disk to
+          // clear the write protect, we have no switch, so a reset, clear or
+          // CAF resets the write protect flag
+          write_lock[0] <= 1'b0;
+          write_lock[1] <= 1'b0;
+          write_lock[2] <= 1'b0;
+          write_lock[3] <= 1'b0;
+        end
+        default:  ;
+      endcase
+      if ((state == F2) && (UF == 1'b0))
+        if (instruction == 12'o6746)  // decode command
+		begin
+          if (cmd_reg[0:2] == 3'b010)
+            // set write protect
+            write_lock[cmd_reg[9:10]] <= 1'b1;
+        end else if (instruction == 12'o6743)
+          if ({cmd_reg[11], dar[0:6]} > 8'd203) status[11] <= 1'b1;
 
-        case (cmd_reg[0:2])
-          2:  // set write protect
-          write_lock[cmd_reg[9:10]] <= 1'b1;
-          default: ;
-        endcase
-      else if ((state == F2) && (UF == 1'b0) && (instruction == 12'o6743))
-        if ({cmd_reg[11], dar[0:6]} > 8'd203) status[11] <= 1'b1;
       // change to a case statement on sdstate
       case (sdstate)
         sdstateINIT,  // SD Initializing
         sdstateREAD,  // SD Reading
         sdstateWRITE: begin
           status[0] <= 1'b0;  // SD Writing
-       //   status[5] <= 1'b1;
+          //   status[5] <= 1'b1;
         end
         sdstateREADY,  // SD Ready for commands
         sdstateDONE: begin
           status[0] <= 1'b1;  // SD Done
-       //   status[5] <= 1'b0;
+          //   status[5] <= 1'b0;
         end
         sdstateINFAIL,  // SD Initialization Failed
         sdstateRWFAIL: begin

@@ -130,7 +130,7 @@ module PDP8e (input clk,
 
 `ifdef RK8E    
 rk8e RK8E (
-    .clk (clk) ,
+    .clk (clk100) ,
     .reset (reset),
     .clear (clear),
     .instruction (instruction) ,

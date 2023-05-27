@@ -32,6 +32,9 @@ module PDP8e_tb;
     wire tclk;
     wire sdMOSI,sdSCLK,sdMISO,sdCS;
 
+	wire diskio;
+	assign diskio = (UUT.instruction[0:8] == 9'o674);
+
 `include "../parameters.v"
 
     always begin  // clock _period comes from parameters.v
@@ -76,7 +79,7 @@ module PDP8e_tb;
         .sdMISO (sdMISO)
 	    );
 		
-sdsim SDSIM(.clk (clk),
+sdsim SDSIM(.clk (clk100),
     .reset (reset),
     .clear (clear),
     .sdCS (sdCS),
@@ -89,16 +92,18 @@ sdsim SDSIM(.clk (clk),
     
 
     initial begin
-        #1 $display("clock frequency %f",(clock_frequency)) ;
-        #1 $display("baud rate %f ",(baud_rate)) ;
-        #1 $display("clock period %f",(clock_period)) ;
-        #1 $display("baud_period %f",(baud_period)) ;
+        #1 $display("clock frequency %f Hz",(clock_frequency)) ;
+        #1 $display("baud rate %f Hz ",(baud_rate)) ;
+        #1 $display("clock period %f nanoseconds",(clock_period)) ;
+        #1 $display("baud_period %f nanoseconds",(baud_period)) ;
         #1 $display("cycle time %f nanoseconds" ,(6*clock_period));
+		#1 $display("Slow SPI frequency %f",LoSpiFreq);
+		#1 $display("Fast SPI frequency %f",HiSpiFreq);
 
 
         #1 sr <= 12'o0200;  // normal start address
         $dumpfile("SDCard.vcd");
-        $dumpvars(0,address,UUT);
+        $dumpvars(0,address,diskio,UUT);
         //$readmemh("Diagnostics/D0JB.hex",UUT.MA.ram.mem,0,4095);
         sr <= 12'o0004;
 
@@ -137,7 +142,7 @@ sdsim SDSIM(.clk (clk),
 		#1000 ;
         `PULSE(cont);
 
-        #30000000  $finish;
+        #10000000  $finish;
 
 
     end

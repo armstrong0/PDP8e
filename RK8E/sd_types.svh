@@ -54,7 +54,7 @@ package sd_types;
   typedef logic [0:7] sdBYTE_t;  // Byte
   typedef sdBYTE_t [0:5] sdCMD_t;  // SD Commands
   typedef logic sdLEN_t;  // Read/Write Length
-  typedef logic [0:14] addr_t;  // 12 bit memory address type
+  typedef logic [0:14] addr_t;  // 15 bit memory address type
   // added because I did not want to import too many things
   typedef logic [0:31] sdDISKaddr_t;  // SD Sector Address
   typedef logic [0:6] sdCCRC_t;  // Command CRC

@@ -1,4 +1,5 @@
-all: view_tx verilog format sim_read sim_write sim_basic rk8e.v full_read
+all: view_tx verilog format sim_read sim_write sim_basic rk8e.v full_read sdsim.v
+
 
 view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
 	iverilog -g2012 sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
@@ -9,8 +10,8 @@ rk8e.v:  rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv
 	~/.local/bin/sv2v rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v 
 	~/bin/verible-verilog-format rk8e.v --inplace
 
-sdsim.v: sdsim.sv
-	./local/bin/sv2v sdsim.sv > sdsim.v
+sdsim.v:sdsim.sv
+	~/.local/bin/sv2v sdsim.sv > sdsim.v
 
 
 verilog: rk8e.sv sd.sv rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv
@@ -29,6 +30,7 @@ format:
 	~/bin/verible-verilog-format sdspi_types.svh --inplace
 	~/bin/verible-verilog-format sdsim.sv --inplace
 	~/bin/verible-verilog-format sd_tb.sv --inplace
+	~/bin/verible-verilog-format rk8e.sv --inplace
 	
 sim_read: sdsim.sv sd.sv sdspi.sv sd_types.svh sdspi_types.svh sd_tb.sv
 	iverilog -g2012 sd_types.svh sdspi_types.svh sdsim.sv sd.sv sdspi.sv sd_tb.sv -o sd.o
