@@ -67,7 +67,7 @@ sd SD (
 
   initial begin
     $dumpfile("sdsim.vcd");
-    $dumpvars(0, SD, SDM);
+    $dumpvars(0, SD);
 
     clk <= 1'b0;
     #50 reset <= 1'b1;
@@ -97,7 +97,8 @@ sd SD (
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= sdopNOP;  // only read one sector
-    #1500000 $finish;
+    wait (dmaREQ == 1'b0);
+    #2000000 $finish;
 
   end
 
