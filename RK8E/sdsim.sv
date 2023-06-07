@@ -94,7 +94,7 @@ module sdsim (
 
   initial begin
 
-    c <= 0;
+    c = 0;
     // sdWP <= 1'b0;
     // read the image file
     $write("Reading Disk Image...");

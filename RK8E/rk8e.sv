@@ -68,6 +68,8 @@ module rk8e
 
   sdSTATE_t        sdstate;
 
+  assign sdLEN = cmd_reg[5];
+
   sd SD (
       .clk       (clk),
       .reset     (reset),       //! Clock/Reset
@@ -145,11 +147,11 @@ bit 11 msb of cylinder
     else interrupt <= 0;
     if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
     else dmaGNT <= 1'b0;
-  end
+ // end
 
 
 
-  always @(posedge clk) begin
+//  always @(posedge clk) begin
     if ((reset == 1'b1) || (clear == 1'b1)) begin
       status        <= 12'o0000;
       car           <= 12'o0000;
@@ -243,6 +245,7 @@ bit 11 msb of cylinder
           status[0]  <= 1'b0;
           status[10] <= 1'b1;
         end
+		default:;
       endcase
       if (sdstate != sdstateREADY) sdOP <= sdopNOP;
 

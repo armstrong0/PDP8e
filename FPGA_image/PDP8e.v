@@ -78,7 +78,7 @@ module PDP8e (input clk,
     wire [0:11] ma;
     wire [0:11] ac,ac_input,me_bus;
     wire [0:11] mq;
-    wire [0:11] instruction,mdout,disk2mem;
+    wire [0:11] instruction,mdout,disk2mem,mem2disk;
 	wire [0:14] dmaAddr;
     wire link;
     wire isz_skip,sskip;
@@ -144,7 +144,7 @@ rk8e RK8E (
     .to_disk (to_disk ),
     .break_in_prog (break_in_prog ),
     .skip (disk_skip) ,
-    .dmaDIN (),
+    .dmaDIN (mem2disk),
     .dmaDOUT (disk2mem),
     .sdMISO (sdMISO),
     .sdMOSI (sdMOSI),
@@ -173,6 +173,7 @@ rk8e RK8E (
         .examd (examd),
 		.to_disk (to_disk),
 		.disk2mem (disk2mem),
+		.mem2disk (mem2disk),
         .mdout (mdout),
 		.dmaAddr (dmaAddr),
         .isz_skip (isz_skip));

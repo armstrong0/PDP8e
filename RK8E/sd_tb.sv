@@ -19,7 +19,7 @@ module sd_tb;
 
   logic        [0:11] dmaDIN;  //! DMA Data Into Disk
   logic               dmaGNT;  //! DMA Grant
-  logic        [42:0] sdSTAT;
+  sdSTAT_t sdSTAT;
 
 
   `include "../parameters.v"
@@ -60,6 +60,12 @@ sd SD (
       .sdCS(sdCS)
   );
 
+sdSTATE_t        sdstate;
+
+always @(posedge clk)
+begin
+  sdstate <= sdSTAT.state;
+end
   always begin
     #(clock_period / 2) clk <= 1;
     #(clock_period / 2) clk <= 0;
@@ -78,27 +84,34 @@ sd SD (
     sdLEN <= 1'b0;
     dmaGNT <= 1'b0;
     dmaDIN <= 12'o5252;
-`ifndef WRITE
     #1600000 sdOP <= sdopRD;  // read
-`else
-    #1600000 sdOP <= sdopWR;  // write
-`endif
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= sdopNOP;  // only read one sector
     wait (dmaREQ == 1'b0);
     #20 dmaGNT <= 1'b0;
     sdLEN <= 1'b1;  // set up to read 1/2 of a sector
-`ifndef WRITE
     sdOP <= sdopRD;
-`else
-    sdOP <= sdopWR;  // write
-`endif
+    wait (dmaREQ == 1'b1);
+    #20 dmaGNT <= 1'b1;
+    sdOP <= sdopNOP;  // only read one sector
+	wait (dmaREQ == 1'b0);
+	#20 dmaGNT <= 1'b0;
+    wait (sdstate == 3'b001);
+	//#10000 $finish ;
+    #160 sdOP <= sdopWR;  // write
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= sdopNOP;  // only read one sector
     wait (dmaREQ == 1'b0);
-    #2000000 $finish;
+    sdLEN <= 1'b0;  // set up to read full sector
+    sdOP <= sdopWR;  // write
+    wait (dmaREQ == 1'b1);
+    #20 dmaGNT <= 1'b1;
+    sdOP <= sdopNOP;  // only read one sector
+    wait (dmaREQ == 1'b0);
+    #20 dmaGNT <= 1'b0;
+    #25000 $finish;
 
   end
 

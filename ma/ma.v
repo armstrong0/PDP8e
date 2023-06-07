@@ -1,5 +1,6 @@
 `include "../ram/ram.v"
-module ma(input clk,
+module ma (
+    input clk,
     input reset,
     input [0:11] pc,
     input [0:11] ac,
@@ -7,237 +8,224 @@ module ma(input clk,
     input [0:11] sr,
     input sw,
     input [4:0] state,
-    input addr_loadd,depd,examd,
+    input addr_loadd,
+    depd,
+    examd,
     input int_in_prog,
-    input [0:2] IF,DF,
-	input [0:14] dmaAddr,
-	input [0:11] disk2mem,
-	input to_disk,
+    input [0:2] IF,
+    DF,
+    input [0:14] dmaAddr,
+    input [0:11] disk2mem,
+    input to_disk,
     output reg [0:11] addr,
     output reg [0:2] EMA,
     output reg isz_skip,
     output reg [0:11] instruction,
     output reg [0:11] ma,
+    output reg [0:11] mem2disk,
     output reg [0:11] mdout
 );
 
-    reg [0:4] current_page;
-    reg [0:11] mdin;
-    reg write_en;
-    wire [0:11] mdtmp;
+  reg [0:4] current_page;
+  reg [0:11] mdin;
+  reg write_en;
+  wire [0:11] mdtmp;
 
-`include "../parameters.v"
+  `include "../parameters.v"
 
-    ram ram(.din (mdin),
-        .addr ({EMA[2],addr}),
-        .write_en (write_en),
-        .clk (clk),
-        .dout (mdtmp));
+ram ram (
+      .din(mdin),
+      .addr({EMA[2], addr}),
+      .write_en(write_en),
+      .clk(clk),
+      .dout(mdtmp)
+  );
 
 
 
-    // address mux
-    always @*  // just replace <= with = for verilator
+  // address mux
+  always @*  // just replace <= with = for verilator
     begin
-        addr = ma;
-        EMA = IF;
-        case (state)
-            F0,FW:       addr = pc;
+    addr = ma;
+    EMA  = IF;
+    case (state)
+      F0, FW:        addr = pc;
 `ifdef RK8E
-            DB0,DB1,DB2: addr = dmaAddr[3:14];
+      DB0, DB1, DB2: addr = dmaAddr[3:14];
 `endif
-            default:     addr = ma;
-        endcase
-        case (state)
-            E0,EW,E1,E2,E3:
-			// use indirect addressing
-            if (((instruction[0:2] == AND) ||
+      default:       addr = ma;
+    endcase
+    case (state)
+      E0, EW, E1, E2, E3:
+      // use indirect addressing
+      if (((instruction[0:2] == AND) ||
                         (instruction[0:2] == TAD) ||
                         (instruction[0:2] == ISZ) ||
                         (instruction[0:2] == DCA)) &&
                     (instruction[3] == 1'b1))   // this bit specifies deferred
-                EMA = DF;
-            else
-                EMA = IF;
-            D3,EAE2,EAE3,EAE4,EAE5:
-                EMA = DF;
+        EMA = DF;
+      else EMA = IF;
+      D3, EAE2, EAE3, EAE4, EAE5: EMA = DF;
 `ifdef RK8E
-            DB0,DB1,DB2:
-			EMA = dmaAddr[0:2];
+      DB0, DB1, DB2: EMA = dmaAddr[0:2];
 `endif
-            default: EMA = IF;
-        endcase
-    end
+      default: EMA = IF;
+    endcase
+  end
 
-    always @(posedge clk)
-    begin
-        if (reset)
-        begin
-            ma <=  12'o0000;
-            isz_skip <= 0;
-            instruction <= 12'o7000;
-            current_page <= 0;
-            write_en <= 0;
+  always @(posedge clk) begin
+    if (reset) begin
+      ma <= 12'o0000;
+      isz_skip <= 0;
+      instruction <= 12'o7000;
+      current_page <= 0;
+      write_en <= 0;
+    end else begin
+      write_en <= 0;
+      ma <= ma;
+      mdin <= mdin;
+      case (state)
+        F0: begin
+          ma <= pc;
         end
-        else
-        begin
-            write_en <= 0;
-            ma <= ma;
-            mdin <= mdin;
-            case (state)
-                F0: begin
-                    ma <= pc;
-                end
-                FW:begin
-                    if (EMA > MAX_FIELD)
-                    begin
-                        mdout <= 12'o0000;
-                        instruction <= 12'o0000;
-                    end
-                    else
-                    begin
-                        mdout <= mdtmp;
-                        instruction <= mdtmp;
-                    end
-                    ma <= pc + 12'o0001; // set up for fetch of immediate operand or address
-                end
-                F1:; //instruction <= mdout;
-                F2A,
-                F2B,
-                F2: begin
-                    current_page <= pc[0:4];
-                    mdout <= mdtmp;
-                end
-                F3: begin
-                    case(instruction[0:2])
-                        0,1,2,3,4,5:
-                        if (instruction[4] == 0 )  //page 0
-                            ma <= {5'b00000,instruction[5:11]};
-                        else
-                            ma <= {current_page,instruction[5:11]};
-							// pc has already been incremented
-                        6,7: ma <= pc;
-						//  pc is problably not valid until the end of F3
-						//  so assign ma here is probably irrelavent
-                        default:;
-                    endcase
-                end
-                D0:;
-                DW: if (EMA > MAX_FIELD)
-                    mdout <= 12'o0000;
-                else
-                    mdout <= mdtmp;
-                D1: if (ma[0:8] == 9'o001 )
-                begin
-                    mdin <= mdout + 12'o0001;
-                    if (EMA <= MAX_FIELD) write_en <= 1;
-                end
-                D2: begin
-                    if (ma[0:8]  == 9'o001 )
-                        ma <= mdout + 12'o0001;
-                    else
-                        ma <= mdout;  // set up for DST
-                    mdin <= mq;
-                end //  the next part is wrong
-                D3:;
-                E0:;
-                EW: begin
-                    if (int_in_prog == 1)
-                    begin
-                        instruction <= 12'o4000;
-                        ma <= 12'o0000;
-                        mdin <= pc;
-                    end
-                    else case (instruction[0:2])
-                            ISZ,AND,TAD:;
-                            JMS: mdin <= pc;
-                            default:;
-                        endcase
-                    mdout <= mdtmp;
-                    if (EMA > MAX_FIELD)
-                        mdout <= 12'o0000;
-                    else
-                        mdout <= mdtmp;
-                end
-                E1: case (instruction[0:2])
-                    ISZ: begin
-                        mdin <= mdout + 12'o0001;
-                        if (EMA <= MAX_FIELD) write_en <=1;
-                        if (mdout == 12'o7777) isz_skip <= 1 ;
-                    end
-                    JMS: begin
-                        if (EMA <= MAX_FIELD) write_en <= 1;
-                        mdin <= pc;
-                    end
-                    DCA: begin
-                        mdin <= ac;
-                        if (EMA <= MAX_FIELD) write_en <= 1;
-                    end
-                    default: ;
-                endcase
-                E2: case (instruction[0:2])
-                    ISZ: isz_skip <= isz_skip;
-                    DCA:;
-                    default:;
-                endcase
-                E3:  isz_skip <= 0;
-                H0:;
-                HW:  if (EMA > MAX_FIELD)
-                    mdout <= 12'o0000;
-                else
-                    mdout <= mdtmp ;
-                H1: if (addr_loadd == 1'b1)
-                    if (sw == 1'b1) ma <= 12'o7777;
-                    else ma <= sr;
-                    else if (depd == 1'b1)
-                    begin
-                        mdin <= sr;
-                        if (EMA <= MAX_FIELD) write_en <= 1;
-                    end
-                    H2: if ((depd ==1'b1) | (examd == 1'b1))
-                        ma <= ma + 12'o0001;
-                H3:;
-				// EAE accesses
-                EAE2:begin
-                    if ((instruction & 12'b111100101111) == DST)
-                    begin
-                        mdin <= mq;
-                        write_en <= 1'b1;
-                    end
-                    if  (EMA > MAX_FIELD)
-                        mdout <= 12'o0000;
-                    else
-                        mdout <= mdtmp;
-
-                end
-                EAE3: begin
-                    ma <= ma +1;
-                    mdin <= ac;
-                end
-
-                EAE4:if  ((instruction & 12'b111100101111) == DST)
-                begin
-                    mdin <= ac;
-                    write_en <= 1'b1;
-                end
-                EAE5:if (EMA > MAX_FIELD)
-                    mdout <= 12'o0000;
-                else
-                    mdout <= mdtmp;
-`ifdef RK8E
-                DB0: if (to_disk == 1'b0)
-				begin
-					mdin <= disk2mem;
-					write_en <= 1'b1;
-				end	
-				DB1,DB2:;
-	        		
-`endif
-					
-                default:;
+        FW: begin
+          if (EMA > MAX_FIELD) begin
+            mdout <= 12'o0000;
+            instruction <= 12'o0000;
+          end else begin
+            mdout <= mdtmp;
+            instruction <= mdtmp;
+          end
+          ma <= pc + 12'o0001;  // set up for fetch of immediate operand or address
+        end
+        F1: ;  //instruction <= mdout;
+        F2A, F2B, F2: begin
+          current_page <= pc[0:4];
+          mdout <= mdtmp;
+        end
+        F3: begin
+          case (instruction[0:2])
+            0, 1, 2, 3, 4, 5:
+            if (instruction[4] == 0)  //page 0
+              ma <= {5'b00000, instruction[5:11]};
+            else ma <= {current_page, instruction[5:11]};
+            // pc has already been incremented
+            6, 7: ma <= pc;
+            //  pc is problably not valid until the end of F3
+            //  so assign ma here is probably irrelavent
+            default: ;
+          endcase
+        end
+        D0: ;
+        DW:
+        if (EMA > MAX_FIELD) mdout <= 12'o0000;
+        else mdout <= mdtmp;
+        D1:
+        if (ma[0:8] == 9'o001) begin
+          mdin <= mdout + 12'o0001;
+          if (EMA <= MAX_FIELD) write_en <= 1;
+        end
+        D2: begin
+          if (ma[0:8] == 9'o001) ma <= mdout + 12'o0001;
+          else ma <= mdout;  // set up for DST
+          mdin <= mq;
+        end  //  the next part is wrong
+        D3: ;
+        E0: ;
+        EW: begin
+          if (int_in_prog == 1) begin
+            instruction <= 12'o4000;
+            ma <= 12'o0000;
+            mdin <= pc;
+          end else
+            case (instruction[0:2])
+              ISZ, AND, TAD: ;
+              JMS: mdin <= pc;
+              default: ;
             endcase
+          mdout <= mdtmp;
+          if (EMA > MAX_FIELD) mdout <= 12'o0000;
+          else mdout <= mdtmp;
         end
+        E1:
+        case (instruction[0:2])
+          ISZ: begin
+            mdin <= mdout + 12'o0001;
+            if (EMA <= MAX_FIELD) write_en <= 1;
+            if (mdout == 12'o7777) isz_skip <= 1;
+          end
+          JMS: begin
+            if (EMA <= MAX_FIELD) write_en <= 1;
+            mdin <= pc;
+          end
+          DCA: begin
+            mdin <= ac;
+            if (EMA <= MAX_FIELD) write_en <= 1;
+          end
+          default: ;
+        endcase
+        E2:
+        case (instruction[0:2])
+          ISZ: isz_skip <= isz_skip;
+          DCA: ;
+          default: ;
+        endcase
+        E3: isz_skip <= 0;
+        H0: ;
+        HW:
+        if (EMA > MAX_FIELD) mdout <= 12'o0000;
+        else mdout <= mdtmp;
+        H1:
+        if (addr_loadd == 1'b1)
+          if (sw == 1'b1) ma <= 12'o7777;
+          else ma <= sr;
+        else if (depd == 1'b1) begin
+          mdin <= sr;
+          if (EMA <= MAX_FIELD) write_en <= 1;
+        end
+        H2: if ((depd == 1'b1) | (examd == 1'b1)) ma <= ma + 12'o0001;
+        H3: ;
+        // EAE accesses
+        EAE2: begin
+          if ((instruction & 12'b111100101111) == DST) begin
+            mdin <= mq;
+            write_en <= 1'b1;
+          end
+          if (EMA > MAX_FIELD) mdout <= 12'o0000;
+          else mdout <= mdtmp;
+
+        end
+        EAE3: begin
+          ma   <= ma + 1;
+          mdin <= ac;
+        end
+
+        EAE4:
+        if ((instruction & 12'b111100101111) == DST) begin
+          mdin <= ac;
+          write_en <= 1'b1;
+        end
+        EAE5: if (EMA > MAX_FIELD) mdout <= 12'o0000;
+ else mdout <= mdtmp;
+`ifdef RK8E
+        DB0:
+        if (to_disk == 1'b0) begin
+          mdin <= disk2mem;
+          write_en <= 1'b1;
+        end
+        DB1:  ;
+        DB2:
+        if (to_disk == 1'b1) begin
+          if (EMA > MAX_FIELD) mem2disk <= 12'o0000;
+          else mem2disk <= mdtmp;
+        end
+
+`endif
+
+        default: ;
+      endcase
     end
+  end
 endmodule
 
 

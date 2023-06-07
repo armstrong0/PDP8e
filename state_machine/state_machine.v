@@ -14,10 +14,10 @@ module state_machine(input clk,
     input EAE_mode,
     input EAE_loop,
     input gtf,
-`ifdef RK8E    
+`ifdef RK8E
     input data_break,   // data break write is to disk read is from disk
     input to_disk,
-`endif    
+`endif
     output reg EAE_skip,
     output reg int_in_prog,
     output reg break_in_prog,
@@ -35,7 +35,7 @@ module state_machine(input clk,
             state <= H0;
             int_in_prog <= 0;
             break_in_prog <= 1'b0;
-			EAE_skip <= 1'b0;
+            EAE_skip <= 1'b0;
         end
         else case (state)
 
@@ -226,7 +226,7 @@ module state_machine(input clk,
                     if (data_break == 1'b1)
                     begin
                         next_state <= F0;
-                        state <= DB0;    
+                        state <= DB0;
                         break_in_prog <= 1'b1;
                     end
                     else if (int_req & int_ena & ~int_inh)
@@ -309,9 +309,9 @@ module state_machine(input clk,
                 DB0: state <= DB1;
                 DB1: state <= DB2;
                 DB2: begin
-                     state <= next_state;
-                     break_in_prog <= 1'b0;
-                end     
+                    state <= next_state;
+                    break_in_prog <= 1'b0;
+                end
 
                 default: state <= H0;
             endcase
