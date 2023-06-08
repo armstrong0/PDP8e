@@ -32,8 +32,8 @@ module PDP8e_tb;
     wire tclk;
     wire sdMOSI,sdSCLK,sdMISO,sdCS;
 
-	wire diskio;
-	assign diskio = (UUT.instruction[0:8] == 9'o674);
+    wire diskio;
+    assign diskio = (UUT.instruction[0:8] == 9'o674);
 
 `include "../parameters.v"
 
@@ -73,12 +73,12 @@ module PDP8e_tb;
         .extd_addrn (~extd_addr),
         .addr_loadn (~addr_load),
         .clearn (~clear),
-		.sdCS (sdCS),
-	    .sdMOSI (sdMOSI),
+        .sdCS (sdCS),
+        .sdMOSI (sdMOSI),
         .sdSCLK (sdSCLK),
         .sdMISO (sdMISO)
-	    );
-		
+        );
+        
 sdsim SDSIM(.clk (clk100),
     .reset (reset),
     .clear (clear),
@@ -97,8 +97,8 @@ sdsim SDSIM(.clk (clk100),
         #1 $display("clock period %f nanoseconds",(clock_period)) ;
         #1 $display("baud_period %f nanoseconds",(baud_period)) ;
         #1 $display("cycle time %f nanoseconds" ,(6*clock_period));
-		#1 $display("Slow SPI frequency %f",LoSpiFreq);
-		#1 $display("Fast SPI frequency %f",HiSpiFreq);
+        #1 $display("Slow SPI frequency %f",LoSpiFreq);
+        #1 $display("Fast SPI frequency %f",HiSpiFreq);
 
 
         #1 sr <= 12'o0200;  // normal start address
@@ -121,25 +121,25 @@ sdsim SDSIM(.clk (clk100),
         #1 pll_locked <= 0;
         #1 rx <= 1; // marking state
         #100 pll_locked <= 1;
-		#5000;
+        #5000;
         sr <= 12'o0026;
         `PULSE(addr_load);
-		#1000 ;
-		sr <= 12'o6741;
-		`PULSE(dep);
-		#1000 ;
-		sr <= 12'o5026;
-		`PULSE(dep);
-		#1000 ;
-		sr <= 12'o6743;
-		`PULSE(dep);
-		#1000 ;
-		sr <= 12'o5030;
-		`PULSE(dep);
-		#1000 ;
+        #1000 ;
+        sr <= 12'o6741;
+        `PULSE(dep);
+        #1000 ;
+        sr <= 12'o5026;
+        `PULSE(dep);
+        #1000 ;
+        sr <= 12'o6743;
+        `PULSE(dep);
+        #1000 ;
+        sr <= 12'o5030;
+        `PULSE(dep);
+        #1000 ;
         sr <= 12'o0026;
         `PULSE(addr_load);
-		#1000 ;
+        #1000 ;
         `PULSE(cont);
 
         #10000000  $finish;

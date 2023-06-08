@@ -6,8 +6,10 @@ DEVICE    = 8k
 FILES = PDP8e.v
 
 .PHONY: PDP8e clean burn
+../RK8E/rk8e.v: ../RK8E/rk8e.sv
+	$(MAKE) -C../RK8E/ -f Makefile verilog
 
-PDP8e:
+PDP8e: ../RK8E/rk8e.v
 	# synthesize using Yosys
 	yosys -p "synth_ice40 -top PDP8e -json $(PROJ).json" $(FILES) -l synth.log
 	# Place and route using nextpnr
