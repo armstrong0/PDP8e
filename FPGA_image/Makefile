@@ -5,9 +5,7 @@ DEVICE    = 8k
 # Files
 FILES = PDP8e.v
 
-.PHONY: PDP8e clean burn
-../RK8E/rk8e.v: ../RK8E/rk8e.sv
-	$(MAKE) -C../RK8E/ -f Makefile verilog
+.PHONY: PDP8e clean burn ../RK8E/rk8e.v
 
 PDP8e: ../RK8E/rk8e.v
 	# synthesize using Yosys
@@ -17,6 +15,9 @@ PDP8e: ../RK8E/rk8e.v
 
 	# Convert to bitstream using IcePack
 	icepack $(PROJ).asc $(PROJ).bin
+
+../RK8E/rk8e.v: ../RK8E/rk8e.sv
+	$(MAKE) -C../RK8E/ -f Makefile verilog
 
 burn:
 	iceFUNprog $(PROJ).bin
