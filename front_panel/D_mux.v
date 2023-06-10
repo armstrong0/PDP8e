@@ -20,7 +20,10 @@ module D_mux(
 
     always @* begin
         case (state)
-            F0,FW,F1,F2,F3:
+`ifdef RK8E
+			DB0,DB1,DB2,
+`endif			
+            F0,FW,F1,F2,F3,F2A,F2B:
             begin
                 run_led = 1;
                 FS = 1;
@@ -36,7 +39,7 @@ module D_mux(
                 ES = 0;
                 HS = 0;
             end
-            E0,EW,E1,E2,E3,EAE0,EAE1,EAE2,EAE3:
+            E0,EW,E1,E2,E3,EAE0,EAE1,EAE2,EAE3,EAE4:
             begin
                 run_led = 1;
                 FS = 0;

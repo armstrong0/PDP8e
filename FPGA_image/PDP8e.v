@@ -254,7 +254,7 @@ rk8e RK8E (
     D_mux DM(.clk (clk100),
         .reset (reset),
         .dsel (dsel),
-        .state1 ( {instruction[0:2],2'b00,sw,2'b00,EAE_mode} ),
+        .state1 ( {instruction[0:2],2'b00,sw,1'b0,break_in_prog,EAE_mode} ),
         .status ({link,gtf,irq,1'b0,int_ena,{UF,IF,DF}}),
         .ac (ac),
         .mb (mdout),

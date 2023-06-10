@@ -73,7 +73,7 @@ end
 
   initial begin
     $dumpfile("sdsim.vcd");
-    $dumpvars(0, SD);
+    $dumpvars(0,SD);
 
     clk <= 1'b0;
     #50 reset <= 1'b1;
@@ -105,6 +105,9 @@ end
     sdOP <= sdopNOP;  // only read one sector
     wait (dmaREQ == 1'b0);
     sdLEN <= 1'b0;  // set up to read full sector
+	// but wait for sdstate to go idle
+    wait (sdstate == 3'b001);
+	
     sdOP <= sdopWR;  // write
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
