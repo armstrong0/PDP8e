@@ -113,8 +113,7 @@ rk8e RK8 (  .clk (clk),
     .to_disk (to_disk),
 	.break_in_prog (break_in_prog),
 	.dmaAddr (dmaAddr),
-    .dmaDIN  (dout),
-//    .dmaDIN  (mem2disk),
+    .dmaDIN  (mem2disk),
     .dmaDOUT (disk2mem),
     .skip (skip),
 	     // Interface to SD Hardware
@@ -126,6 +125,7 @@ rk8e RK8 (  .clk (clk),
 );
 
 `include "../parameters.v"
+`include "disk_instructions.v"
 
 always begin  
         #(clock_period/2) clk <= 1;
@@ -136,7 +136,7 @@ end
 
  initial begin
  $dumpfile("sdb.vcd");
- $dumpvars(0,clk,reset,SDSIM,MA,RK8,SM1);
+ $dumpvars(0,clk,reset,MA,RK8,SM1);
  #100  reset <= 1;
  MOSI_enable <= 1'b1; // set to zero to test initialization failure
  EAE_loop <= 0;
@@ -155,67 +155,102 @@ db_write <= 0;
 #100 reset <= 0;
 #60 `pulse(cont);
 wait(state == F0);
-instruction <= 12'o6007;  // CAF
-// the #100 before the wait is so we progress from state F0 to FW
+instruction <= CAF;         // CAF
+// the #500 before the wait is so we progress from state F0 to FW
 // so they all don't collapse to 1 wait
-#100 wait (state <= F0);
+#500 wait (state <= F0);
 ac <= 12'b010_000_000_000;  // write protect drive 0
-instruction <= 12'o6746;
-#100 wait (state <= F0);
+instruction <= DLDC;
+#500 wait (state <= F0);
 ac <= 12'b010_000_000_010;  // write protect drive 1
-instruction <= 12'o6746;
-#100 wait (state <= F0);
+instruction <= DLDC;
+#500 wait (state <= F0);
 ac <= 12'b010_000_000_100;  // write protect drive 2
-instruction <= 12'o6746;
-#100 wait (state <= F0);
+instruction <= DLDC;
+#500 wait (state <= F0);
 ac <= 12'b010_000_000_110;  // write protect drive 3
-instruction <= 12'o6746;
-#100 wait (state == F0);
+instruction <= DLDC;
+#500 wait (state == F0);
 ac <= 12'b100_100_000_000;
-instruction <= 12'o6746;
-#100 wait (state == F0);
+instruction <= DLDC;
+#500 wait (state == F0);
 // now try to write to the disk
 ac <= 12'b100_000_000_000;
-instruction <= 12'o6746;
+instruction <= DLDC;
 //  XXXXXXX write lock error doesn't happen until a write is called for
-//#100 wait (RK8.status[7] == 1'b1)
+//
+
+#500 wait (state == F0);
+ac <= 12'o0000;
+instruction <= DLAG;
+#500 wait (state == F0);
+instruction <= CAF;
+// now try an intrrupt
+#500 wait (state == F0);
+ac <= 12'b010_000_000_000;  // write protect drive 0
+instruction <= DLDC;
+
+#500 wait (state == F0);
+// now try to write to the disk
+ac <= 12'b100_100_000_000; // notice the 1 bit in the second octet
+instruction <= DLDC;
+
+#500 wait (state == F0);
+ac <= 12'o0000;
+instruction <= DLAG;
+
+#500 wait (RK8.status[7] == 1'b1)
+//#5000 $finish;
 // write lock error
-instruction <= 12'o6007; // clear the error
-// now try cylinder errors
-// max is o312
+instruction <= CAF; // clear the error
+#500 wait (state == F0);
+// now try cylinder errors #cym= 203, zero based
+// max is o312 which has a 1 in cmd_reg[11] and o4500 in dar
 // the car contains the least 7 bits of the cylinder, the msb
 // is bit 11 of the cmd register
 // set bit 11 of the cmd to 0
-instruction <= 12'o6746;
-#100 wait (state == F0);
-// set the car to o1120
-ac <= 12'o1120;
-instruction <= 12'o6743;
-#100 wait (state == F0);
+instruction <= DLDC;
+#500 wait (state == F0);
+// set cmd_reg bit 11 to zero
+ac <= 12'o0000;
+instruction <= DLDC;
+#500 wait (state == F0);
+// set the dar to o4500
+ac <= 12'o4500;
+instruction <= DLAG;
+#500 wait (state == F0);
 // should be no error
 // set bit 11 of cmd to 1 still no error
 ac <= 12'o0001;
-instruction <= 12'o6746;
-#100 wait (state == F0);
-// set car to 01130  - should error bit 11 of status should be a 1
-// set cmd bit 11 to zero should result in no error 
+instruction <= DLDC;
+#500 wait (state == F0);
+ac <= 12'o4540;
+instruction <= DLAG;
+#500 wait (state == F0);
 
-#100 wait (RK8.status[0] == 1'b0);
-#100 wait (RK8.sdstate == 3'b001); // ready
+#500 wait (RK8.status[0] == 1'b0);
+//#500 wait (RK8.sdstate == 3'b001); // ready
 
 ac <= 12'o0000;
-#100 wait (state == F0);
-ac <= 12'o0000;
-#100 wait (state == F0);
+instruction <= DLDC;
+#500 wait (state == F0);
 // try a read
+#500 wait (RK8.sdstate == 3'b001); // ready
 
-instruction <= 12'o6743;
-#100 wait (state == F0);
+instruction <= DLAG;
+#500 wait (state == F0);
 instruction <= 12'o7000;
-#100 wait (RK8.dmaREQ == 1'b1);
-#100 wait (RK8.dmaGNT == 1'b0);
+#500 wait (RK8.dmaREQ == 1'b1);
+#500 wait (RK8.dmaGNT == 1'b0);
 
 $writememh("ram_contents",MA.ram.mem,0,255);
+// at this point we have completed a read operation on disk
+// now try a write
+// note that the image file is not saved
+
+#500 wait (RK8.sdstate == 3'b001); // ready
+instruction <= DRST;
+
 
 #20000 $finish;
 

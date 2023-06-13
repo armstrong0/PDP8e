@@ -147,11 +147,7 @@ bit 11 msb of cylinder
     else interrupt <= 0;
     if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
     else dmaGNT <= 1'b0;
- // end
 
-
-
-//  always @(posedge clk) begin
     if ((reset == 1'b1) || (clear == 1'b1)) begin
       status        <= 12'o0000;
       car           <= 12'o0000;
@@ -179,11 +175,13 @@ bit 11 msb of cylinder
         12'o6743:    // DLAG load address and go
           begin
           dar <= ac;
+          if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
+          else 
           if (cmd_reg[0:2] == 3'b000)  // read
             begin
             to_disk <= 1'b0;
             sdOP <= sdopRD;
-          end else if (cmd_reg[0:2] == 3'b101)  // write
+          end else if (cmd_reg[0:2] == 3'b100)  // write
             // need to check here for write protect
             if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
               status[7] <= 1'b1;
@@ -192,12 +190,13 @@ bit 11 msb of cylinder
               to_disk <= 1'b1;
             end
         end
-        12'o6744: car <= ac;  // DLCA load current addressa
+        12'o6744: car <= ac;  // DLCA load current address
         12'o6745: disk_bus <= status;  // DRST
         12'o6746: // DLDC load command register
           begin
           cmd_reg <= ac;
           status  <= 12'o0000;
+          if (cmd_reg[0:2] == 3'b010) write_lock[cmd_reg[9:10]] <= 1'b1;
         end
         12'o6747: ;  // DMAN not implemented
         12'o6007:    // CAF
@@ -218,14 +217,6 @@ bit 11 msb of cylinder
         end
         default:  ;
       endcase
-      if ((state == F2) && (UF == 1'b0))
-        if (instruction == 12'o6746)  // decode command
-		begin
-          if (cmd_reg[0:2] == 3'b010)
-            // set write protect
-            write_lock[cmd_reg[9:10]] <= 1'b1;
-        end else if (instruction == 12'o6743)
-          if ({cmd_reg[11], dar[0:6]} > 8'd203) status[11] <= 1'b1;
 
       // change to a case statement on sdstate
       case (sdstate)
@@ -245,7 +236,7 @@ bit 11 msb of cylinder
           status[0]  <= 1'b0;
           status[10] <= 1'b1;
         end
-		default:;
+        default: ;
       endcase
       if (sdstate != sdstateREADY) sdOP <= sdopNOP;
 

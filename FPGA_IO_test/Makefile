@@ -20,4 +20,9 @@ burn:
 	iceFUNprog $(PROJ).bin
 
 clean:
-	rm *.asc *.bin *blif
+	rm -rf *.asc *.bin *blif
+	rm -rf *.log
+	rm -rf *.vcd
+	rm -rf *.json
+	rm -rf obj_dir
+
