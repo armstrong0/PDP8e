@@ -29,7 +29,8 @@ reg UF;
 wire [0:11] addr;
 
 wire [0:14] dmaAddr;
-wire [0:11] mem2disk;
+reg [0:11] mem2disk;
+//wire [0:11] mem2disk;
 wire [0:11] disk2mem;
 wire to_disk;
 
@@ -152,6 +153,8 @@ trigger <= 0;
 db_read <= 0;
 db_write <= 0;
 
+mem2disk <= 12'o2525;
+
 #100 reset <= 0;
 #60 `pulse(cont);
 wait(state == F0);
@@ -177,9 +180,7 @@ instruction <= DLDC;
 // now try to write to the disk
 ac <= 12'b100_000_000_000;
 instruction <= DLDC;
-//  XXXXXXX write lock error doesn't happen until a write is called for
-//
-
+// write lock error doesn't happen until a write is called for
 #500 wait (state == F0);
 ac <= 12'o0000;
 instruction <= DLAG;
@@ -249,9 +250,22 @@ $writememh("ram_contents",MA.ram.mem,0,255);
 // note that the image file is not saved
 
 #500 wait (RK8.sdstate == 3'b001); // ready
+
 instruction <= DRST;
 
+#500 wait (state == F0);
+// now try to write to the disk
+ac <= 12'b100_000_000_000;
+instruction <= DLDC;
+#500 wait (state == F0);
+ac <= 12'o0000;
+instruction <= DLAG;
 
+#500 wait (state == F0);
+instruction <= 12'o7000;
+#500 wait (RK8.dmaREQ == 1'b1);
+#500 wait (RK8.dmaGNT == 1'b0);
+#500 wait (RK8.sdstate == 3'b001); // ready
 #20000 $finish;
 
 
