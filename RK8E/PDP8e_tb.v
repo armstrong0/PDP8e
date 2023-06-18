@@ -142,7 +142,7 @@ sdsim SDSIM(.clk (clk100),
         #1000 ;
         `PULSE(cont);
 
-        #10000000  $finish;
+        #50000000  $finish;
 
 
     end

@@ -98,7 +98,8 @@ module sdsim (
     // sdWP <= 1'b0;
     // read the image file
     $write("Reading Disk Image...");
-    imageFILE = $fopen("advent.rk05", "rb");
+   // imageFILE = $fopen("advent.rk05", "rb");
+    imageFILE = $fopen("v3d.rk05", "rb");
     c = $fread(image, imageFILE, 0, 256);
     $write("Done Reading Disk Image.");
     $display();

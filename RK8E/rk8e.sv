@@ -180,11 +180,13 @@ bit 11 msb of cylinder
           dar <= ac;
           if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
           else 
-          if (cmd_reg[0:2] == 3'b000)  // read
+          if ((cmd_reg[0:2] == 3'b000) ||  // read
+	      (cmd_reg[0:2] == 3'b101))
             begin
             to_disk <= 1'b0;
             sdOP <= sdopRD;
-          end else if (cmd_reg[0:2] == 3'b100)  // write
+          end else if ((cmd_reg[0:2] == 3'b100) ||  // write
+	               (cmd_reg[0:2] == 3'b101))
             // need to check here for write protect
             if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
               status[7] <= 1'b1;
