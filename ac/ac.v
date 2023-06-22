@@ -319,10 +319,12 @@ module ac (input clk,  // have to rename the mdulate for verilator
             else {link,ac} <= {link,ac} ;
 
             E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
+`ifdef EAE			
             else if (instruction == DAD)  //DAD
                 {link,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
             else if ((instruction == DLD) || (instruction ==CAMDAD)) //
                 ac <= mdout;
+`endif				
 
 
             H0:;
@@ -341,7 +343,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             H3:;
             //   EAE stuff
 
-
+`ifdef EAE
             EAE0:
             begin   // set up state
                 case (instruction & 12'b111100001111)
@@ -591,6 +593,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             else if ((instruction == DLD)||(instruction == CAMDAD))
                 mq <= mdout;
             EAE5:;
+`endif			
             default:;
         endcase
 

@@ -166,6 +166,7 @@ module ma (
         H2: if ((depd == 1'b1) | (examd == 1'b1)) ma <= ma + 12'o0001;
         H3: ;
         // EAE accesses
+`ifdef EAE		 
         EAE2: begin
           if ((instruction & 12'b111100101111) == DST) begin
             mdin <= mq;
@@ -185,6 +186,7 @@ module ma (
           write_en <= 1'b1;
         end
         EAE5: mdout <= mdtmp;
+`endif		
 `ifdef RK8E
         DB0:
         if (to_disk == 1'b0) begin
