@@ -8,12 +8,9 @@ module ma (
     input [0:11] sr,
     input sw,
     input [4:0] state,
-    input addr_loadd,
-    depd,
-    examd,
+    input addr_loadd,depd,examd,
     input int_in_prog,
-    input [0:2] IF,
-    DF,
+    input [0:2] IF,DF,
     input [0:14] dmaAddr,
     input [0:11] disk2mem,
     input to_disk,
@@ -194,7 +191,7 @@ module ma (
           mdin <= disk2mem;
           write_en <= 1'b1;
         end
-        DB1:  ;
+        DB1: mdin <= disk2mem  ;
         DB2:
         if (to_disk == 1'b1) begin
           mem2disk <= mdtmp;

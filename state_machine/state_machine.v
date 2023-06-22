@@ -17,13 +17,18 @@ module state_machine(input clk,
 `ifdef RK8E
     input data_break,   // data break write is to disk read is from disk
     input to_disk,
+    output reg break_in_prog,
 `endif
     output reg EAE_skip,
     output reg int_in_prog,
-    output reg break_in_prog,
     output reg [4:0] state);
 
     reg [4:0] next_state;
+`ifndef RK8E
+    reg data_break;
+	reg break_in_prog;
+	assign data_break = 1'b0;
+`endif
 
 `include "../parameters.v"
 
@@ -34,7 +39,9 @@ module state_machine(input clk,
         begin
             state <= H0;
             int_in_prog <= 0;
+`ifdef RK8E			
             break_in_prog <= 1'b0;
+`endif			
             EAE_skip <= 1'b0;
         end
         else case (state)

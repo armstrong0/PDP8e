@@ -1,4 +1,4 @@
-SUBDIRS = ac pc imux ma EAE state_machine FPGA_image FPGA_IO_test integrate \
+SUBDIRS = ac pc imux ma EAE state_machine FPGA_image FPGA_up5k FPGA_IO_test integrate \
 	front_panel mem_gen mem_ext serial RK8E
 
 .PHONY: clean vdent

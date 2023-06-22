@@ -1,0 +1,86 @@
+# For iceFUN board
+# set_frequency clk100 62.250
+#set_frequency clk100 85.5
+set_frequency clk100 73.5
+set_frequency clk 12
+
+set_io --warn-no-port clk 20 # global input  - good for clocks
+
+# LED drive
+set_io --warn-no-port LR[0] 41
+set_io --warn-no-port LR[1] 40
+set_io --warn-no-port LR[2] 39
+set_io --warn-no-port LC[0] 2
+set_io --warn-no-port LC[1] 4
+set_io --warn-no-port LC[2] 3
+set_io --warn-no-port LC[3] 32
+set_io --warn-no-port LC[4] 31
+set_io --warn-no-port LC[5] 6 
+set_io --warn-no-port LC[6] 9
+set_io --warn-no-port LC[7] 10
+set_io --warn-no-port LC[8] 11
+set_io --warn-no-port LC[9] 12
+set_io --warn-no-port LC[10] 21
+set_io --warn-no-port LC[11] 13
+set_io --warn-no-port LC[12] 37  
+
+# switch matrix
+
+set_io --warn-no-port SR[0] 46
+set_io --warn-no-port SR[1] 47
+set_io --warn-no-port SR[2] 44
+set_io --warn-no-port SR[3] 48
+set_io --warn-no-port SR[4] 45
+set_io --warn-no-port SC[0] 19
+set_io --warn-no-port SC[1] 18
+set_io --warn-no-port SC[2] 25
+set_io --warn-no-port SC[3] 23
+
+# SD card
+set_io --warn-no-port sdMISO 14 
+set_io --warn-no-port sdMOSI 17
+set_io --warn-no-port sdSCLK 15 
+set_io --warn-no-port sdCS 27 # note that this chip select is for SD card,
+# config chip select is pin 16
+
+# serial port
+set_io --warn-no-port tx 26
+set_io --warn-no-port rx 28
+
+set_io --warn-no-port runn 34 
+#set_io --warn-no-port sr[2] N14
+#set_io --warn-no-port sr[3] M12
+#set_io --warn-no-port sr[4] P8
+#set_io --warn-no-port sr[5] P14
+#set_io --warn-no-port sr[6] L12
+#set_io --warn-no-port sr[7] L14
+#set_io --warn-no-port sr[8] K14  
+#set_io --warn-no-port sr[9] H12 
+#set_io --warn-no-port sr[10] G14
+#set_io --warn-no-port sr[11] F14
+
+
+#set_io --warn-no-port addr_loadn E14
+#set_io --warn-no-port extd_addrn D14
+
+#set_io --warn-no-port clearn C14
+#set_io --warn-no-port contn A12
+#set_io --warn-no-port examn C11
+#set_io --warn-no-port halt D10
+#set_io --warn-no-port single_step D7
+
+#set_io --warn-no-port dep  C6 #   A6 global input - messes up PLL
+
+#set_io --warn-no-port dsel[0] A7 #A7 global input 
+#set_io --warn-no-port dsel[1] C7 #
+#set_io --warn-no-port dsel[2] D6
+#set_io --warn-no-port dsel[3] A10
+#set_io --warn-no-port dsel[4] C10
+#set_io --warn-no-port dsel[5] A11
+
+#set_io --warn-no-port sdCS   E12
+#set_io --warn-no-port sdSCLK D12
+#set_io --warn-no-port sdMOSI C12
+#set_io --warn-no-port sdMISO B14
+ 
+
