@@ -1,3 +1,7 @@
+The ICE40up5k is not as fast as the ICE40HX, so the clock frequency has to be lower.  However it does have lots of RAM so it can have the full 32 k words of memory.
+
+
+
 One needs to make a pll module with the correct parameters for the operating frequency;
 
 This can be done thus:

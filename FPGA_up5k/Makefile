@@ -40,7 +40,7 @@ verilator: PDP8e.v
 
 # was 62.25
 pll: 
-	icepll -i 12 -o 74.00  -f  pll.v -m
+	icepll -i 12 -o 32.00  -f  pll.v -m
 
 lint: 
 	verilator -cc -DSIM PDP8e.v
