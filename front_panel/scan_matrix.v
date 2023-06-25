@@ -6,11 +6,11 @@ module scan_matrix (
     input [0:11] A,
     input [0:2] EMA,
     input [0:11] ds,
-    output [0:2] LR,
-    output reg [0:11] LC,
-    output [0:5] SR,
-    output [0:11] sr,
-	output [2:0] dsel,
+    output reg [0:2] LR,
+    output reg [0:12] LC,
+    output reg [0:4] SR,
+    output reg [0:11] sr,
+    output reg [2:0] dsel,
     output reg single_step,
     halt, sw,
     output reg addr_load,
@@ -19,7 +19,7 @@ module scan_matrix (
     cont,
     exam,
     dep,
-    input [0:4] SC
+    input [0:3] SC
 );
 
   reg [14:0] counter;
@@ -54,26 +54,32 @@ module scan_matrix (
       case (Srow)
         0: begin
 	   SR <= 6'b100000;
+	   sr[0:3] <= SC;
 	   Srow <= 3'b001;
         end
         1: begin
 	   SR <= 6'b010000;
+	   sr[4:7] <= SC;
 	   Srow <= 3'b010;
         end
         2: begin
 	   SR <= 6'b001000;
+	   sr[8:11] <= SC; 
 	   Srow <= 3'b011;
         end
         3: begin
 	   SR <= 6'b000100;
+	   {single_step,halt,sw,dep} <= SC; //need separate signals for inout and processed output
 	   Srow <= 3'b100;
         end
         4: begin
 	   SR <= 6'b000010;
+	   {dep,exam} <= SC[0];
 	   Srow <= 3'b101;
         end
         5: begin
 	   SR <= 6'b000001;
+	   {addr_load,extd_addr,clear,cont} <= SC;
 	   Srow <= 3'b000;
         end
         default: Srow <= 3'b000;
