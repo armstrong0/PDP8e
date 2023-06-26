@@ -1,4 +1,6 @@
-`include "../ram/ram.v"
+//`include "../ram/ram.v"
+`include "../spram/up_spram.v"
+
 module ma (
     input clk,
     input reset,
@@ -32,13 +34,21 @@ module ma (
 
   assign EMA  = eaddr[0:2];
   assign addr = eaddr[3:14];
-
+/*
   ram ram (
       .din(mdin),
       .addr(eaddr),
       .write_en(write_en),
       .clk(clk),
       .dout(mdtmp)
+  );
+*/
+  up_spram ram (
+      .wdata({3'b0,mdin}),
+      .addr(eaddr),
+      .wr  (write_en),
+      .clk(clk),
+      .rdata(mdtmp)
   );
 
 

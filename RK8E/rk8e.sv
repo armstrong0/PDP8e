@@ -163,7 +163,7 @@ bit 11 msb of cylinder
       write_lock[1] <= 1'b0;
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
-	  last_sdstate  <= sdstateINIT;
+      last_sdstate  <= sdstateINIT;
     end else if ((state == F1) && (UF == 1'b0)) begin
       skip <= 1'b0;
       case (instruction)
@@ -179,14 +179,12 @@ bit 11 msb of cylinder
           begin
           dar <= ac;
           if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
-          else 
-          if ((cmd_reg[0:2] == 3'b000) ||  // read
-	      (cmd_reg[0:2] == 3'b101))
-            begin
+          else if ((cmd_reg[0:2] == 3'b000) ||  // read
+              (cmd_reg[0:2] == 3'b101)) begin
             to_disk <= 1'b0;
             sdOP <= sdopRD;
           end else if ((cmd_reg[0:2] == 3'b100) ||  // write
-	               (cmd_reg[0:2] == 3'b101))
+              (cmd_reg[0:2] == 3'b101))
             // need to check here for write protect
             if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
               status[7] <= 1'b1;
@@ -201,7 +199,7 @@ bit 11 msb of cylinder
           begin
           cmd_reg <= ac;
           status  <= 12'o0000;
-		  // execute now cmd does not yet hold the cmd from ac
+          // execute now, cmd does not yet hold the cmd from ac
           if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
         end
         12'o6747: ;  // DMAN not implemented
@@ -226,24 +224,24 @@ bit 11 msb of cylinder
 
       // change to a case statement on sdstate
       case (sdstate)
-        sdstateINIT:; // SD Initializing
-        sdstateREADY: // SD Ready for commands
-		  if (last_sdstate != sdstateREADY) status[0] <= 1'b1;
+        sdstateINIT: ;  // SD Initializing
+        sdstateREADY:  // SD Ready for commands
+        if (last_sdstate != sdstateREADY) status[0] <= 1'b1;
         sdstateREAD,  // SD Reading
-        sdstateWRITE: 
-          status[0] <= 1'b0;  // SD Writing
+        sdstateWRITE:
+        status[0] <= 1'b0;  // SD Writing
         sdstateDONE: begin
-		  if ((last_sdstate == sdstateREAD) || (last_sdstate == sdstateWRITE)) 
-          status[0] <= 1'b1;  // SD Done
+          if ((last_sdstate == sdstateREAD) || (last_sdstate == sdstateWRITE))
+            status[0] <= 1'b1;  // SD Done
         end
         sdstateINFAIL,  // SD Initialization Failed
         sdstateRWFAIL: begin
           status[0]  <= 1'b0;
           status[10] <= 1'b1;
         end
-        default:status[0] <= 1'b0;
+        default: status[0] <= 1'b0;
       endcase
-	  last_sdstate <= sdstate;
+      last_sdstate <= sdstate;
       if (sdstate != sdstateREADY) sdOP <= sdopNOP;
 
     end
