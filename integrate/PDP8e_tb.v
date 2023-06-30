@@ -54,7 +54,7 @@ module PDP8e_tb;
     parameter test_sel=2;
 
 
-    top UUT (.clk (clk),
+    PDP8e UUT (.clk (clk),
         .runn (runn),
         .led1 (led1),
         .led2 (led2),
@@ -468,7 +468,7 @@ module PDP8e_tb;
 				#500 `pulse1(dep);
 				sr <= 12'o4667;
                 #500 `pulse1(addr_load);
-				sr <= 12'o5003;
+				sr <= 12'o5000;
                 #500 `pulse1(clear);
                 #500 `pulse1(cont);
 				#10000 $finish;
