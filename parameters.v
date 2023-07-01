@@ -1,5 +1,6 @@
 `define EAE
 `define RK8E
+//`define up5k
 
 // state machine encoding
 parameter     F0 = 5'b00000,
@@ -56,7 +57,12 @@ parameter
 `ifndef SIM
     //parameter real clock_frequency    =  62250000;
     //parameter real clock_frequency    =  79500000;
-    parameter real clock_frequency    =  73500000;
+    //parameter real clock_frequency    =  73500000;
+`ifdef up5K	
+`include "FPGA_up5k/clock.v"
+`else
+`include "FPGA_image/clock.v"
+`endif
     parameter real clock_period = 1/clock_frequency*1e9;
     parameter real baud_rate=9600;
     parameter real baud_period = 1.0/baud_rate*1e9;

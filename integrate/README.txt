@@ -31,7 +31,7 @@ The structure of the test bed is not all that good, it has grown as I have
 learned about coding in verilog and figuring out new ways to make thing easier
 to do.
 
-There are 14 tests possible (designated t1, t1.1, t2, t2.1, t2 .. t12.  The
+There are 17 tests possible (designated t1, t1.1, t2, t2.1, t2 .. t15.  The
 names of the VCD files produced tells you what is being tested.  For each test
 a hex file is loaded, the hex file comes from within the Diagnostics directory.
 In the diagnostics directory are the hex files, a bin file with the same 4 (or
@@ -40,7 +40,7 @@ Also is a documentation file with the same base part of the file name.  That
 documentation files describes how to run the test on a real PDP8e.  For the
 most part the test bed file does that work.  
 
-The last test t12 is a serial interface test.  The test has many sub parts,
+The test t12 is a serial interface test.  The test has many sub parts,
 some of which are expected to run while others are not.  Any test trying to do
 timing will be troublesome as this PDP8e is way faster that the original.  A
 new state machine design was created that added delay states to increase the
@@ -49,10 +49,10 @@ frequecy of 5 MHz.  The test is set to run at 1200 baud.  Prog0 and prog1 are
 the two sets if tests that test the logic implemention, the rest mostly test
 the ASR33 or ASR37.
 
-One thing that t12 requires is loopback tx to tx.  I unhooked the recieve line
+One thing that t12 requires is loopback tx to tx.  I unhooked the receive line
 of the FPGA from the USB to serial converter and tied tx to rx.  I realized
 later that I could have "rewired" it inside of the test bed without changing the
-hardware.
+hardware, that is now done.
 
 Now the tx tests run as well as the rx tests.
 
