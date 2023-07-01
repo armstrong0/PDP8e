@@ -1,5 +1,8 @@
-//`include "../ram/ram.v"
+`ifdef up5k
 `include "../spram/up_spram.v"
+`else
+`include "../ram/ram.v"
+`endif
 
 module ma (
     input clk,
@@ -34,15 +37,8 @@ module ma (
 
   assign EMA  = eaddr[0:2];
   assign addr = eaddr[3:14];
-/*
-  ram ram (
-      .din(mdin),
-      .addr(eaddr),
-      .write_en(write_en),
-      .clk(clk),
-      .dout(mdtmp)
-  );
-*/
+
+`ifdef up5k
   up_spram ram (
       .wdata({3'b0,mdin}),
       .addr(eaddr),
@@ -50,6 +46,16 @@ module ma (
       .clk(clk),
       .rdata(mdtmp)
   );
+`else
+  ram ram (
+      .din(mdin),
+      .addr(eaddr),
+      .write_en(write_en),
+      .clk(clk),
+      .dout(mdtmp)
+  );
+`endif
+
 
 
 

@@ -27,6 +27,15 @@ module scan_matrix (
   reg [ 2:0] Srow;
   reg [0:5] dsel1;
 
+  // three signals single_step, halt and sw have to be developed in this
+  // module.  In an original PDP8e they are essentailly toggle switches, Here
+  // we are emulating that with push button switches.  So we have to detect
+  // presses, toggle the state of the signal and hold off making changes for
+  // some period of time.  Basically the same as the circuitry in
+  // front_panel.v
+  //
+  // Additionally the 12 sr switches need the same treatment
+
   always @(posedge clk) begin
     if (reset == 1'b1) begin
       counter <= 15'd0;

@@ -104,7 +104,7 @@ sdsim SDSIM(.clk (clk100),
         #1 sr <= 12'o0200;  // normal start address
         $dumpfile("SDCard.vcd");
         $dumpvars(0,address,diskio,UUT);
-        //$readmemh("Diagnostics/D0JB.hex",UUT.MA.ram.mem,0,4095);
+        $readmemh("zero.hex",UUT.MA.ram.mem,0,8191);
         sr <= 12'o0004;
 
         #1 reset <= 1;
