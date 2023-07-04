@@ -180,7 +180,7 @@ bit 11 msb of cylinder
           dar <= ac;
           if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
           else if ((cmd_reg[0:2] == 3'b000) ||  // read
-              (cmd_reg[0:2] == 3'b101)) begin
+              (cmd_reg[0:2] == 3'b001)) begin
             to_disk <= 1'b0;
             sdOP <= sdopRD;
           end else if ((cmd_reg[0:2] == 3'b100) ||  // write
