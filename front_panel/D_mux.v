@@ -21,7 +21,7 @@ module D_mux(
     always @* begin
         case (state)
 `ifdef RK8E
-			DB0,DB1,DB2,
+			DB0,DB1,
 `endif			
             F0,FW,F1,F2,F3,F2A,F2B:
             begin
@@ -31,7 +31,7 @@ module D_mux(
                 ES = 0;
                 HS = 0;
             end
-            D0,DW,D1,D2,D3:
+            D0,DW,D1,D2,DW1,D3:
             begin
                 run_led = 1;
                 FS = 0;

@@ -25,12 +25,12 @@ wire [4:0] stateo;
 wire int_in_prog;
 reg EAE_loop,EAE_mode;
 reg UF;
-reg db_read,db_write;
+reg data_break,to_disk;
 reg  DB;
 
 always @(posedge clk)
 begin
-  DB <= (stateo == DB0) || (stateo == DB1) || (stateo == DB2);
+  DB <= ((stateo == DB0) || (stateo == DB1) );
 end
 
 
@@ -45,8 +45,8 @@ state_machine SM1(.clk (clk),
           .EAE_mode (EAE_mode),
           .EAE_loop (EAE_loop),
           .UF (UF),
-          .db_read (db_read),
-          .db_write (db_write),
+          .data_break (data_break),
+          .to_disk (to_disk),
           .int_ena (int_ena),
           .int_req (int_req),
           .int_inh (int_inh),
@@ -57,8 +57,6 @@ state_machine SM1(.clk (clk),
 `include "../parameters.v"
 
 
-integer               data_file    ; // file handle
-integer               scan_file    ; // file handle
 integer address;
 integer dummy;
 integer temp;
@@ -88,27 +86,30 @@ int_req <= 0;
 int_ena <= 0;
 int_inh <= 1;
 trigger <= 0;
-db_read <= 0;
-db_write <= 0;
+data_break  <= 0;
+to_disk <= 0;
 
 #50 rst <= 0;
 #1 halt = 0;
 sing_step <= 0;
 // the following tests single machine cycles for 1,2 and 3 MC instructions
 op <= 12'o7200;  // path for 6 and 7 IOT and OP opcodesw
+data_break <= 0;
 #30 `pulse(cont);
-db_write <=1;
-
+data_break <= 1;
+to_disk <= 0;
 #50 op <= 12'o7402;
 // now do it again with db_read
-db_read <= 1;
-db_write <= 0;
+data_break  <= 1;
+to_disk <= 0;
 
 op <= 12'o7200;
 #50 op <= 12'o7402;
+halt <= 1;
 wait(SM1.state == H0);
 op <= 12'o5000; // jump direct
 #60 `pulse(cont);
+$finish;
 wait(SM1.state == DB1);
 wait(DB == 0);
 #50 op <= 12'o7402;

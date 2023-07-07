@@ -141,8 +141,9 @@ sdsim SDSIM(.clk (clk100),
         `PULSE(addr_load);
         #1000 ;
         `PULSE(cont);
-
-        #50000000  $finish;
+		//wait(UUT.instruction == 12'o6744);
+        //$writememh("ram_contents2",UUT.MA.ram.mem,0,8191);
+        #4000000  $finish;
 
 
     end

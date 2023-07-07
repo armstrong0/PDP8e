@@ -13,6 +13,7 @@ parameter     F0 = 5'b00000,
               DW = 5'b00110,
               D1 = 5'b00111,
               D2 = 5'b01000,
+	  DW1 = 5'b11111,
               D3 = 5'b01001,
 
               E0 = 5'b01010,
@@ -37,8 +38,8 @@ parameter     F0 = 5'b00000,
               F2A  = 5'b11011,
               F2B  = 5'b11100,
               DB0 = 5'b11101,  // data break states
-              DB1 = 5'b11110,
-              DB2 = 5'b11111;
+              DB1 = 5'b11110;
+            //  DB2 = 5'b11111; turned into a wait state for defered
 
 
 // instruction encodings
@@ -59,9 +60,9 @@ parameter
     //parameter real clock_frequency    =  79500000;
     //parameter real clock_frequency    =  73500000;
 `ifdef up5K	
-`include "FPGA_up5k/clock.v"
+`include "./FPGA_up5k/clock.v"
 `else
-`include "FPGA_image/clock.v"
+`include "../FPGA_image/clock.v"
 `endif
     parameter real clock_period = 1/clock_frequency*1e9;
     parameter real baud_rate=9600;

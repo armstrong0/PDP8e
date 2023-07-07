@@ -10,7 +10,7 @@ module state_machine(input clk,
     input int_inh,
     input UF,
     input trigger,
-    input [0:11] instruction, ac, mq,
+    input [0:11] instruction, ac, ma, mq,
     input EAE_mode,
     input EAE_loop,
     input gtf,
@@ -206,9 +206,10 @@ module state_machine(input clk,
                     state <= DW;
                 else
                     state <= D0;
-                DW: state <= D1;
-                D1: state <= D2;
-                D2: state <= D3;
+				D1: state <= D2;
+                D2: if (ma[0:9] == 9'o001) state <= DW1;
+				else state <= D3;
+				DW1: state <= D3;
                 //  if it is a jmp I then F0 is the desired state
                 D3: if (instruction[0:3] == 4'b1011)
                 begin
@@ -296,8 +297,7 @@ module state_machine(input clk,
                 EAE5: state <= E3;   // back to normal processing
                 // data break
                 DB0: state <= DB1;
-                DB1: state <= DB2;
-                DB2: begin
+                DB1: begin
                     state <= next_state;
                     break_in_prog <= 1'b0;
                 end

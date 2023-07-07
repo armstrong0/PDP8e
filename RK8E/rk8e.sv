@@ -139,7 +139,7 @@ bit 11 msb of cylinder
       dmaAddr <= dmaADDR;  // register and pass through
       data_break <= 1'b1;
     end
-    if (state == DB2) // data break is happening so reset request
+    if (state == DB1) // data break is happening so reset request
     begin
       data_break <= 1'b0;
     end
