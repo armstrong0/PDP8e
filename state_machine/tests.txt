@@ -50,16 +50,19 @@ Verify timing
 These are non auto increment
 JMP I 5600   // have to pull another value from memory (or hardcode)
 DCA I 3600
+HLT 7402
 
 Now using zero page  I 
 JMP I 5410
 DCA I 3410
+hlt 7402
 Now current page (PC [0:4] == 0
 JMP I 5610
 DCA I 3610
+hlt
 my test bed reads the last op code and the simulation stops before it is done
 I could fix it but I think I will just add another opcode 
-7402 - just nneded a carrage return!!
+7402 - just needed a carrage return!!
 
 
 

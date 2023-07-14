@@ -24,8 +24,9 @@ module state_machine_tb;
   wire [4:0] stateo;
   wire int_in_prog;
   reg EAE_loop, EAE_mode;
+  reg index;
   reg UF;
-  reg date_break, to_disk;
+  reg data_break, to_disk;
 
 
   state_machine SM1 (
@@ -39,8 +40,9 @@ module state_machine_tb;
       .state(stateo),
       .EAE_mode(EAE_mode),
       .EAE_loop(EAE_loop),
+	  .index (index),
       .UF(UF),
-      .data_break(ddata_break),
+      .data_break(data_break),
       .to_disk(to_disk),
       .int_ena(int_ena),
       .int_req(int_req),
@@ -50,7 +52,7 @@ module state_machine_tb;
 
   ram mem (
       .din(din),
-      .addr(address[12:0]),
+      .addr(address[14:0]),
       .write_en(write_en),
       .clk(clk),
       .dout(opt)
@@ -92,6 +94,7 @@ module state_machine_tb;
     rst <= 1;
     EAE_loop <= 0;
     EAE_mode <= 0;
+	index <= 1'b0;
     UF <= 0;
     loaded <= 0;
     sing_step <= 0;
@@ -101,8 +104,8 @@ module state_machine_tb;
     int_ena <= 0;
     int_inh <= 1;
     trigger <= 0;
-    db_read <= 0;
-    db_write <= 0;
+    //db_read <= 0;
+    //db_write <= 0;
 
     #500 rst <= 0;
     address <= 1;  // first addess is the reset state
@@ -142,22 +145,26 @@ module state_machine_tb;
     #10 int_ena <= 1;
     #1 int_inh <= 0;
     #135 int_req <= 1;
+	wait(stateo == 5'o20);
     #100 `pulse(cont);
+	wait(stateo == 5'o20);
     #100 `pulse(cont);
-    #250 `pulse(cont);
-    #225 int_ena <= 0;
+	wait(stateo == 5'o20);
+    #100 `pulse(cont);
+    #1 int_ena <= 0;
     #1 int_req <= 0;
     #50 halt <= 1;
-    #200 `pulse(cont);
-    #400 `pulse(cont);
-    #600 `pulse(cont);
-    #200 `pulse(cont);
-    #200 `pulse(cont);
-    #200 `pulse(cont);
-    #200 `pulse(cont);
-    #200 `pulse(cont);
-    #200 `pulse(cont);
-    #200 `pulse(cont);
+	#150 halt <= 0;
+	wait(stateo == 5'o20);
+    #100 `pulse(cont);
+	wait(stateo == 5'o20);
+	index <= 1'b1;
+    #100 `pulse(cont);
+	wait(stateo == 5'o20);
+    #100 `pulse(cont);
+    #1000 $finish;
+
+
     #1000 $finish;
 
 

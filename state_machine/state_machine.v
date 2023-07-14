@@ -10,9 +10,10 @@ module state_machine(input clk,
     input int_inh,
     input UF,
     input trigger,
-    input [0:11] instruction, ac, ma, mq,
+    input [0:11] instruction, ac, mq,
     input EAE_mode,
     input EAE_loop,
+	input index, // auto increment occuring
     input gtf,
 `ifdef RK8E
     input data_break,   // data break write is to disk read is from disk
@@ -206,8 +207,9 @@ module state_machine(input clk,
                     state <= DW;
                 else
                     state <= D0;
+				DW: state <= D1;	
 				D1: state <= D2;
-                D2: if (ma[0:9] == 9'o001) state <= DW1;
+                D2: if (index == 1'b1) state <= DW1;
 				else state <= D3;
 				DW1: state <= D3;
                 //  if it is a jmp I then F0 is the desired state
