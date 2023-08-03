@@ -9,9 +9,9 @@ FILES = PDP8e.v
 
 PDP8e:
 	# synthesize using Yosys
-	yosys -p "synth_ice40 -top top -json $(PROJ).json" $(FILES)
+	yosys -p "synth_ice40 -top top -json $(PROJ).json" $(FILES) -l synth.log
 	# Place and route using nextpnr
-	nextpnr-ice40 -r --hx8k --json $(PROJ).json --package cb132 --asc $(PROJ).asc --opt-timing --pcf PDP8e.pcf
+	nextpnr-ice40 -r --hx8k --json $(PROJ).json --package cb132 --asc $(PROJ).asc --opt-timing --pcf PDP8e.pcf -l routing.log
 
 	# Convert to bitstream using IcePack
 	icepack $(PROJ).asc $(PROJ).bin

@@ -15,11 +15,11 @@ module front_panel (input clk,
 
 `include "../parameters.v"
     wire cont_c;
-    reg [0:6] switchd;
-    reg [0:5] switchl;
-    reg [0:2] trig_state;
+    reg [6:0] switchd;
+    reg [5:0] switchl;
+    reg [2:0] trig_state;
 
-    reg [0:dbnce_nu_bits] trig_cnt;  // the highest order bit is always bit 0 !
+    reg [dbnce_nu_bits:0] trig_cnt;  // the highest order bit is always dbnce_nu_bits !
     reg trigger1;
 
     assign { triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd } = switchd;
@@ -81,7 +81,7 @@ module front_panel (input clk,
                     switchd <= switchd;
 
                 end
-                Delay: if (trig_cnt[0] == 1)
+                Delay: if (trig_cnt[dbnce_nu_bits] == 1)
                 begin
                     trig_state <= Reenable;
                     sw_active <= 1'b0;
