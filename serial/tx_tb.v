@@ -4,7 +4,7 @@ module tx_tb;
 
     reg clk;
     reg reset;
-	reg clear;
+    reg clear;
     wire tx;
     reg load;
     wire flag;
@@ -16,13 +16,13 @@ module tx_tb;
 
     tx tx1(.clk100 (clk),
         .reset (reset),
-		.clear (clear),
+        .clear (clear),
         .tx (tx),
         .load (load),
         .char (char),
         .clear_flag (clear_flag),
         .set_flag (set_flag),
-		.flag (flag));
+        .flag (flag));
 
     initial begin
 
@@ -37,12 +37,11 @@ module tx_tb;
 
     initial begin
         $dumpfile("tx.vcd");
-        $dumpvars(0,clk,reset,tx,tx1);
-		//load,char,flag,set_flag,clear_flag,tx1.counter,tx1.shifter,tx1.active);
+        $dumpvars(0,tx1);
         clear_flag <= 0;
         set_flag <= 0;
         reset <= 1;
-		clear <= 0;
+        clear <= 0;
         load <= 0;
         #40 reset <= 0;
         #40 set_flag <= 1;
@@ -50,9 +49,11 @@ module tx_tb;
         #40 clear_flag <= 1;
         #40 clear_flag <= 0;
         #20 load <= 0;
-        #150000 char <= 12'o0110;
-        #20 load <= 1;
-        #20 load <= 0;
+        wait (tx1.flag == 1'b0); 
+        #1000 char <= 12'o0110;
+        #(2*clock_period) load <= 1;
+        #(2*clock_period) load <= 0;
+        wait (tx1.flag == 1'b1); 
         #78200 char <= 12'o0105;
         #20 load <= 1;
         #20 load <= 0;
@@ -69,7 +70,7 @@ module tx_tb;
         #20 load <= 1;
         #20 load <= 0;
         
-		#150000 $finish;
+        #150000 $finish;
     end
 
 endmodule

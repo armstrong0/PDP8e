@@ -3,20 +3,21 @@
 // Check the first few sample to ensure a real start bit
 // Then at the appropriate bit times shift rx into the receive shift register.
 
-module rx (input reset,
+module rx (
+    input reset,
     input clear,
     input clk,
     input rx,
     input clear_flag,
     output reg flag,
-    output reg[0:7] char0);  //  bit 7 is the LSB and was received first
+    output reg [0:7] char0
+);  //  bit 7 is the LSB and was received first
 
-`include "../parameters.v"
+  `include "../parameters.v"
 
-    localparam term_cnt = $rtoi ((baud_period / 16) / clock_period);
+  localparam term_cnt = $rtoi((baud_period / 16) / clock_period);
 
-
-    localparam start_search = 0,
+  localparam start_search = 0,
     check_start = 1,
     check_start1 = 2,
     check_start2 = 3,
@@ -31,41 +32,37 @@ module rx (input reset,
     bit7 = bit6 + 16,
     stop_bit = bit7 + 16;
 
-    reg[7:0] state;
-    reg[14:0] counter;
-    reg[0:7] char1; // receive shift register
+  reg [ 7:0] state;
+  reg [14:0] counter;
+  reg [ 0:7] char1;  // receive shift register
 
 
-    always @ (posedge clk)
-    begin if ((reset == 1 'b1)| (clear == 1))
-        begin
-            char1 <= 8'o377;
-            char0 <= 8'o377;
-            counter <= term_cnt[14:0];
-            flag <= 0;
-            state <= start_search;
+  always @(posedge clk) begin
+    if ((reset == 1'b1) | (clear == 1)) begin
+      char1 <= 8'o377;
+      char0 <= 8'o377;
+      counter <= term_cnt[14:0];
+      flag <= 0;
+      state <= start_search;
+    end else if (clear_flag == 1) flag <= 0;
+    else if (counter > 15'o0000) counter <= counter - 1;
+    else  // counter reached zero
+    begin
+      counter <= term_cnt[14:0];
+      state   <= state + 1;
+      case (state)
+        start_search, check_start, check_start1, check_start2, check_start3:
+        if (rx == 1) state <= 8'b11111111;
+        else char1 <= 8'o377;
+        bit0, bit1, bit2, bit3, bit4, bit5, bit6: char1 <= {rx, char1[0:6]};
+        bit7: char0 <= {rx, char1[0:6]};
+
+        stop_bit: begin  // rx should be one here
+          flag  <= 1;
+          state <= start_search;
         end
-        else if (clear_flag == 1)
-            flag <=0;
-        else if (counter > 15'o0000) counter <= counter - 1;
-        else   // counter reached zero
-        begin counter <= term_cnt[14:0];
-            state <= state + 1;
-            case (state)
-                start_search, check_start, check_start1,
-                check_start2, check_start3:
-                if (rx == 1) state <= 8'b11111111;
-                else char1 <= 8'o377;
-                bit0,bit1, bit2, bit3, bit4, bit5, bit6:
-                char1 <= { rx, char1[0: 6] };
-                bit7: char0 <= { rx, char1[0: 6] };
-
-                stop_bit:begin // rx should be one here
-                    flag <= 1;
-                    state <= start_search;
-                end
-                default:;
-            endcase
-        end
+        default: ;
+      endcase
     end
+  end
 endmodule
