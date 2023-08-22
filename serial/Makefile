@@ -11,17 +11,17 @@ tx: tx.v tx_tb.v ../parameters.v
 	#gtkwave tx.vcd tx.gtkw	&
 
 rx: rx.v rx_tb.v ../parameters.v
-	iverilog rx.v rx_tb.v -o rx 
+	iverilog -DSIM rx.v rx_tb.v -o rx 
 	vvp rx -fst
 	
 view_tx: tx
-	gtkwave top_tx.vcd top_tx.gtkw & 
+	gtkwave tx.vcd tx.gtkw & 
 
 view_rx:rx 
 	gtkwave rx.vcd rx_rx.gtkw	&
 
-view_top: top_tx.vcd
-	gtkwave top_tx.vcd top.gtkw &
+view_top: top
+	gtkwave top.vcd top.gtkw &
 
 
 vdent: rx.v tx.v serial_top.v
@@ -37,6 +37,7 @@ clean:
 	rm -f brg
 	rm -f tx
 	rm -f rx
+	rm -rf top
 	rm -f *.vcd
 	rm -f *design
 	rm -rf top_tx
