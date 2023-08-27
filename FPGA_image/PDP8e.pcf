@@ -1,6 +1,4 @@
 # For iceFUN board
-# set_frequency clk100 62.250
-#set_frequency clk100 85.5
 set_frequency clk100 73.5
 set_frequency clk 12
 
@@ -65,8 +63,8 @@ set_io --warn-no-port extd_addrn D14
 set_io --warn-no-port clearn C14
 set_io --warn-no-port contn A12
 set_io --warn-no-port examn C11
-set_io --warn-no-port halt D10
-set_io --warn-no-port single_step D7
+set_io --warn-no-port haltn D10
+set_io --warn-no-port single_stepn D7
 
 set_io --warn-no-port dep  C6 #   A6 global input - messes up PLL
 
