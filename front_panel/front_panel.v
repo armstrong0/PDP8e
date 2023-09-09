@@ -24,11 +24,11 @@ module front_panel (input clk,
 
     assign { triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd } = switchd;
 
-    localparam Latch = 3'b110,
-	      Wait  = 3'b000,
+    localparam reg Latch = 3'b110,
+          Wait  = 3'b000,
           Trig1 = 3'b001,
           Trig2 = 3'b010,
-     	  Trig3 = 3'b011,
+          Trig3 = 3'b011,
           Delay = 3'b100,
           Reenable = 3'b101;
 
@@ -50,7 +50,8 @@ module front_panel (input clk,
             case (trig_state)
                 Latch:
                 begin
-                    switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont };// latch inputs
+                    switchl <= switchl |
+                     {clear, extd_addr, addr_load, dep, exam, cont };// latch inputs
                     if (switchl == 6'b000000)
                         trig_state <= Latch;
                     else

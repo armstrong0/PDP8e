@@ -55,7 +55,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             FW:;
             F1:
             casez (instruction)
-			    // oper1 instructions
+                // oper1 instructions
                 12'b11100000????:                // nop
                 {link,ac} <= {link,ac};
                 12'b11100001????:                // cml
@@ -91,13 +91,13 @@ module ac (input clk,  // have to rename the mdulate for verilator
 
                 //oper3 instructions
                 // below are the instructoions that are part of the base
-				// PDP8e.  Without the EAE the bits used by the EAE are set to
-				// zero.  However when we implement the EAE we need to
-				// consider that some of those bits need to be set.
-				// Different actions depend  on the mode bit
-				// The instructions below execute in this phase of the machine
-				// cycle.  Any further operations on the link, ac or mq must
-				// happen in the following phases.
+                // PDP8e.  Without the EAE the bits used by the EAE are set to
+                // zero.  However when we implement the EAE we need to
+                // consider that some of those bits need to be set.
+                // Different actions depend  on the mode bit
+                // The instructions below execute in this phase of the machine
+                // cycle.  Any further operations on the link, ac or mq must
+                // happen in the following phases.
 
                     //12'b111100?0???1:;  //NOP  caught by default
                 12'b111100?1???1:  //MQL
@@ -154,7 +154,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             F2B: //EAE Mode B
             if ((instruction & 12'b111100101111) == 12'b111100101111)
                  // 7457 SAM first phase
-                {il,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'b1;
+                {il,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'o00001;
             else if ((instruction & 12'b111100101111) == 12'b111110111001)
                  // 7471:  skip if mode B
             begin
@@ -163,10 +163,10 @@ module ac (input clk,  // have to rename the mdulate for verilator
             end
 
             F3: casez(instruction)
-				//  all 6000 series instructions need to be inhibited in user
-				//  mode, I tried to put the if conditional outside of the
-				//  casez, it did not work in simulation or on hardware so
-				//  we have a much repeated conditional
+                //  all 6000 series instructions need to be inhibited in user
+                //  mode, I tried to put the if conditional outside of the
+                //  casez, it did not work in simulation or on hardware so
+                //  we have a much repeated conditional
                 12'o6004: if (UF == 1'b0)  //GTF
                     ac <= {link,gtf,input_bus[2:11]};
                 else ac <= ac;
@@ -195,7 +195,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 if (UF == 1'b0)
                     ac <= input_bus;
                 else ac <= ac;
-               	// oper2 switch operations
+                   // oper2 switch operations
                 12'b1111?????1?0: if (UF == 1'b0)
                     ac <= ac | sr; // ac may have been cleared in previous phase
 
@@ -224,11 +224,11 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     ac[0:11]  <= {ac[11],link,ac[0:9]};
                     link <= ac[10];
                 end
-				// now some oper3;
+                // now some oper3;
 
-				// ac may have already been cleared if it
-				// needs to be.  some of the other micro op combinations don't
-				// make sense
+                // ac may have already been cleared if it
+                // needs to be.  some of the other micro op combinations don't
+                // make sense
                 12'b1111??0?0011: if (EAE_mode == 1'b0)  // 7403 SCL
                 begin
                     sc <= ~mdout[7:11];
@@ -299,6 +299,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     case ({ac_tmp[0],ac[0],mq[0]})
                         3'b000,3'b010,3'b011,3'b110: gtf <= 1'b1;
                         3'b001,3'b100,3'b101,3'b111: gtf <= 1'b0;
+                        default: gtf <= 0;
                     endcase
                 end
 
@@ -319,12 +320,12 @@ module ac (input clk,  // have to rename the mdulate for verilator
             else {link,ac} <= {link,ac} ;
 
             E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
-`ifdef EAE			
+`ifdef EAE
             else if (instruction == DAD)  //DAD
                 {link,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
             else if ((instruction == DLD) || (instruction ==CAMDAD)) //
                 ac <= mdout;
-`endif				
+`endif
 
 
             H0:;
@@ -347,14 +348,14 @@ module ac (input clk,  // have to rename the mdulate for verilator
             EAE0:
             begin   // set up state
                 case (instruction & 12'b111100001111)
-				    // MUL
+                    // MUL
                     12'o7405:
                     begin
                         link <= 1'b0;
                         EAE_loop <= 1'b1;
                         sc <= 5'd12;
                     end
-					// DIV
+                    // DIV
                     12'o7407: begin
                         if (div_ov[0] == 1'b0) // divide overflow
                         begin
@@ -521,9 +522,9 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     end
                     12'o7407:  // DIV
                     begin // the original PDP8e used non restoring division.
-					// here I am using restoring devision BUT since the old
-					// values are still around I use those, shifted without
-					// the subtraction
+                    // here I am using restoring devision BUT since the old
+                    // values are still around I use those, shifted without
+                    // the subtraction
                         ;
                         if (link == 1'b0)   // no overflow
                         begin
@@ -548,7 +549,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     begin
                         {link,ac,mq} <= {ac,mq,1'b0};
                         sc <= sc + 5'd1;
-					    // conditional set for next iteration
+                        // conditional set for next iteration
                         if ((ac[1] != ac[2])
                                 || ((ac[3:11] == 9'o0)
                                     && (mq == 12'o0)))
@@ -593,7 +594,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             else if ((instruction == DLD)||(instruction == CAMDAD))
                 mq <= mdout;
             EAE5:;
-`endif			
+`endif
             default:;
         endcase
 

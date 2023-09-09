@@ -1,17 +1,17 @@
 [*]
 [*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Sun Aug 28 01:11:00 2022
+[*] Thu Feb 16 21:54:11 2023
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.vcd"
-[dumpfile_mtime] "Sun Aug 28 01:09:44 2022"
-[dumpfile_size] 7171
+[dumpfile_mtime] "Thu Feb 16 21:51:21 2023"
+[dumpfile_size] 7232
 [savefile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.gtkw"
-[timestart] 0
-[size] 1680 970
-[pos] -161 -140
-*-19.174809 749 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 918000
+[size] 1674 970
+[pos] -1 -1
+*-16.174809 1150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] front_panel_tb.
-[sst_width] 207
+[sst_width] 214
 [signals_width] 158
 [sst_expanded] 1
 [sst_vpaned_height] 282
@@ -21,6 +21,11 @@ front_panel_tb.UUT.trig_state[0:2]
 front_panel_tb.UUT.trig_cnt[0:4]
 @28
 front_panel_tb.UUT.trigger1
+front_panel_tb.UUT.sing_step
+front_panel_tb.UUT.halt
+@29
+front_panel_tb.UUT.cont
+@28
 front_panel_tb.UUT.cont_c
 front_panel_tb.UUT.contd
 front_panel_tb.UUT.dep
@@ -31,9 +36,10 @@ front_panel_tb.UUT.exam
 front_panel_tb.UUT.examd
 front_panel_tb.UUT.extd_addr
 front_panel_tb.UUT.extd_addrd
-front_panel_tb.UUT.sing_step
-front_panel_tb.UUT.halt
-@23
-front_panel_tb.UUT.switchd[0:6]
+front_panel_tb.UUT.addr_load
+front_panel_tb.UUT.addr_loadd
+@22
+front_panel_tb.UUT.switchl[0:5]
+front_panel_tb.UUT.switchd[0:5]
 [pattern_trace] 1
 [pattern_trace] 0
