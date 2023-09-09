@@ -8,7 +8,6 @@ FILES = PDP8e.v
 .PHONY: PDP8e clean burn ../RK8E/rk8e.v
 
 PDP8e: ../RK8E/rk8e.v
-	cp clock.v ../clock.v
 	# synthesize using Yosys
 	yosys -p "synth_ice40 -top PDP8e -json $(PROJ).json" $(FILES) -l synth.log
 	# Place and route using nextpnr
@@ -26,9 +25,8 @@ burn:
 clean:
 	rm -rf *.asc *.bin *blif
 	rm -rf *.log
-	rm -rf top_design
 	rm -rf *.vcd
-	rm -rf *json
+	rm -rf *.json
 	rm -rf obj_dir
 
 sim: PDP8e.v PDP8e_tb.v 
@@ -39,9 +37,8 @@ sim: PDP8e.v PDP8e_tb.v
 verilator: PDP8e.v
 	verilator -DSIM -cc PDP8e.v
 
-# was 62.25
 pll: 
-	icepll -i 12 -o 74.00  -f  pll.v -m
+	icepll -i 12 -o 73  -f  pll.v -m
 
 lint: 
 	verilator -cc -DSIM PDP8e.v

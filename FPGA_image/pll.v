@@ -6,7 +6,7 @@
  * Use at your own risk.
  *
  * Given input frequency:        12.000 MHz
- * Requested output frequency:   74.000 MHz
+ * Requested output frequency:   73.000 MHz
  * Achieved output frequency:    73.500 MHz
  */
 

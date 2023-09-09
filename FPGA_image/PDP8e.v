@@ -2,6 +2,7 @@
 
 `ifndef SIM
 `include "pll.v"
+`include "HX_clock.v"
 `endif
 `include "../imux/imux.v"
 `include "../front_panel/front_panel.v"
@@ -33,27 +34,28 @@ module PDP8e (input clk,
     output [0:2] EMAn,
     output [0:11] An,
     output [0:11] dsn,
-    output tx,
 `ifdef SIM
     input clk100,
     input pll_locked,
     input reset,
 `endif
-    input rx,
     input [0:11] sr,
     input [0:5] dsel,
     input dep, input sw,
-    input single_step, input halt, input examn, input contn,
+    input single_stepn, input haltn, input examn, input contn,
     input extd_addrn, input addr_loadn, input clearn,
+`ifdef RK8E
     output  sdMOSI,
     input   sdMISO,
-    output  sdSCLK,sdCS
+    output  sdSCLK,sdCS,
+`endif
+    input rx,
+    output reg tx
     );
     /* I/O */
     wire [0:2] EMA;
     assign EMAn = ~EMA;
-    wire [0:11] A;
-    assign An = ~A;
+    assign An = ~ma;
     wire [0:11] ds;
     assign dsn = ~ds;
     wire run;
@@ -69,6 +71,10 @@ module PDP8e (input clk,
     assign addr_load = ~addr_loadn;
     wire clear;
     assign clear = ~clearn;
+    wire halt;
+    assign halt = ~haltn;
+    wire single_step;
+    assign single_step = ~single_stepn;
 
 
     wire mskip,skip,eskip;
@@ -79,7 +85,7 @@ module PDP8e (input clk,
     wire [0:11] ac,ac_input,me_bus;
     wire [0:11] mq;
     wire [0:11] instruction,mdout,disk2mem,mem2disk;
-	wire [0:14] dmaAddr;
+    wire [0:14] dmaAddr;
     wire link;
     wire isz_skip,sskip;
     wire int_ena,int_inh,irq;
@@ -93,7 +99,8 @@ module PDP8e (input clk,
     reg [0:11] rsr;
     wire EAE_mode,EAE_loop,EAE_skip;
     wire sw_active;
-`ifdef RK8E    
+    wire index;
+`ifdef RK8E
     wire data_break,to_disk;
     wire disk_interrupt,disk_skip;
     wire break_in_prog;
@@ -127,13 +134,16 @@ module PDP8e (input clk,
 
 `include "../parameters.v"
 `ifdef RK8E
-    assign irq = s_interrupt | UI | disk_interrupt
+    assign irq = s_interrupt | UI | disk_interrupt;
 `else
-    assign irq = s_interrupt | UI; 
+    assign irq = s_interrupt | UI;
 `endif
-;
 
-`ifdef RK8E    
+
+`ifdef RK8E
+`ifndef SIM
+`include "HX_clock.v"
+`endif
 rk8e RK8E (
     .clk (clk100) ,
     .reset (reset),
@@ -142,7 +152,7 @@ rk8e RK8E (
     .state (state),
     .ac (ac),
     .UF (UF),
-	.dmaAddr (dmaAddr),
+    .dmaAddr (dmaAddr),
     .disk_bus (disk_bus ),
     .interrupt (disk_interrupt),
     .data_break (data_break),
@@ -166,23 +176,24 @@ rk8e RK8E (
         .ma (ma),
         .ac (ac),
         .mq (mq),
-        .sw (sw),
         .sr (rsr),
         .DF (DF),
         .IF (IF),
         .EMA (EMA),
-        .addr (A),
+      //  .addr (A),
         .int_in_prog (int_in_prog),
         .addr_loadd (addr_loadd),
         .depd (depd),
         .examd (examd),
-`ifdef RK8E		
-		.to_disk (to_disk),
-		.disk2mem (disk2mem),
-		.dmaAddr (dmaAddr),
-		.mem2disk (mem2disk),
-`endif	
+        .sw (sw),
+`ifdef RK8E
+        .to_disk (to_disk),
+        .disk2mem (disk2mem),
+        .dmaAddr (dmaAddr),
+        .mem2disk (mem2disk),
+`endif
         .mdout (mdout),
+        .index (index),
         .isz_skip (isz_skip));
 
     pc PC(.clk (clk100),
@@ -190,7 +201,7 @@ rk8e RK8E (
         .state (state),
         .instruction (instruction),
         .ma (ma),
-        .mdout (mdout),
+      //  .mdout (mdout),
         .pc (pc),
         .int_in_prog (int_in_prog),
         .skip (skip),
@@ -202,22 +213,27 @@ rk8e RK8E (
         .reset (reset),
         .state (state),
         .instruction (instruction),
+
         .ac (ac),
         .mq (mq),
-        .EAE_loop (EAE_loop),
-        .EAE_mode (EAE_mode),
-        .EAE_skip (EAE_skip),
-        .gtf (gtf),
+
+        .index (index),
+
         .int_req (irq),
         .int_inh (int_inh),
         .int_ena (int_ena),
         .int_in_prog (int_in_prog),
-`ifdef RK8E				
-		.break_in_prog (break_in_prog),
+        .UF (UF),
+
+        .EAE_loop (EAE_loop),
+        .EAE_mode (EAE_mode),
+        .EAE_skip (EAE_skip),
+        .gtf (gtf),
+`ifdef RK8E
+        .break_in_prog (break_in_prog),
         .data_break (data_break),
         .to_disk (to_disk),
-`endif		
-        .UF (UF),
+`endif
         .halt (halt),
         .single_step (single_step),
         .cont (contd),
@@ -263,19 +279,19 @@ rk8e RK8E (
     D_mux DM(.clk (clk100),
         .reset (reset),
         .dsel (dsel),
-`ifdef RK8E				
+        .state (state),
+`ifdef RK8E
         .state1 ( {instruction[0:2],2'b00,sw,1'b0,break_in_prog,EAE_mode} ),
-`else		
+`else
         .state1 ( {instruction[0:2],2'b00,sw,2'b00,EAE_mode} ),
-`endif	
+`endif
         .status ({link,gtf,irq,1'b0,int_ena,{UF,IF,DF}}),
         .ac (ac),
         .mb (mdout),
         .mq (mq),
         .io_bus (display_bus),
-        .dout (ds),
-        .state (state),
         .sw_active (sw_active),
+        .dout (ds),
         .run_led (run));
 
     front_panel FP(.clk (clk100),
@@ -307,10 +323,10 @@ rk8e RK8E (
         .serial_data_bus (serial_data_bus),
         .in_bus (ac_input),
         .bus_display (display_bus),
-`ifdef RK8E		
+`ifdef RK8E
         .disk_bus (disk_bus),
         .disk_skip (disk_skip),
-`endif	        
+`endif
         .EAE_skip (EAE_skip),
         .EAE_mode (EAE_mode),
         .sskip (sskip),
