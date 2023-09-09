@@ -1,5 +1,5 @@
-`define EAE
-`define RK8E
+//`define EAE
+//`define RK8E
 //`define up5k
 
 // state machine encoding
@@ -13,7 +13,7 @@ parameter     F0 = 5'b00000,
               DW = 5'b00110,
               D1 = 5'b00111,
               D2 = 5'b01000,
-	  DW1 = 5'b11111,
+              DW1 = 5'b11111,
               D3 = 5'b01001,
 
               E0 = 5'b01010,
@@ -43,7 +43,7 @@ parameter     F0 = 5'b00000,
 
 
 // instruction encodings
-parameter 
+parameter
 `ifdef EAE
           DAD = 12'o7443,
           DLD = 12'o7763, CAMDAD = 12'o7663, DST=12'o7445,
@@ -54,21 +54,28 @@ parameter
           DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
           OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
           JMPI = 4'b1011, JM = 2'b10 ;
+// clock_frequency is defined in the top level verilog file or in an included
+// file..
 
-`ifndef SIM
-    //parameter real clock_frequency    =  62250000;
-    //parameter real clock_frequency    =  79500000;
-    //parameter real clock_frequency    =  73500000;
-`ifdef up5K	
-`include "./FPGA_up5k/clock.v"
+
+`ifdef SIM
+    // calculate in nanoseconds
+    parameter real clock_frequency    =  84000000;
+    parameter real baud_rate=115200;
+`elsif TSIM
+    // calculate in nanoseconds
+    parameter real clock_frequency    =  5000000;
+    parameter real baud_rate=1200;
 `else
-`include "../FPGA_image/clock.v"
-`endif
-    parameter real clock_period = 1/clock_frequency*1e9;
     parameter real baud_rate=9600;
-    parameter real baud_period = 1.0/baud_rate*1e9;
-    parameter tx_term_cnt = $rtoi(baud_period/clock_period);
 `endif
+
+`ifndef clock_frequency
+    parameter real clock_frequency = 75000000;
+`endif
+
+    parameter real clock_period = 1/clock_frequency*1e9;
+
 // define the slow and fast clocks of the sd card
 // the counts here have to be for 1/2 clock
 // error on the low side, especially for 4 MHz
@@ -88,37 +95,17 @@ parameter
 `endif
 
 
-`ifdef SIM
-`ifndef TSIM
-    // calculate in nanoseconds
-    parameter real clock_frequency    =  84000000;
-    parameter real clock_period = 1/clock_frequency*1e9;
-    parameter real baud_rate=115200;
-    parameter real baud_period = 1.0/baud_rate*1e9;
-    parameter tx_term_cnt = $rtoi(baud_period/clock_period);
-`else
-    // calculate in nanoseconds
-    parameter real clock_frequency    =  5000000;
-    parameter real clock_period = 1/clock_frequency*1e9;
-    parameter real baud_rate=1200;
-    parameter real baud_period = 1.0/baud_rate*1e9;
-    parameter tx_term_cnt = $rtoi(baud_period/clock_period);
-`endif
-`endif
 
-
-
-parameter MAX_FIELD = 3'b001;
+parameter reg MAX_FIELD = 3'b001;
 
 `define ONESTOP   // one stop bit for all baud rates greater than 110
 
 `ifndef SIM
-    parameter dbnce_nu_bits = $rtoi($clog2($rtoi(0.4*clock_frequency)));
+    parameter reg dbnce_nu_bits = $rtoi($clog2($rtoi(0.4*clock_frequency)));
 `else
-    parameter dbnce_nu_bits = 4;
+    parameter reg dbnce_nu_bits = 4;
 `endif
 
-parameter tx_term_nu_bits = $rtoi($clog2(tx_term_cnt));
 
 
 
