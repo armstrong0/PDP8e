@@ -10,8 +10,10 @@ module imux(
     input [0:11] ac,
     input [0:11] mem_reg_bus,
     input [0:11] serial_data_bus,
+`ifdef RK8E
     input [0:11] disk_bus,
     input disk_skip,
+`endif
     input sskip,
     input mskip,
     input EAE_skip,
@@ -55,7 +57,9 @@ module imux(
             12'o6036: in_bus = serial_data_bus;// teletype keyboard / reader
             12'o6214,12'o6224,12'o6234:        // memory manage unit
             in_bus = mem_reg_bus;
+`ifdef RK8E
             12'o6745: in_bus = disk_bus;      // RK8E disk
+`endif
             default: in_bus = 12'o0000;
         endcase
     end
@@ -63,13 +67,15 @@ module imux(
     always @(*) begin //again for verilator
         casez (instruction[0:11] )
             12'o600?: skip = mskip ;
-	        // EAE instructions that use the next word as
-	        // an operand, ???? stands for normal MQ ops
+            // EAE instructions that use the next word as
+            // an operand, ???? stands for normal MQ ops
             12'b1111???????1:  // EAE ops
             skip = EAE_skip;
             12'o603?,12'o604?: skip = sskip;
             12'o625?: skip = mskip;
+`ifdef RK8E
             12'o6741: skip = disk_skip;
+`endif
             default: skip = 0;
         endcase
     end

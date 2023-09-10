@@ -16,31 +16,33 @@ module ma (
     input addr_loadd,depd,examd,
     input int_in_prog,
     input [0:2] IF,DF,
+`ifdef RK8E
     input [0:14] dmaAddr,
     input [0:11] disk2mem,
     input to_disk,
-    output wire [0:11] addr,
+    output reg [0:11] mem2disk,
+`endif
     output wire [0:2] EMA,
+    output reg index,
     output reg isz_skip,
     output reg [0:11] instruction,
     output reg [0:11] ma,
-    output reg [0:11] mem2disk,
     output reg [0:11] mdout
 );
 
   reg [0:4] current_page;
-  reg [0:11] mdin;
+  reg [0:11] mdin, idx_tmp;
   reg write_en;
   wire [0:11] mdtmp;
   reg [0:14] eaddr;
   `include "../parameters.v"
 
   assign EMA  = eaddr[0:2];
-  assign addr = eaddr[3:14];
+ // assign addr = eaddr[3:14];
 
 `ifdef up5k
   up_spram ram (
-      .wdata({3'b0,mdin}),
+      .wdata({4'b0,mdin}),
       .addr(eaddr),
       .wr  (write_en),
       .clk(clk),
@@ -65,8 +67,9 @@ module ma (
     eaddr = {IF, ma};
     case (state)
       F0, FW: eaddr = {IF, pc};
+      F1,F2,F3: eaddr = {IF,ma};
 `ifdef RK8E
-      DB0, DB1, DB2: eaddr = dmaAddr;
+      DB0, DB1: eaddr = dmaAddr;
 `endif
       E0, EW, E1, E2, E3:
       // use indirect addressing
@@ -77,7 +80,7 @@ module ma (
                     (instruction[3] == 1'b1))   // this bit specifies deferred
         eaddr = {DF, ma};
       else eaddr = {IF, ma};
-      D3, EAE2, EAE3, EAE4, EAE5: eaddr = {DF, ma};
+      D0,DW,D1,D2,D3, DW1, EAE2, EAE3, EAE4, EAE5: eaddr = {IF, ma};
       default: eaddr = {IF, ma};
     endcase
   end
@@ -89,6 +92,7 @@ module ma (
       instruction <= 12'o7000;
       current_page <= 0;
       write_en <= 0;
+      index <= 1'b0;
     end else begin
       write_en <= 0;
       ma <= ma;
@@ -118,17 +122,20 @@ module ma (
             default: ;
           endcase
         end
-        D0: ;
+        D0:if (ma[0:8] == 9'o001) index <= 1'b1 ;
+           else index <= 1'b0;
         DW: mdout <= mdtmp;
-        D1:
-        if (ma[0:8] == 9'o001) begin
+        D1:if (index == 1'b1) begin
           mdin <= mdout + 12'o0001;
+          idx_tmp <= mdout +12'o0001;
           write_en <= 1;
         end
+        else ma <= mdout;
+        DW1: // only get here if we have auto indcexing
+          ma <= idx_tmp;
         D2: begin
-          if (ma[0:8] == 9'o001) ma <= mdout + 12'o0001;
-          else ma <= mdout;  // set up for DST
-          mdin <= mq;
+          //mdin <= mq;
+          index <= 1'b0;
         end
         D3: ;
         E0: ;
@@ -182,7 +189,7 @@ module ma (
         H2: if ((depd == 1'b1) | (examd == 1'b1)) ma <= ma + 12'o0001;
         H3: ;
         // EAE accesses
-`ifdef EAE		 
+`ifdef EAE
         EAE2: begin
           if ((instruction & 12'b111100101111) == DST) begin
             mdin <= mq;
@@ -202,18 +209,19 @@ module ma (
           write_en <= 1'b1;
         end
         EAE5: mdout <= mdtmp;
-`endif		
+`endif
 `ifdef RK8E
         DB0:
         if (to_disk == 1'b0) begin
           mdin <= disk2mem;
           write_en <= 1'b1;
         end
-        DB1: mdin <= disk2mem  ;
-        DB2:
-        if (to_disk == 1'b1) begin
+        DB1:begin
+         mdin <= disk2mem  ;
+         if (to_disk == 1'b1) begin
           mem2disk <= mdtmp;
-        end
+         end
+         end
 
 `endif
 

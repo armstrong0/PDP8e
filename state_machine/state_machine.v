@@ -13,7 +13,7 @@ module state_machine(input clk,
     input [0:11] instruction, ac, mq,
     input EAE_mode,
     input EAE_loop,
-	input index, // auto increment occuring
+    input index, // auto increment occuring
     input gtf,
 `ifdef RK8E
     input data_break,   // data break write is to disk read is from disk
@@ -27,7 +27,7 @@ module state_machine(input clk,
     reg [4:0] next_state;
 `ifndef RK8E
     reg data_break;
-	reg break_in_prog;
+    reg break_in_prog;
 `endif
 
 `include "../parameters.v"
@@ -39,12 +39,12 @@ module state_machine(input clk,
         begin
             state <= H0;
             int_in_prog <= 0;
-`ifdef RK8E			
+`ifdef RK8E            
             break_in_prog <= 1'b0;
 `else
             data_break <= 1'b0;
             break_in_prog <= 1'b0;
-`endif			
+`endif            
             EAE_skip <= 1'b0;
         end
         else case (state)
@@ -110,7 +110,7 @@ module state_machine(input clk,
 
                     12'b1111??1?0001,   // SCL both A and B
                     12'b1111??0?0001: state <= F3;  //NOP
-					
+                    
                     12'b1111??1?0011:   // SCA - SCL
                     begin
                         EAE_skip <= 1'b1;
@@ -123,10 +123,10 @@ module state_machine(input clk,
                 F2B: casez (instruction) // mode B
 
                     12'b110000000110:
-					begin
+                    begin
                     if (gtf == 1'b1) EAE_skip <= 1;
-					state <= F3;
-					end
+                    state <= F3;
+                    end
                     12'b111100001001:
                     state <= EAE0;      // 7411 NMI
                     12'b1111??0?1011,   // 7413 SHL
@@ -207,11 +207,11 @@ module state_machine(input clk,
                     state <= DW;
                 else
                     state <= D0;
-				DW: state <= D1;	
-				D1: state <= D2;
+                DW: state <= D1;
+                D1: state <= D2;
                 D2: if (index == 1'b1) state <= DW1;
-				else state <= D3;
-				DW1: state <= D3;
+                else state <= D3;
+                DW1: state <= D3;
                 //  if it is a jmp I then F0 is the desired state
                 D3: if (instruction[0:3] == 4'b1011)
                 begin

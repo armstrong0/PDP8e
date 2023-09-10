@@ -69,7 +69,11 @@ module tx_tb;
         #150000 char <= 12'o0015;
         #20 load <= 1;
         #20 load <= 0;
-        
+		wait(flag == 0);
+		char <= 12'o0105;
+        wait (flag == 1);
+        #40 load <= 1;
+        #40 load <= 0;
         #150000 $finish;
     end
 

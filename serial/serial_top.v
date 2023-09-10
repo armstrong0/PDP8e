@@ -15,9 +15,9 @@ module serial_top(
     input UF,
     output reg [0:11] serial_bus,  //from the point of view of the CPU
     output tx,
-	/* verilator lint_off SYMRSVDWORD */
+    /* verilator lint_off SYMRSVDWORD */
     output reg interrupt,
-	/* verilator lint_on SYMRSVDWORD */
+    /* verilator lint_on SYMRSVDWORD */
     output reg skip);
 
     wire rx_flag;
@@ -35,8 +35,8 @@ module serial_top(
         if (rx_flag == 1) serial_bus <= {4'b0000,rx_serial_bus};
     end
 
-`include "../parameters.v"
 
+`include "../parameters.v"
     tx TX(.clk100 (clk),
         .reset (reset),
         .clear (clear),
@@ -100,9 +100,9 @@ module serial_top(
                 12'o6032:if (UF == 1'b0) clear_rx <= 1;//KCC Clear AC,keyboard flag
                 12'o6034:;//KRS Read Keyboard buffer 'ors' the buffer int the AC
                 12'o6035: if (UF == 1'b0) sint_ena <= ac[11];
-				//KIE AC11 to Keyboard interupt enable
+                //KIE AC11 to Keyboard interupt enable
                 12'o6036: if (UF == 1'b0) clear_rx <= 1;
-				// KRB Clear AC read buffer, clear flags
+                // KRB Clear AC read buffer, clear flags
                 12'o6040: if (UF == 1'b0) set_tx <= 1;  // SPF Set printer flag
                 12'o6041:;//TSF Skip if printer flag = 1 or keyboard flag = 1
                 12'o6042: if (UF == 1'b0) clear_tx <= 1;//TCF clear printer flag

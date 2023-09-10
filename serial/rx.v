@@ -14,7 +14,7 @@ module rx (
 );  //  bit 7 is the LSB and was received first
 
   `include "../parameters.v"
-
+  localparam real baud_period = 1.0/baud_rate*1e9;
   localparam term_cnt = $rtoi((baud_period / 16) / clock_period);
 
   localparam start_search = 0,

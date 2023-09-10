@@ -6,7 +6,6 @@ module pc(
     input [4:0] state,
     input [0:11] ma,
     input [0:11] instruction,
-    input [0:11] mdout,
     input int_in_prog,
     output reg [0:11] pc);
 

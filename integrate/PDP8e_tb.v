@@ -1,4 +1,3 @@
-`define SIM
 `timescale 1 ns / 10 ps
 `define pulse(arg) #1 ``arg <=1 ; #140 ``arg <= 0
 
@@ -31,6 +30,7 @@ module PDP8e_tb;
     wire [0:11] dsn;
     wire tx;
     wire tclk;
+	reg serial_io;
 
 `include "../parameters.v"
 
@@ -49,7 +49,9 @@ module PDP8e_tb;
 
     always @(posedge clk100)
     begin
-        rx <= tx;
+        rx <= tx;  // used in serial tests
+        serial_io <= ((UUT.instruction[0:8] == 9'o603) || 
+	                 (UUT.instruction[0:8] == 9'o604)) ;
     end
     parameter test_sel=2;
 
@@ -145,7 +147,6 @@ module PDP8e_tb;
                 #99 $finish;
             end
 
-            2.1:;
             3: if ( address == 15'o01653)
             begin
                 $display("%c",UUT.ac[4:11]);
@@ -227,7 +228,7 @@ module PDP8e_tb;
         case(test_sel)
             1: begin
                 $dumpfile("instruction_test_pt1.vcd");
-                $dumpvars(0,address,sr,clear,cont,UUT.reset,UUT.state,UUT.instruction,UUT.ac,UUT.cont,UUT.MA.mdout,UUT.link,UUT.skip);
+                $dumpvars(0,address,sr,clear,cont,serial_io,UUT);
                 $readmemh( "Diagnostics/dhkaf-a.hex", UUT.MA.ram.mem,0,4095);
             end
             1.1: begin
@@ -237,16 +238,11 @@ module PDP8e_tb;
             end
             2: begin
                 $dumpfile("instruction_test_pt2.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac,UUT.link,UUT.skip,UUT.irq,UUT.int_ena,UUT.int_inh,UUT.ac_input,UUT.mdout,UUT.int_in_prog,UUT.s_interrupt,UUT.MA.mdin,UUT.MA.write_en,UUT.isz_skip);
+                $dumpvars(0,address,serial_io,UUT.reset,UUT.instruction,UUT.ac,UUT.link,UUT.skip,UUT.irq,UUT.int_ena,UUT.int_inh,UUT.ac_input,UUT.mdout,UUT.int_in_prog,UUT.s_interrupt,UUT.MA.mdin,UUT.MA.write_en,UUT.isz_skip);
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/dhkag-a.hex",UUT.MA.ram.mem,0,4095);
             end
 
-            2.1: begin
-                $dumpfile("instruction_test_pt2.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac,UUT.link,UUT.skip,UUT.irq,UUT.int_ena,UUT.int_inh,UUT.ac_input,UUT.mdout,UUT.int_in_prog,UUT.s_interrupt);
-                $readmemh("Diagnostics/dhkag-a.hex",UUT.MA.ram.mem,0,4095);
-            end
             3: begin
                 $dumpfile("Adder_test.vcd");
                 $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac,UUT.MA.mdout);
@@ -327,6 +323,7 @@ module PDP8e_tb;
         endcase
         #0 halt <= 1;
         #1 reset <= 1;
+		#1 clear <= 0;
         #(clock_period*10) reset <=0;
         #1 single_step <= 0;
         #1 sw <= 0;

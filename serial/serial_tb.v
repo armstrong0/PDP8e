@@ -6,7 +6,7 @@ module serial_tb;
     serial_top ST(
         .clk (clk),
         .reset (reset),
-		.clear (clear),
+        .clear (clear),
         .instruction (instruction),
         .state (state),
         .ac (ac),
@@ -19,18 +19,18 @@ module serial_tb;
 
     reg clk;
     reg reset;
-	reg clear;
+    reg clear;
     reg [0:11] instruction;
     reg [4:0] state;
     reg [0:11] ac;
-	reg UF;
+    reg UF;
     wire [0:11] input_bus;
     wire flag;
     wire interupt;
     wire skip;
     wire rx;  //loop tx to rx
     
-	assign rx = tx;
+    assign rx = tx;
 
 `include "../parameters.v"
     initial begin
@@ -64,8 +64,8 @@ module serial_tb;
 
 
         reset <= 1;
-		clear <= 0;
-		UF <= 0;
+        clear <= 0;
+        UF <= 0;
 
         #400 reset <= 0;
         ac <= 12'o0001;
@@ -73,15 +73,15 @@ module serial_tb;
         #40 instruction <= 12'o6035; // KIE AC11 to Keyboard interupt enable
         #100 ac <= 12'o0252;
         #180 ;
-		wait(state == F0);
+        wait(state == F0);
         #20 instruction <= 12'o6040;
-		wait(state == F0);
-	    #20 instruction <= 12'o6041;
-		wait(state == F0);
-    	#20 instruction <= 12'o6044; // TCP Load buffer and print
-		wait(state == F0);
+        wait(state == F0);
+        #20 instruction <= 12'o6041;
+        wait(state == F0);
+        #20 instruction <= 12'o6044; // TCP Load buffer and print
+        wait(state == F0);
         #20 instruction <= 12'o7000;
-		wait(state == F0);
+        wait(state == F0);
 //instruction <= 12'o6030; // KCF Clear Keyboard flag
 //instruction <= 12'o6031; // KSF Skip if Keyboard Flag = 1
 //instruction <= 12'o6032; // KCC Clear AC keyboard flag and set reader to run
@@ -91,6 +91,7 @@ module serial_tb;
 //instruction <= 12'o6041; // TSF Skip if printer of keyboard flag = 1
 //instruction <= 12'o6042; // TCF clear printer flag
 //instruction <= 12'o6044; // TCP Load buffer and print
+
 //instruction <= 12'o6045; // SPI Skip if printer interrupt = 1
 //instruction <= 12'o6046;
 //#30 rx <= 0;

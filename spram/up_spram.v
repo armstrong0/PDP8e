@@ -1,9 +1,9 @@
 module up_spram (
-	input clk,
-	input wr,
-	input  [14:0] addr,
-	input  [15:0] wdata,
-	output [15:0] rdata
+    input clk,
+    input wr,
+    input  [14:0] addr,
+    input  [15:0] wdata,
+    output [15:0] rdata
 );
 
 wire cs_0, cs_1;
@@ -29,7 +29,7 @@ SB_SPRAM256KA ram00
     .DATAOUT(rdata_0[15:0])
   );
 
-  
+
 SB_SPRAM256KA ram10
   (
     .ADDRESS(addr[13:0]),

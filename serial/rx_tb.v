@@ -19,7 +19,7 @@ rx rx1(.reset (reset),
        .flag (flag),
        .clear_flag (clear_flag),
        .char0 (char));
-
+localparam real baud_period = 1.0/baud_rate*1e9;
 localparam slow_baud = 0.97 * baud_period;
 initial begin
 

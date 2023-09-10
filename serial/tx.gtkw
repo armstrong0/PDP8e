@@ -1,25 +1,30 @@
 [*]
-[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Wed Jun 15 20:58:44 2022
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Tue Aug 15 20:58:57 2023
 [*]
-[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/serial/tx.vcd"
-[dumpfile_mtime] "Wed Jun 15 20:58:03 2022"
-[dumpfile_size] 1914816
-[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/serial/tx.gtkw"
+[dumpfile] "/home/armstrong/Desktop/PDP8e/serial/tx.vcd"
+[dumpfile_mtime] "Tue Aug 15 20:56:56 2023"
+[dumpfile_size] 2452224
+[savefile] "/home/armstrong/Desktop/PDP8e/serial/tx.gtkw"
 [timestart] 0
-[size] 1358 691
-[pos] -1 -1
-*-27.494062 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1920 987
+[pos] -461 -192
+*-26.655287 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tx_tb.
-[sst_width] 207
-[signals_width] 134
+[sst_width] 210
+[signals_width] 166
 [sst_expanded] 1
-[sst_vpaned_height] 185
+[sst_vpaned_height] 343
 @28
-tx_tb.clk
-tx_tb.reset
-tx_tb.tx
-@29
 tx_tb.tx1.load
+tx_tb.tx1.clk100
+tx_tb.tx1.flag
+tx_tb.tx1.loaded
+@22
+tx_tb.tx1.period_cntr[13:0]
+@31
+tx_tb.tx1.tto[0:7]
+@28
+tx_tb.tx1.tx
 [pattern_trace] 1
 [pattern_trace] 0

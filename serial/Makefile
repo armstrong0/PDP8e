@@ -31,6 +31,9 @@ vdent: rx.v tx.v serial_top.v
 	mv t.v tx.v
 	~/bin/vdent <serial_top.v > t.v
 	mv t.v serial_top.v
+
+verilator: rx.v tx.v serial_top.v
+	verilator -cc serial_top.v
 	
 clean: 
 	rm -f *vcd

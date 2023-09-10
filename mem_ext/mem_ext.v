@@ -54,7 +54,7 @@ module mem_ext
                 F0:;
                 F1:
                 case (instruction) // these should only get executed when
-			     	// in executive mode or in an interrupt
+                     // in executive mode or in an interrupt
                     12'o6003: if ((UF == 1'b0) && (irq == 1 ))    mskip <= 1; // SRQ
                     12'o6006: if (gtf == 1'b1)  mskip <= 1; // SGT
                     12'o6000: if ((UF == 1'b0) && (int_ena == 1)) mskip <= 1; // SKON
@@ -64,8 +64,8 @@ module mem_ext
 
                 F2: begin
                     casez (instruction)
-					   // these are prevented from loading into ac by ac
-					   // module
+                       // these are prevented from loading into ac by ac
+                       // module
                         12'o6004:if (UF == 1'b0)
                             me_bus <= { 2'b00,irq,1'b0,(int_ena|int_delay),
                                 savereg};//GTF
