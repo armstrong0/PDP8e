@@ -31,7 +31,7 @@ module PDP8e (input clk,
     input dep, input sw,
     input single_step, input halt, input examn, input contn,
     input extd_addrn, input addr_loadn, input clearn
-    );
+);
     /* I/O */
     wire [0:2] EMA;
     assign EMAn = ~EMA;
@@ -83,7 +83,7 @@ module PDP8e (input clk,
     always @(posedge clk)
     begin
         rsr <= sr;
-	UF <= 0;
+        UF <= 0;
     end
 `endif
 
@@ -91,22 +91,22 @@ module PDP8e (input clk,
 `include "../parameters.v"
 
     inst_mux IM (.clock (clk100),
-         .reset (reset),
-	 .skip (sskip),
-	 .state (state),
-	 .instruction (instruction));
-	 
+        .reset (reset),
+        .skip (sskip),
+        .state (state),
+        .instruction (instruction));
+
     char_mux CM (.clock (clk100),
-         .reset (reset),
-	 .state (state),
-	 .skip (sskip),
-	 .ochar (ac));
+        .reset (reset),
+        .state (state),
+        .skip (sskip),
+        .ochar (ac));
 
 
     state SM(.clock (clk100),
         .reset (reset),
         .state (state)
-        );
+    );
 
     serial_top ST(.clk (clk100),
         .reset (reset),

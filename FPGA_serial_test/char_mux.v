@@ -1,7 +1,7 @@
 module char_mux(
     input clock,
     input reset,
-    input state,
+    input [4:0] state,
     input skip,
     output reg [0:11] ochar);
     reg [0:11] char;
