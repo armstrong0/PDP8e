@@ -48,7 +48,7 @@ module PDP8e_tb;
     end
     always @(posedge clk100)
     begin
-        rx <= tx;  // used in serial tests
+        //rx <= tx;  // used in serial tests
         serial_io <= ((UUT.instruction[0:8] == 9'o603) || 
 	                 (UUT.instruction[0:8] == 9'o604)) ;
     end
@@ -109,7 +109,7 @@ module PDP8e_tb;
         #1 rx <= 1; // marking state
         #100 pll_locked <= 1;
         #100 halt <= 0;
-        #400000 $finish;
+        #4000000 $finish;
 
 
     end

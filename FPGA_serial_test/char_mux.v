@@ -27,11 +27,11 @@ module char_mux(
             case (state)
                 FW,F1,F2:  // need to output char
                 begin
-                    if ( clmn_cntr == (7'd79 + 7'o040))
+                    if ( clmn_cntr == 7'd80)
                     begin
                         ochar <=   7'o015; // charriage return
                     end
-                    else if ( clmn_cntr == (7'd80 + 7'o040))
+                    else if ( clmn_cntr == 7'd81)
                     begin
                         ochar <=   7'o011; //linefeed// linefeed
                     end
@@ -40,12 +40,19 @@ module char_mux(
                 end
                 F3:
                 begin
-                    if (clmn_cntr <= (7'd79 )) begin
+                    if (clmn_cntr < 7'd80 ) begin
                         clmn_cntr <= clmn_cntr + 1;
                         char <= char +1;
                     end
-                    else if (clmn_cntr > 7'd81)
-                        char <= 7'o040;
+                    else if (clmn_cntr == 7'd80)
+					begin
+						clmn_cntr <= clmn_cntr +1;
+					end	
+					else if (clmn_cntr >= 7'd81)
+					begin
+						clmn_cntr <= 0;
+					end	
+					if (char == 7'o176) char <= 7'o040;    
                 end
 		default:;
             endcase
