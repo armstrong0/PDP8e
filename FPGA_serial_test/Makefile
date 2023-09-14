@@ -5,7 +5,7 @@ DEVICE    = 8k
 # Files
 FILES = PDP8e.v
 
-.PHONY: PDP8e clean burn ../RK8E/rk8e.v
+.PHONY: PDP8e clean burn ../RK8E/rk8e.v sim
 
 PDP8e: ../RK8E/rk8e.v
 	cp clock.v ../clock.v
@@ -20,6 +20,12 @@ PDP8e: ../RK8E/rk8e.v
 ../RK8E/rk8e.v: ../RK8E/rk8e.sv
 	$(MAKE) -C../RK8E/ -f Makefile verilog
 
+sim: PDP8e_tb.v PDP8e.v inst_mux.v char_mux.v
+	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e.o
+	vvp PDP8e.o
+	gtkwave Hardware_serial_test.vcd serial_test.gtkw
+
+
 burn:
 	iceFUNprog $(PROJ).bin
 
@@ -30,11 +36,6 @@ clean:
 	rm -rf *.vcd
 	rm -rf *json
 	rm -rf obj_dir
-
-sim: PDP8e.v PDP8e_tb.v 
-	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e_design
-	vvp PDP8e_design
-	gtkwave top.vcd top.gtkw
 
 verilator: PDP8e.v
 	verilator -DSIM -cc PDP8e.v

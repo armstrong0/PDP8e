@@ -10,7 +10,7 @@ module inst_mux(
     always @(posedge clock)
     begin
         if (reset == 1)
-            instruction <= 12'o6041;
+            instruction <= 12'o6046; // need to prime the pump
         else
 		begin
             if (state == F3)

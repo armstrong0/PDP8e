@@ -20,6 +20,7 @@ module char_mux(
         if (reset == 1)
         begin
             char <= 12'o0040;
+			ochar <= 12'o0252;
             clmn_cntr <= 0 ;
         end
         else if (skip == 1)
