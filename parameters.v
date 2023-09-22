@@ -70,9 +70,9 @@ parameter
     parameter real baud_rate=9600;
 `endif
 
-`ifndef clock_frequency
-    parameter real clock_frequency = 75000000;
-`endif
+//ifndef clock_frequency
+//   parameter real clock_frequency = 75000000;
+//`endif
 
     parameter real clock_period = 1/clock_frequency*1e9;
 
@@ -85,7 +85,7 @@ parameter
    parameter real fast_spi =  2000000; // go too high and the state machines
    // don't work
    parameter slow_dev = $rtoi(clock_frequency/(slow_spi*2));
-   parameter nu_divcnt_bits = $rtoi($clog2(slow_dev));
+   parameter nu_divcnt_bits = $clog2(slow_dev);
    parameter SlowDiv = slow_dev[nu_divcnt_bits-1:0];
    parameter fast_dev = $rtoi(clock_frequency/(fast_spi*2));
    parameter FastDiv = fast_dev[nu_divcnt_bits-1:0];
@@ -101,9 +101,9 @@ parameter reg MAX_FIELD = 3'b001;
 `define ONESTOP   // one stop bit for all baud rates greater than 110
 
 `ifndef SIM
-    parameter reg dbnce_nu_bits = $rtoi($clog2($rtoi(0.4*clock_frequency)));
+    parameter integer dbnce_nu_bits = $clog2(clock_frequency/2);
 `else
-    parameter reg dbnce_nu_bits = 4;
+    parameter integer dbnce_nu_bits = 4;
 `endif
 
 

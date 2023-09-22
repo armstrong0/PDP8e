@@ -1,39 +1,39 @@
 [*]
-[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Sat Mar 13 01:15:07 2021
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed Aug 16 19:47:08 2023
 [*]
-[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/IOT/Serial/top.vcd"
-[dumpfile_mtime] "Sat Mar 13 01:14:21 2021"
-[dumpfile_size] 3800455
-[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/IOT/Serial/top.gtkw"
+[dumpfile] "/home/armstrong/Desktop/PDP8e/serial/top.vcd"
+[dumpfile_mtime] "Wed Aug 16 19:46:29 2023"
+[dumpfile_size] 18915
+[savefile] "/home/armstrong/Desktop/PDP8e/serial/top.gtkw"
 [timestart] 0
 [size] 1358 691
 [pos] -1 -1
-*-27.940430 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-18.482729 254000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] serial_tb.
 [treeopen] serial_tb.ST.
-[sst_width] 207
+[sst_width] 210
 [signals_width] 166
 [sst_expanded] 1
 [sst_vpaned_height] 185
 @28
-serial_tb.clk
-@22
-serial_tb.state[3:0]
-@30
-serial_tb.instruction[0:11]
-@28
-serial_tb.ST.rx_int_ena
 serial_tb.ST.rx1.flag
 @30
 serial_tb.ST.rx1.char0[0:7]
-@31
-serial_tb.ST.tx1.char[0:11]
+serial_tb.ST.ac[0:11]
 @28
-serial_tb.skip
-serial_tb.flag
-serial_tb.interrupt
-serial_tb.reset
-serial_tb.tx
+serial_tb.ST.interrupt
+@23
+serial_tb.ST.state[4:0]
+@28
+serial_tb.ST.clear
+serial_tb.ST.clk
+serial_tb.ST.flag
+serial_tb.ST.load_tx
+serial_tb.ST.reset
+serial_tb.ST.rx
+serial_tb.ST.tx
+@30
+serial_tb.ST.instruction[0:11]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -24,7 +24,8 @@ module front_panel (input clk,
 
     assign { triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd } = switchd;
 
-    localparam reg Latch = 3'b110,
+    parameter 
+	      Latch = 3'b110,
           Wait  = 3'b000,
           Trig1 = 3'b001,
           Trig2 = 3'b010,

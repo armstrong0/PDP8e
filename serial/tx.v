@@ -9,18 +9,15 @@ module tx (
     output reg flag,
     output reg tx
 );
+  `include "../parameters.v"
+  localparam tx_term_cnt = $rtoi(clock_frequency/baud_rate);
+  localparam tx_term_nu_bits = $clog2(tx_term_cnt);
 
   /* verilator lint_off LITENDIAN */
-  reg [tx_term_nu_bits:0] period_cntr;
+  reg [tx_term_nu_bits-1:0] period_cntr;
   reg [3:0] state;
   reg [0:7] tto;
   reg loaded;
-  `include "../parameters.v"
-  localparam real baud_period = 1.0/baud_rate*1e9;
-  localparam tx_term_count = $rtoi((baud_period / 16) / clock_period);
-  localparam tx_term_nu_bits = $rtoi($clog2(tx_term_count));
-  wire [tx_term_nu_bits:0] tx_term_cnt;
-  assign tx_term_cnt = tx_term_count[tx_term_nu_bits:0];
 
   parameter IDLE =4'd0, START = 4'd1,
     BIT0 = 4'd2, BIT1 = 4'd3, BIT2 = 4'd4, BIT3 = 4'd5,
