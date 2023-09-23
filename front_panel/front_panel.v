@@ -25,22 +25,30 @@ module front_panel (input clk,
     assign { triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd } = switchd;
 
     parameter 
-	      Latch = 3'b110,
-          Wait  = 3'b000,
-          Trig1 = 3'b001,
-          Trig2 = 3'b010,
-          Trig3 = 3'b011,
-          Delay = 3'b100,
-          Reenable = 3'b101;
+	  LATCH = 3'b000,
+          WAIT  = 3'b001,
+          TRIG1 = 3'b010,
+	  TRIG2 = 3'b011,
+          TRIG3 = 3'b100,
+          DELAY = 3'b101,
+	  REENABLE = 3'b110;
 
-
-    assign cont_c = (cont & sing_step );
+// This set of notes is to record in short form efforts to get this working
+// again!  One of the last yosys ugrades seem to make the logic optimizer work
+// better.  There was a noticable decrease in resoures and an increase in the
+// allowable clock frequency.  However it also optimizes out logic, notably
+// some of the counter in the tx module and here it appears that the state
+// machine below completely dissappears, hence the switiches don't work.
+// This can be seen in the synth log, as a counter going to [0:0] ie one bit
+// instead of what it should be OR eliminating switches (6 in the case of this
+// module)
+    assign cont_c = (switchl[0] & sing_step );
 
     always @(posedge clk)
     begin
         if (reset)
         begin
-            trig_state <= Latch;
+            trig_state <= LATCH;
             switchd <= 7'b0000000;
             switchl <= 6'b000000;
             trig_cnt <= 0;
@@ -49,57 +57,58 @@ module front_panel (input clk,
         else
         begin
             case (trig_state)
-                Latch:
+                LATCH:
                 begin
                     switchl <= switchl |
                      {clear, extd_addr, addr_load, dep, exam, cont };// latch inputs
                     if (switchl == 6'b000000)
-                        trig_state <= Latch;
+                        trig_state <= LATCH;
                     else
                     begin
-                        trig_state <= Wait;
+                        trig_state <= WAIT;
                         trigger1 <= 1'b1;
                     end
                 end
-                Wait: if ((((state == H0) || (state == HW)) & (trigger1 == 1)) |
+                WAIT: if ((((state == H0) || (state == HW)) & (trigger1 == 1)) |
                         ((state == F0) & cont_c) |
                         ((state == D0) & cont_c) |
                         ((state == E0) & cont_c))
                 begin
-                    trig_state <= Trig1 ;
+                    trig_state <= TRIG1 ;
                     switchd <= {trigger1,switchl};
                     switchl <= 6'b000000;
                 end
-                Trig1: begin
-                    trig_state <= Trig2;
+		else trig_state <= WAIT;
+                TRIG1: begin
+                    trig_state <= TRIG2;
                     switchd <= switchd;
                 end
-                Trig2: begin
-                    trig_state <= Trig3;
+                TRIG2: begin
+                    trig_state <= TRIG3;
                     switchd <= switchd;
                 end
-                Trig3: begin
-                    trig_state <= Delay;
+                TRIG3: begin
+                    trig_state <= DELAY;
                     switchd <= switchd;
 
                 end
-                Delay: if (trig_cnt[dbnce_nu_bits] == 1)
+                DELAY: if (trig_cnt[dbnce_nu_bits] == 1)
                 begin
-                    trig_state <= Reenable;
+                    trig_state <= REENABLE;
                     sw_active <= 1'b0;
                 end
                 else
                 begin
-                    trig_state <= Delay;
+                    trig_state <= DELAY;
                     sw_active <= 1'b1;
                     switchd <= 7'b0000000;
                 end
 
-                Reenable: trig_state <= Latch;
-                default: trig_state <= Latch;
+                REENABLE: trig_state <= LATCH;
+                default: trig_state <= LATCH;
 
             endcase
-            if (trig_state == Trig1)
+            if (trig_state == TRIG1)
                 trig_cnt <=0;
             else  trig_cnt <= trig_cnt + 1;
         end

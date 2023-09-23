@@ -15,7 +15,9 @@ module PDP8e_tb;
     reg  dep;
     reg  sw;
     reg  single_step;
+    wire single_stepn;
     reg  halt;
+    wire haltn;
     reg  exam;
     reg  cont;
     reg  extd_addr;
@@ -72,15 +74,16 @@ module PDP8e_tb;
         .dsel (dsel),
         .dep (dep),
         .sw (sw),
-        .single_step (single_step),
-        .halt (halt),
+        .single_stepn (single_stepn),
+        .haltn (haltn),
         .examn (~exam),
         .contn (~cont),
         .extd_addrn (~extd_addr),
         .addr_loadn (~addr_load),
         .clearn (~clear)) ;
 
-
+assign haltn = ~halt;
+assign single_stepn = ~single_step;
 
     always @(posedge clk)
     begin
@@ -220,7 +223,6 @@ module PDP8e_tb;
         #1 $display("clock frequency %f",(clock_frequency)) ;
         #1 $display("baud rate %f ",(baud_rate)) ;
         #1 $display("clock period %f",(clock_period)) ;
-        #1 $display("baud_period %f",(baud_period)) ;
         #1 $display("cycle time %f nanoseconds" ,(6*clock_period));
 
 

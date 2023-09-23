@@ -50,7 +50,7 @@ module PDP8e (input clk,
     output  sdSCLK,sdCS,
 `endif
     input rx,
-    output reg tx
+    output tx
     );
     /* I/O */
     wire [0:2] EMA;
