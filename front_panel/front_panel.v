@@ -42,8 +42,9 @@ module front_panel (input clk,
 // This can be seen in the synth log, as a counter going to [0:0] ie one bit
 // instead of what it should be OR eliminating switches (6 in the case of this
 // module)
-    assign cont_c = (switchl[0] & sing_step );
 
+// don't really care what state the state machine is in as every processed
+// switch press is validated for the proper state elsewhare
     always @(posedge clk)
     begin
         if (reset)
@@ -66,22 +67,18 @@ module front_panel (input clk,
                     else
                     begin
                         trig_state <= WAIT;
-                        trigger1 <= 1'b1;
                     end
                 end
-                WAIT: if ((((state == H0) || (state == HW)) & (trigger1 == 1)) |
-                        ((state == F0) & cont_c) |
-                        ((state == D0) & cont_c) |
-                        ((state == E0) & cont_c))
+                WAIT:
                 begin
                     trig_state <= TRIG1 ;
-                    switchd <= {trigger1,switchl};
+                    switchd <= {1'b1,switchl};
                     switchl <= 6'b000000;
                 end
-		else trig_state <= WAIT;
                 TRIG1: begin
                     trig_state <= TRIG2;
                     switchd <= switchd;
+                    trig_cnt <=0;
                 end
                 TRIG2: begin
                     trig_state <= TRIG3;
@@ -90,7 +87,6 @@ module front_panel (input clk,
                 TRIG3: begin
                     trig_state <= DELAY;
                     switchd <= switchd;
-
                 end
                 DELAY: if (trig_cnt[dbnce_nu_bits] == 1)
                 begin
@@ -99,6 +95,7 @@ module front_panel (input clk,
                 end
                 else
                 begin
+                    trig_cnt <= trig_cnt + 1;
                     trig_state <= DELAY;
                     sw_active <= 1'b1;
                     switchd <= 7'b0000000;
@@ -108,9 +105,6 @@ module front_panel (input clk,
                 default: trig_state <= LATCH;
 
             endcase
-            if (trig_state == TRIG1)
-                trig_cnt <=0;
-            else  trig_cnt <= trig_cnt + 1;
         end
     end
 

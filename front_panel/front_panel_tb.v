@@ -2,7 +2,7 @@
 module front_panel_tb;
 
     reg clk,reset;
-	reg halt;
+    reg halt;
     reg clear, extd_addr,addr_load,dep,exam,sing_step,cont;
     wire contd;
     wire cleard , extd_addrd , addr_loadd , depd , examd;
@@ -19,7 +19,7 @@ module front_panel_tb;
         .dep (dep),
         .exam (exam),
         .sing_step (sing_step),
-		.halt (halt),
+        .halt (halt),
         .cleard (cleard),
         .extd_addrd (extd_addrd),
         .addr_loadd (addr_loadd) ,
@@ -41,38 +41,38 @@ module front_panel_tb;
 
     initial begin
         clear <= 0;
-		halt <= 0;
+        halt <= 0;
         extd_addr  <= 0;
         addr_load  <= 0;
         dep  <= 0;
         exam <= 0;
         sing_step <= 0;
         cont <= 0;
-		sing_step <= 0;
+        sing_step <= 0;
         state <= H0;
 
         #15 reset <= 1;
-        #25 reset <= 0;
+        #40 reset <= 0;
         #24 clear <= 1;
         #100 clear <= 0;
-        #20 cont <= 1;
-        #20 cont <=0;
-        #355 extd_addr <= 1;
+        #40 cont <= 1;
+        #40 cont <=0;
+        #500 extd_addr <= 1;
         #80 extd_addr <= 0;
         #500 addr_load <= 1;
         #50 addr_load <= 0;
 
         #500 exam <= 1;
-        #25 exam <= 0;
+        #40 exam <= 0;
         #50 exam <= 1;
-        #25 exam <= 0;
-        #300 dep <= 1;
-        #25 dep <= 0;
-		sing_step <= 1;
+        #40 exam <= 0;
+        #500 dep <= 1;
+        #40 dep <= 0;
+        sing_step <= 1;
         #500 cont <= 1;
         #50 cont <= 0;
         sing_step <= 0;
-		#50 halt <= 1;
+        #50 halt <= 1;
 
         #500 cont <= 1;
         #50 cont <= 0;
