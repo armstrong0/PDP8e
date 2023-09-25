@@ -96,7 +96,7 @@ parameter
 
 
 
-parameter reg MAX_FIELD = 3'b001;
+parameter MAX_FIELD = 3'b001;
 
 `define ONESTOP   // one stop bit for all baud rates greater than 110
 
