@@ -50,6 +50,17 @@
 // RK8E Secure Digital SPI Interface Entity
 // --
 
+`include "../parameters.v"
+
+   parameter slow_dev = $rtoi(clock_frequency/(slow_spi*2));
+   parameter nu_divcnt_bits = $clog2(slow_dev);
+   parameter SlowDiv = slow_dev[nu_divcnt_bits-1:0];
+   parameter fast_dev = $rtoi(clock_frequency/(fast_spi*2));
+   parameter FastDiv = fast_dev[nu_divcnt_bits-1:0];
+   parameter LoSpiFreq = clock_frequency/(SlowDiv*2);
+   parameter HiSpiFreq = clock_frequency/(FastDiv*2);
+
+
 
 module sdspi
   import sdspi_types::*;

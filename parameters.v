@@ -50,12 +50,21 @@ parameter
           SHL = 12'o7413, ASR = 12'o7415, LSR = 12'o7417,
           MUL = 12'o7405, DIV = 12'o7407, NMI = 12'o7411,
 `endif
+`ifdef RK8E
+          CAF  = 12'o6007,  // clear all flags
+          DSKP = 12'o6741,  // skip if error or done
+          DCLC = 12'o6742,  // DCLC disk clear
+          DLAG = 12'o6743,  // DLAG load and go
+          DCLA = 12'o6744,  // DLCA load current address
+          DRST = 12'o6745,  // DRST read status
+          DLDC = 12'o6746,  // DLDC load command register
+`endif
           AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
           DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
           OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
           JMPI = 4'b1011, JM = 2'b10 ;
-// clock_frequency is defined in the top level verilog file or in an included
-// file..
+// clock_frequency is defined in the top level verilog file 
+// or in an included file..
 
 
 `ifdef SIM
@@ -70,28 +79,16 @@ parameter
     parameter real baud_rate=9600;
 `endif
 
-//ifndef clock_frequency
-//   parameter real clock_frequency = 75000000;
-//`endif
-
     parameter real clock_period = 1/clock_frequency*1e9;
 
 // define the slow and fast clocks of the sd card
-// the counts here have to be for 1/2 clock
-// error on the low side, especially for 4 MHz
+// the counts here have to be for 1/2 clock.
+// Error on the low side, especially for 4 MHz
 // frequencies will not be exact.
 `ifdef RK8E
    parameter real slow_spi =  400000;
-   parameter real fast_spi =  2000000; // go too high and the state machines
-   // don't work
-   parameter slow_dev = $rtoi(clock_frequency/(slow_spi*2));
-   parameter nu_divcnt_bits = $clog2(slow_dev);
-   parameter SlowDiv = slow_dev[nu_divcnt_bits-1:0];
-   parameter fast_dev = $rtoi(clock_frequency/(fast_spi*2));
-   parameter FastDiv = fast_dev[nu_divcnt_bits-1:0];
-   parameter LoSpiFreq = clock_frequency/(SlowDiv*2);
-   parameter HiSpiFreq = clock_frequency/(FastDiv*2);
-
+   parameter real fast_spi =  2000000; 
+   // go too high and the state machines don't work!
 `endif
 
 

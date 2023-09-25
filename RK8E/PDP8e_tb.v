@@ -34,7 +34,10 @@ module PDP8e_tb;
 
     wire diskio;
     assign diskio = (UUT.instruction[0:8] == 9'o674);
+    wire troublesome;
+    assign troublesome = (address == 15'o07750);
 
+//`include "../FPGA_image/HX_clock.v"
 `include "../parameters.v"
 
     always begin  // clock _period comes from parameters.v
@@ -94,6 +97,8 @@ sdsim SDSIM(.clk (clk100),
     initial begin
         #1 $display("clock frequency %f Hz",(clock_frequency)) ;
         #1 $display("baud rate %f Hz ",(baud_rate)) ;
+        #1 $display("TX term count %f ",(tx_term_cnt)); 
+        #1 $display("RX term count %f ",$rtoi((baud_period /16)/clock_period));
         #1 $display("clock period %f nanoseconds",(clock_period)) ;
         #1 $display("baud_period %f nanoseconds",(baud_period)) ;
         #1 $display("cycle time %f nanoseconds" ,(6*clock_period));
@@ -103,7 +108,7 @@ sdsim SDSIM(.clk (clk100),
 
         #1 sr <= 12'o0200;  // normal start address
         $dumpfile("SDCard.vcd");
-        $dumpvars(0,address,diskio,UUT);
+        $dumpvars(0,address,diskio,troublesome,UUT);
         $readmemh("zero.hex",UUT.MA.ram.mem,0,8191);
         sr <= 12'o0004;
 
@@ -141,9 +146,19 @@ sdsim SDSIM(.clk (clk100),
         `PULSE(addr_load);
         #1000 ;
         `PULSE(cont);
-		//wait(UUT.instruction == 12'o6744);
-        //$writememh("ram_contents2",UUT.MA.ram.mem,0,8191);
-        #4000000  $finish;
+        #500 wait (address == 15'o00000);
+
+        #500 wait (UUT.RK8E.status == 12'o4000); // ready
+        wait (UUT.RK8E.status == 12'o0000);
+        $writememh("b177",UUT.MA.ram.mem,127,255);
+        $writememh("b046",UUT.MA.ram.mem,38,63);
+        //wait(UUT.instruction == 12'o6744);
+        wait(address == 15'o17605);
+        $writememh("ram_contents5",UUT.MA.ram.mem,0,8191);
+        $writememh("a7577",UUT.MA.ram.mem,3967,4095);
+        $writememh("a17746",UUT.MA.ram.mem,8166,8191);
+        $finish;
+        #40000000  $finish;
 
 
     end

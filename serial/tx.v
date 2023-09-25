@@ -10,8 +10,9 @@ module tx (
     output reg tx
 );
   `include "../parameters.v"
-  localparam tx_term_cnt = $rtoi(clock_frequency/baud_rate);
-  localparam tx_term_nu_bits = $clog2(tx_term_cnt);
+  localparam tx_term_count = $rtoi(clock_frequency/baud_rate);
+  localparam tx_term_nu_bits = $clog2(tx_term_count);
+  localparam tx_term_cnt = tx_term_count[tx_term_nu_bits-1:0]; 
 
   /* verilator lint_off LITENDIAN */
   reg [tx_term_nu_bits-1:0] period_cntr;

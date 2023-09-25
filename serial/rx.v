@@ -14,8 +14,9 @@ module rx (
 );  //  bit 7 is the LSB and was received first
 
   `include "../parameters.v"
-  localparam real baud_period = 1.0/baud_rate*1e9;
-  localparam term_cnt = $rtoi((baud_period / 16) / clock_period);
+  localparam rx_term_count = $rtoi(clock_frequency/(baud_rate*16));
+  localparam rx_term_nu_bits = $clog2(rx_term_count);
+  localparam rx_term_cnt = rx_term_count[rx_term_nu_bits-1:0];
 
   localparam start_search = 0,
     check_start = 1,
@@ -33,7 +34,7 @@ module rx (
     stop_bit = bit7 + 16;
 
   reg [ 7:0] state;
-  reg [14:0] counter;
+  reg [rx_term_nu_bits-1:0] counter;
   reg [ 0:7] char1;  // receive shift register
 
 
@@ -41,14 +42,14 @@ module rx (
     if ((reset == 1'b1) | (clear == 1)) begin
       char1 <= 8'o377;
       char0 <= 8'o377;
-      counter <= term_cnt[14:0];
+      counter <= rx_term_cnt;
       flag <= 0;
       state <= start_search;
     end else if (clear_flag == 1) flag <= 0;
     else if (counter > 15'o0000) counter <= counter - 1;
     else  // counter reached zero
     begin
-      counter <= term_cnt[14:0];
+      counter <= rx_term_cnt;
       state   <= state + 1;
       case (state)
         start_search, check_start, check_start1, check_start2, check_start3:

@@ -1,40 +1,56 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Wed Jun  7 00:44:55 2023
+[*] Fri Jul 21 01:48:37 2023
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/RK8E/SDCard.vcd"
-[dumpfile_mtime] "Wed Jun  7 00:33:46 2023"
-[dumpfile_size] 1294004
+[dumpfile_mtime] "Fri Jul 21 01:32:30 2023"
+[dumpfile_size] 2528995
 [savefile] "/home/armstrong/Desktop/PDP8e/RK8E/full_debug.gtkw"
-[timestart] 1540996800
-[size] 1600 900
-[pos] -601 -28
-*-15.599382 1541139250 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 4123372200
+[size] 1868 935
+[pos] -1 -1
+*-17.563347 4123653450 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
 [treeopen] PDP8e_tb.UUT.MA.
-[treeopen] PDP8e_tb.UUT.RK8E.
 [sst_width] 263
 [signals_width] 166
 [sst_expanded] 1
-[sst_vpaned_height] 262
+[sst_vpaned_height] 293
 @30
 PDP8e_tb.address[0:14]
 @28
 PDP8e_tb.UUT.MA.write_en
 @30
 PDP8e_tb.UUT.MA.dmaAddr[0:14]
-@31
-PDP8e_tb.UUT.MA.mdtmp[0:11]
+PDP8e_tb.UUT.AC.ac[0:11]
 @22
 PDP8e_tb.UUT.RK8E.state[4:0]
-@30
+@31
 PDP8e_tb.UUT.RK8E.instruction[0:11]
+@30
+PDP8e_tb.UUT.MA.idx_tmp[0:11]
 @28
+PDP8e_tb.troublesome
 PDP8e_tb.UUT.RK8E.data_break
 PDP8e_tb.diskio
 PDP8e_tb.UUT.RK8E.dmaRD
 @30
 PDP8e_tb.UUT.RK8E.dmaWR
+@28
+PDP8e_tb.UUT.IM.disk_skip
+PDP8e_tb.UUT.IM.skip
+@22
+PDP8e_tb.UUT.RK8E.status[0:11]
+@30
+PDP8e_tb.UUT.RK8E.car[0:11]
+PDP8e_tb.UUT.RK8E.cmd_reg[0:11]
+@28
+PDP8e_tb.UUT.MA.index
+@30
+PDP8e_tb.UUT.MA.mdin[0:11]
+PDP8e_tb.UUT.MA.mdout[0:11]
+PDP8e_tb.UUT.MA.mdtmp[0:11]
+PDP8e_tb.UUT.RK8E.dar[0:11]
 [pattern_trace] 1
 [pattern_trace] 0

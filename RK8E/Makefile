@@ -44,8 +44,9 @@ sim_verilog: rk8e_basic_tb.v rk8e.v sdsim.v ../state_machine/state_machine.v ../
 	vvp sdb.o
 	gtkwave sdb.vcd sdsim.gtkw
 
-full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v rk8e.v sdsim.v
-	iverilog -DSIM ../FPGA_image/PDP8e.v PDP8e_tb.v sdsim.v -o sdcard.o 
+full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v rk8e.sv sdsim.v
+	~/.local/bin/sv2v -DSIM rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v  
+	iverilog -DSIM -DRK8E ../FPGA_image/PDP8e.v PDP8e_tb.v sdsim.v -o sdcard.o 
 	vvp sdcard.o -fst
 	gtkwave SDCard.vcd full_debug.gtkw &
 
