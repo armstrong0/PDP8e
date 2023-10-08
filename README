@@ -1,3 +1,7 @@
+October 7 2023:  After a change in tool chain version serila output is not working, I am currently debugginh.  I am adding a better hardware test.  What I have working so far proves that the hardwaare is fine.  So something subtil has caused the serial port to not work whaen compiled with the new tools.   However the serial hareware test compiled with the same tool set works!
+
+The basis of an SD card disk emulating an RK8E with 4 RK05 packs is in the repository but does not work yet.
+
 The design now pass all three EAE tests, so a complete EAE implementation.  All hardware tests have been re-run and pass.  See status in integrate.
 
 There is a problem with the serial port, if the halt switch is set, it is possible that the serial transmitter was in the middle of a character, leaving the line is the spacing state, this messes up the receiving uart.
