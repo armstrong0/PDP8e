@@ -2,18 +2,16 @@
 
 `ifndef SIM
 `include "pll.v"
+`include "HX_clock.v"
 `endif
-`include "../serial/serial_top.v"
-`include "state.v"
-`include "inst_mux.v"
-`include "char_mux.v"
-
+`include "serial_tx.v"
+`include "serial_rx.v"
 `default_nettype none
 
 
 /* verilator lint_off LITENDIAN */
 
-module PDP8e (input clk,
+module PDP8e (input clk12,
     output reg led1,output reg led2,
     output runn,
     output [0:2] EMAn,
@@ -37,7 +35,8 @@ module PDP8e (input clk,
     assign EMAn = ~EMA;
     wire [0:11] A;
     assign An = ~A;
-    wire [0:11] ds;
+    //wire [0:11] ds;
+    reg [0:11] ds;
     assign dsn = ~ds;
     wire run;
 
@@ -53,73 +52,123 @@ module PDP8e (input clk,
     wire clear;
     assign clear = ~clearn;
 
-
     wire mskip,skip,eskip;
     wire [0:11] ac;
-    wire [0:11] instruction;
+    wire [0:11] serial_data_bus,instruction;
     wire sskip;
     wire [4:0]  state;
     reg [0:11] rsr;
     reg UF;
 
+    wire [11:0] tx_char;
+	wire [11:0] rx_char;
 
     reg [3:0] pll_locked_buf;   // reset circuit by Cliff Wolf
-    reg [24:0] counter;
 `ifndef SIM
     reg reset;
     wire clk100;
     wire pll_locked;
-    pll p1(.clock_in (clk),
+    pll p1(.clock_in (clk12),
         .clock_out (clk100),
         .locked (pll_locked));
 
-    always @(posedge clk)  // was clk
+    always @(posedge clk12)
     begin
         pll_locked_buf <= {pll_locked_buf[2:0],pll_locked};
         reset <= ~pll_locked_buf[3];
         rsr <= sr;
     end
 `else
-    always @(posedge clk)
+    always @(posedge clk12)
     begin
         rsr <= sr;
-        UF <= 0;
     end
 `endif
+    reg [14:0] counter2;
 
+always @(posedge clk100)
+begin
+counter2 <= counter2 +1;
+end
+
+    assign {EMA,A} = counter2;
+    assign run = ~rx;
 
 `include "../parameters.v"
+// this section established the baud rate and transmits charactors at that
+// baud rate
+// It transmits in order ascii charactors starting at space and ending at ~.
+// so it includes numbers punctuation upper and lower case alphabet.
+// The output is arranged in 80 column lines.
+// lines are terminated with cr / lf.
 
-    inst_mux IM (.clock (clk100),
-        .reset (reset),
-        .skip (sskip),
-        .state (state),
-        .instruction (instruction));
-
-    char_mux CM (.clock (clk100),
-        .reset (reset),
-        .state (state),
-        .skip (sskip),
-        .ochar (ac));
+    
+serial_tx TX(
+	.clk100 (clk100),
+	.reset (reset),
+	.tx (tx),
+	.tx_char_out (tx_char));
 
 
-    state SM(.clock (clk100),
-        .reset (reset),
-        .state (state)
-    );
+serial_rx RX(
+	.reset (reset),
+	.clk100 (clk100),
+	.rx (rx),
+	.rx_char_out (rx_char));
 
-    serial_top ST(.clk (clk100),
-        .reset (reset),
-        .clear (1'b0),
-        .state (state),
-        .instruction (instruction),
-        .ac (ac),
-    //    .serial_bus (serial_data_bus),
-        .rx (rx),
-        .tx (tx),
-        .UF (UF),
-      //  .interrupt (s_interrupt),
-        .skip (sskip));
 
+
+// this section selects what is displayed on the 12 bit data display
+//
+    reg [0:11] shft_reg;
+    
+	always @(posedge clk100)
+    begin
+        if (dsel[0] == 1) begin
+            ds <= {4'd0,tx_char}; // displays last char send, very fast
+        end
+        else if (dsel[1] == 1) begin // allows testing of each switch in the switch register
+            ds <= sr;
+        end
+        else if (dsel[2] == 1) begin // allows testing of every other switch
+            ds <= {sw,addr_load,extd_addr,clear,cont,exam,halt,single_step,dep,3'b0};
+        end
+        else if (dsel[3] == 1) begin // this and the next shifts a single bit thru data display
+            ds <= shft_reg;
+        end
+        else if (dsel[4] == 1) begin
+            ds <= shft_reg;
+        end
+        else if (dsel[5] == 1) begin // display rx charactor
+        end
+    end
+
+// this section implements left and right shift of a single lit LED	
+    reg pps;
+    reg [23:0] pps_cntr;
+    always @(posedge pps) begin
+	  if (dsel[4] == 1) begin
+            if (shft_reg == 0) shft_reg <= 12'o4000;
+            else shft_reg <= shft_reg >> 1;
+			end
+	  else if (dsel[3] == 1) begin
+            if (shft_reg == 0) shft_reg <= 1;
+            else shft_reg <= shft_reg << 1;
+		end	
+end
+
+// this section generates a 1 pps clock
+
+    always @(posedge clk12)
+    begin
+        if (pps_cntr == 0)
+        begin
+            pps <= ~ pps;
+            pps_cntr <= 'd6000000;
+        end
+        else
+            pps_cntr <= pps_cntr -1;
+
+    end
 
 endmodule

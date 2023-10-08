@@ -98,7 +98,7 @@ parameter MAX_FIELD = 3'b001;
 `define ONESTOP   // one stop bit for all baud rates greater than 110
 
 `ifndef SIM
-    parameter integer dbnce_nu_bits = $clog2(clock_frequency/2);
+    parameter integer dbnce_nu_bits = $clog2(clock_frequency) - 1;
 `else
     parameter integer dbnce_nu_bits = 4;
 `endif

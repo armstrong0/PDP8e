@@ -1,13 +1,16 @@
-One needs to make a pll module with the correct parameters for the operating frequency;
+This directory contains the source code for a hardware test.  Its intent is to test every LED and every switch as well as the receive and transmit serial lines.
 
-This can be done thus:
+The address LEDs , EMA 0- 2 and address 0 - 11 display and rapidly increasing count.
 
- icepll -i 12 -o 58  -f  pll.v -m
+The run LED is connected to the receive serial line.  Normal state is LED off, when a receive charactor appears the LED will blink.  There is no processing on this line, so low baud rates the LED may visably blink, on higher baud rates the intensity of the LED will vary depending upon the charactor.
 
- Where 12 is the input clock frequency in MHz and the 58 is the output frequency.
+A simple serial receiver is implemented. The baud rate is set in the source code,  the received charactor can be display on the low order (bits 5:11) of hte data display by swtiching the display selector switch to state. Bits 0 and 1 are light if a start bit or stop bit error is found.
 
-Then the frequency has to be set in the PDP8e.pcf file and parameters.v to provide the tools information on the desired operating frequency.
+A serial transmitter is implemented, it transmits:
+7 bits No parity 2 stops bits 
+8 bits 1 stop bit with the 88th bit set to 1.
+It transmits the ASCII values for space (h20) through to tilde ~ (h7e) and repeates. A carraige return (h0d) and linefeed (h0a)  are inserted every 80 charactors. 
 
-The file parameters.v, one level up, calculates many things from the clock frequency, such as the number of bits in the debounce timer in front_panel.v and baud rate parameters in the serial module.  So the clock frequency must match what is set in the pcf and pll.  If they are not close enough a warning will show up in one or both of the logs.
+A single 1 bit is shifted accross the data display LED's when the status or ac dispaly is selected.
 
 

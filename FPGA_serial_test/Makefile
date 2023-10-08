@@ -31,6 +31,7 @@ burn:
 clean:
 	rm -rf *.asc *.bin *blif
 	rm -rf *.log
+	rm -rf *.o
 	rm -rf top_design
 	rm -rf *.vcd
 	rm -rf *json

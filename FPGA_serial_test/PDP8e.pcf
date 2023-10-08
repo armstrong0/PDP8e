@@ -2,11 +2,11 @@
 # set_frequency clk100 62.250
 #set_frequency clk100 85.5
 set_frequency clk100 73.5
-set_frequency clk 12
+set_frequency clk12 12
 
 set_io --warn-no-port led1 A5	
 set_io --warn-no-port led2 M4	
-set_io --warn-no-port clk P7 # global input  - good for clocks
+set_io --warn-no-port clk12 P7 # global input  - good for clocks
 
 set_io --warn-no-port runn A4
 
