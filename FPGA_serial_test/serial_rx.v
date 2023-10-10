@@ -1,4 +1,5 @@
 
+
 module serial_rx (
     input  reset,
     input  clk100,
@@ -6,9 +7,8 @@ module serial_rx (
     output [11:0] rx_char_out
 );
 
-  assign rx_char_out = rx_char; 
-`include "../parameters.v"
-
+`include "HX_clock.v"
+  localparam baud_rate = 9600;
   localparam term_count = $rtoi(clock_frequency/baud_rate);
   localparam term_nu_bits = $clog2(term_count);
 
@@ -19,15 +19,25 @@ module serial_rx (
   reg [2:0] bit_cnt;
   reg [term_nu_bits-1:0] rx_counter;
   reg [2:0] rx_state;
+  assign rx_char_out = rx_char; 
+  
   always @(posedge clk100) begin
-    case (rx_state)
+  if (reset == 1) 
+  begin
+    rx_counter <= 0;
+	bit_cnt  <= 0;
+	rx_state <= 0;
+	rx_char  <= 0;
+	rx_temp  <= 0;
+  end
+  else  case (rx_state)
       0: // idle state
       begin
-        if (rx == 1) rx_state <= 1;
+        if (rx == 1) rx_state <= 0;
         else begin
           rx_counter <= 'd32;
           rx_state <= 1;
-          rx_char <= '0;
+          rx_char <= 'o0;
         end
       end
 
@@ -50,7 +60,7 @@ module serial_rx (
             rx_state   <= 3;
             rx_counter <= term_count;
           end else begin
-            rx_state <= 0;  // start over
+            rx_state <= 0;  // false start bit start over
             rx_char[11] <= 1;
           end
         end
@@ -74,7 +84,7 @@ module serial_rx (
           rx_counter <= (term_count >> 1);
           rx_char <= rx_temp;
           rx_state <= 5;
-          if (rx == 0) rx_char[10] <= '1;
+          if (rx == 0) rx_char[10] <= 'o1;
 
         end
       end

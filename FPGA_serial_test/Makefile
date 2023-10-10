@@ -19,7 +19,7 @@ PDP8e: ../RK8E/rk8e.v
 ../RK8E/rk8e.v: ../RK8E/rk8e.sv
 	$(MAKE) -C../RK8E/ -f Makefile verilog
 
-sim: PDP8e_tb.v PDP8e.v inst_mux.v char_mux.v
+sim: PDP8e_tb.v PDP8e.v serial_tx.v serial_rx.v
 	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e.o
 	vvp PDP8e.o
 	gtkwave Hardware_serial_test.vcd serial_test.gtkw

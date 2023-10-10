@@ -2,7 +2,6 @@
 
 `ifndef SIM
 `include "pll.v"
-`include "HX_clock.v"
 `endif
 `include "serial_tx.v"
 `include "serial_rx.v"
@@ -63,6 +62,8 @@ module PDP8e (input clk12,
     wire [11:0] tx_char;
 	wire [11:0] rx_char;
 
+`include "HX_clock.v"
+
     reg [3:0] pll_locked_buf;   // reset circuit by Cliff Wolf
 `ifndef SIM
     reg reset;
@@ -84,17 +85,20 @@ module PDP8e (input clk12,
         rsr <= sr;
     end
 `endif
-    reg [14:0] counter2;
+    reg [18:0] counter2;
+    reg [3:0] counter3;
 
 always @(posedge clk100)
 begin
-counter2 <= counter2 +1;
+if (reset == 1) counter2 <= 'o0;
+else
+    counter2 <= counter2 +1;
 end
 
-    assign {EMA,A} = counter2;
+    assign {EMA,A} = counter2[18:4];
     assign run = ~rx;
 
-`include "../parameters.v"
+//`include "../parameters.v"
 // this section established the baud rate and transmits charactors at that
 // baud rate
 // It transmits in order ascii charactors starting at space and ending at ~.
@@ -147,7 +151,9 @@ serial_rx RX(
     reg pps;
     reg [23:0] pps_cntr;
     always @(posedge pps) begin
-	  if (dsel[4] == 1) begin
+	if (reset == 1) shft_reg <= 'o0;
+
+	else if (dsel[4] == 1) begin
             if (shft_reg == 0) shft_reg <= 12'o4000;
             else shft_reg <= shft_reg >> 1;
 			end

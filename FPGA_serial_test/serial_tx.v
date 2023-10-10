@@ -1,8 +1,10 @@
 module serial_tx(
     input reset,
 	input clk100,
-	output tx,
-	output [7:0] tx_char_out);
+	output reg tx,
+	output [11:0] tx_char_out);
+
+`include "HX_clock.v"
     localparam baud_rate = 9600;
     localparam term_count = $rtoi(clock_frequency / baud_rate);
     localparam term_nu_bits = $clog2(term_count);
@@ -10,9 +12,8 @@ module serial_tx(
 assign tx_char_out = tx_char;
     reg [term_nu_bits-1:0] counter;
     reg [3:0] stat;
-    reg [7:0] tx_char;
-    reg [7:0] tx_char1;
-	reg tx;
+    reg [11:0] tx_char;
+    reg [11:0] tx_char1;
     reg [6:0] column;
 always @(posedge clk100)
     begin
@@ -20,6 +21,9 @@ always @(posedge clk100)
             counter <= term_count;
             column <= 0;
             tx_char1 <= 'h20;
+			tx_char  <= 'h20;
+			stat <= 'o0;
+			tx <= 1;
         end
         else
         if (counter == 0)
