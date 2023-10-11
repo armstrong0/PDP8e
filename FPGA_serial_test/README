@@ -4,7 +4,7 @@ The address LEDs , EMA 0- 2 and address 0 - 11 display and rapidly increasing co
 
 The run LED is connected to the receive serial line.  Normal state is LED off, when a receive charactor appears the LED will blink.  There is no processing on this line, so low baud rates the LED may visably blink, on higher baud rates the intensity of the LED will vary depending upon the charactor.
 
-A simple serial receiver is implemented. The baud rate is set in the source code,  the received charactor can be display on the low order (bits 5:11) of hte data display by swtiching the display selector switch to state. Bits 0 and 1 are light if a start bit or stop bit error is found.
+A simple serial receiver is implemented. The baud rate is set in the source code,  the received charactor can be display on the low order (bits 5:11) of hte data display by swtiching the display selector switch to state. Bits 0 and 1 are light if a start bit or stop bit error is found.  Currently on properly formatted PDP8e tapes sent using sendtape framing and or startbit errors occur BUT we know th ehardwar is OK.
 
 A serial transmitter is implemented, it transmits:
 7 bits No parity 2 stops bits 
