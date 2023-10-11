@@ -46,7 +46,7 @@ module rx (
       flag <= 0;
       state <= start_search;
     end else if (clear_flag == 1) flag <= 0;
-    else if (counter > 15'o0000) counter <= counter - 1;
+    else if (counter > 0) counter <= counter - 1;
     else  // counter reached zero
     begin
       counter <= rx_term_cnt;
