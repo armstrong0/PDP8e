@@ -85,16 +85,16 @@ module PDP8e (input clk12,
         rsr <= sr;
     end
 `endif
-    reg [14:0] counter2;
+    reg [24:0] counter2;
 
-always @(posedge pps)
+always @(posedge clk100)
 begin
 if (reset == 1) counter2 <= 'o0;
 else
     counter2 <= counter2 +1;
 end
 
-    assign {EMA,A} = counter2[14:0];
+    assign {EMA,A} = counter2[24:10];
     assign run = ~rx;
 
 //`include "../parameters.v"
