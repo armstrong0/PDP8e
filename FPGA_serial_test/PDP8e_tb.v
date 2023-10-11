@@ -96,6 +96,7 @@ module PDP8e_tb;
          $dumpvars(0,UUT);
         //        $readmemh( "Diagnostics/dhkaf-a.hex", UUT.MA.ram.mem,0,4095);
         #1 halt <= 1;
+		#1 rx <= 1;
         #1 reset <= 1;
 		#1 clear <= 0;
         #( clock_period*10) reset <=0;
@@ -112,7 +113,7 @@ module PDP8e_tb;
         #1 rx <= 1; // marking state
         #100 pll_locked <= 1;
         #100 halt <= 0;
-		#1000 rx <= 0;
+		#150000 rx <= 0;
 		#(baud_period*2) rx <=1;
 		#(baud_period) rx <=0;
 		#(baud_period) rx <=1;

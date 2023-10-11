@@ -85,17 +85,16 @@ module PDP8e (input clk12,
         rsr <= sr;
     end
 `endif
-    reg [18:0] counter2;
-    reg [3:0] counter3;
+    reg [14:0] counter2;
 
-always @(posedge clk100)
+always @(posedge pps)
 begin
 if (reset == 1) counter2 <= 'o0;
 else
     counter2 <= counter2 +1;
 end
 
-    assign {EMA,A} = counter2[18:4];
+    assign {EMA,A} = counter2[14:0];
     assign run = ~rx;
 
 //`include "../parameters.v"
@@ -144,6 +143,7 @@ serial_rx RX(
             ds <= shft_reg;
         end
         else if (dsel[5] == 1) begin // display rx charactor
+		    ds <= rx_char;
         end
     end
 

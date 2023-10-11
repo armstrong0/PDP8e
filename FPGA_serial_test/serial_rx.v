@@ -37,7 +37,7 @@ module serial_rx (
         else begin
           rx_counter <= 'd32;
           rx_state <= 1;
-          rx_char <= 'o0;
+         // rx_char <= 'o0;
         end
       end
 
@@ -69,11 +69,11 @@ module serial_rx (
       3: // bit 0
    begin
         rx_counter <= rx_counter - 1;
-        if (rx_counter == 0);
+        if (rx_counter == 0)
         begin
-          if (bit_cnt == 'd6) rx_state <= 4;
+          if (bit_cnt == 'd7) rx_state <= 4;
           else rx_counter <= term_count;
-          rx_temp <= {rx_temp[5:0], rx};
+          rx_temp <= {rx,rx_temp[7:1]};
           bit_cnt <= bit_cnt + 1;
         end
       end
