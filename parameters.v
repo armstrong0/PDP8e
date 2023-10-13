@@ -79,7 +79,7 @@ parameter
     parameter real baud_rate=9600;
 `endif
 
-    parameter real clock_period = 1/clock_frequency*1e9;
+//    parameter real clock_period = 1/clock_frequency*1e9;
 
 // define the slow and fast clocks of the sd card
 // the counts here have to be for 1/2 clock.
@@ -96,13 +96,6 @@ parameter
 parameter MAX_FIELD = 3'b001;
 
 `define ONESTOP   // one stop bit for all baud rates greater than 110
-
-`ifndef SIM
-    parameter integer dbnce_nu_bits = $clog2(clock_frequency) - 1;
-`else
-    parameter integer dbnce_nu_bits = 4;
-`endif
-
 
 
 

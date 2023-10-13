@@ -1,4 +1,6 @@
-October 7 2023:  After a change in tool chain version serila output is not working, I am currently debugginh.  I am adding a better hardware test.  What I have working so far proves that the hardwaare is fine.  So something subtil has caused the serial port to not work whaen compiled with the new tools.   However the serial hareware test compiled with the same tool set works!
+October 12, 2023 Serial is now working, hardwaer tests need to be re-run
+
+October 7 2023:  After a change in tool chain version serial output is not working, I am currently debugging.  I am adding a better hardware test.  What I have working so far proves that the hardware is fine.  So something subtle has caused the serial port to not work when compiled with the new tools.   However the serial hareware test compiled with the same tool set works!
 
 The basis of an SD card disk emulating an RK8E with 4 RK05 packs is in the repository but does not work yet.
 
@@ -24,7 +26,7 @@ were wired with 22 AWG copper bus wire.
 Almost all of the circuitry is on the Icewerks modules.  Exceptions are the
 LED's and associated current limiting resistors, toggle switches, rotary
 display select switch and a USB to TTL serial module.  Two 33 ufd caps were,
-placed between 3.3 volt and ground on the switch busses.  3 30 AWG wires were
+placed between 3.3 volt and ground on the switch buses.  3 30 AWG wires were
 used to connect the ICEWERKS module ground to the switch ground.  Only 1 30
 AWG wire is used to hook up 3.3 Volts.
 

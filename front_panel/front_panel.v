@@ -14,6 +14,14 @@ module front_panel (input clk,
 );
 
 `include "../parameters.v"
+`ifndef SIM
+    parameter integer dbnce_nu_bits = $clog2(clock_frequency) - 1;
+`else
+    parameter integer dbnce_nu_bits = 4;
+`endif
+
+
+
     wire cont_c;
     reg [6:0] switchd;
     reg [5:0] switchl;
@@ -25,13 +33,13 @@ module front_panel (input clk,
     assign { triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd } = switchd;
 
     parameter 
-	  LATCH = 3'b000,
-          WAIT  = 3'b001,
-          TRIG1 = 3'b010,
-	  TRIG2 = 3'b011,
-          TRIG3 = 3'b100,
-          DELAY = 3'b101,
-	  REENABLE = 3'b110;
+      LATCH = 3'b000,
+      WAIT  = 3'b001,
+      TRIG1 = 3'b010,
+      TRIG2 = 3'b011,
+      TRIG3 = 3'b100,
+      DELAY = 3'b101,
+      REENABLE = 3'b110;
 
 // This set of notes is to record in short form efforts to get this working
 // again!  One of the last yosys ugrades seem to make the logic optimizer work
