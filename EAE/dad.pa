@@ -6,70 +6,59 @@
 	DLD=7763
 	DST=7445
 	swp=7521
-	*0010   // new to check auto increment
-	K7777
-	K1234
-	0
-	0
-	0
+//	*0010   // new to check auto increment
+//	K7777
+//	K1234
+//	0
+//	0
+//	0
 	field 1
-	*3000
+	*4000
 	3000
 	3001
+	3000
+	0000
+  
     field 0
 
-    *100
+    /*100
 	 
-	K7777, 7777
-	K3777, 3777
-	K1234, 1234
-	K4567, 4567
+	/K7777, 7777
+	/K3777, 3777
+	/K1234, 1234
+	/K4567, 4567
 
 	*110
 	5000
 	4776
+	5000
+	7777
 
-	*150
-	stor, 0000
-    /  a whole selection of constants
-
+	
     *200
 	swab  // first check to see if double add works
 	      // see if double add with auto increment works
 		  // see that the carry propogates from mq to ac
 
-	cam
-	      // then check to see that double load works
-		  // see if double load with auto increment
-	dad	  
-    0100 
-	cla swp dad  // cam doesn't do what is needed
-	0100
-	dad
-	0100
-	cll
-	dad
-	0102
-	dst
-	stor
-	// now try auto increment
-	dld
-	0010
-	dad
-	0010
-	6211  //cif1
-	cam
-	tad 0110
+	    cla
+	tad 110
 	swp
-	tad 0111
+	cla
+	tad 111
+
+	6211  //cdf 1
 	dad
-	3000
-	cam
-	tad 0110
+	4000
+	nop
+	6201  //cdf 0
+	cla
+	tad 112
 	swp
-	tad 0111
-	cam dad
-	3000
+	cla
+	tad 113
+	6211 / cdf 1
+	dad 
+	4002
 	hlt
 	
 
