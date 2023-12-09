@@ -1,7 +1,7 @@
 `define SIM
 `timescale 1 ns / 10 ps
 // assumes about a 58 MHz clock
-`define clock_period = 18;
+//`define clock_period = 18;
 `define pulse(arg) #1 ``arg <=1 ; #(4*clock_period) ``arg <= 0
 
 
@@ -60,7 +60,7 @@ module state_machine_tb;
 
 
   `include "../parameters.v"
-
+   localparam clock_period = 1e9/clock_frequency;
 
   integer data_file;  // file handler
   integer scan_file;  // file handler
