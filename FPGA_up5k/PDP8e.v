@@ -3,6 +3,7 @@
 `ifndef SIM
 `include "pll.v"
 `endif
+`include "UP_clock.v"
 `include "../imux/imux.v"
 `include "../front_panel/front_panel.v"
 `include "../front_panel/D_mux.v"
@@ -117,7 +118,7 @@ module PDP8e (input clk,
     end
 `endif
 
-
+`include "UP_clock.v"
 `include "../parameters.v"
 `ifdef RK8E
     assign irq = s_interrupt | UI | disk_interrupt;
