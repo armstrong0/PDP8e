@@ -1,21 +1,21 @@
 [*]
-[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Fri Dec 30 21:21:35 2022
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Fri Dec  8 21:31:50 2023
 [*]
-[dumpfile] "/home/armstrong/Desktop/PDP8e/integrate/EAE_test.vcd"
-[dumpfile_mtime] "Fri Dec 30 21:20:54 2022"
-[dumpfile_size] 7314
+[dumpfile] "/home/armstrong/Desktop/PDP8e/integrate/instruction_test_pt1.1.vcd"
+[dumpfile_mtime] "Fri Dec  8 21:30:28 2023"
+[dumpfile_size] 26794
 [savefile] "/home/armstrong/Desktop/PDP8e/integrate/PDP8e.gtkw"
-[timestart] 8368900
-[size] 1678 968
-[pos] -1 -1
-*-17.318272 9359350 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 13299300
+[size] 1920 987
+[pos] -461 -192
+*-17.318272 13917050 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
 [sst_width] 214
 [signals_width] 166
 [sst_expanded] 1
-[sst_vpaned_height] 528
+[sst_vpaned_height] 605
 @c00030
 PDP8e_tb.UUT.ac[0:11]
 @28
@@ -33,11 +33,11 @@ PDP8e_tb.UUT.ac[0:11]
 (11)PDP8e_tb.UUT.ac[0:11]
 @1401200
 -group_end
-@31
+@30
 PDP8e_tb.UUT.mq[0:11]
-@c00030
+@c00031
 PDP8e_tb.UUT.instruction[0:11]
-@28
+@29
 (0)PDP8e_tb.UUT.instruction[0:11]
 (1)PDP8e_tb.UUT.instruction[0:11]
 (2)PDP8e_tb.UUT.instruction[0:11]
@@ -50,8 +50,17 @@ PDP8e_tb.UUT.instruction[0:11]
 (9)PDP8e_tb.UUT.instruction[0:11]
 (10)PDP8e_tb.UUT.instruction[0:11]
 (11)PDP8e_tb.UUT.instruction[0:11]
-@1401200
+@1401201
 -group_end
+@30
+PDP8e_tb.UUT.MA.mdin[0:11]
+PDP8e_tb.UUT.MA.mdout[0:11]
+@28
+PDP8e_tb.UUT.MA.write_en
+@30
+PDP8e_tb.UUT.addr[0:14]
+@24
+PDP8e_tb.UUT.ME.state[4:0]
 @30
 PDP8e_tb.UUT.ME.me_bus[0:11]
 @28
@@ -69,22 +78,11 @@ PDP8e_tb.UUT.ME.IF[0:2]
 PDP8e_tb.UUT.EAE_mode
 @30
 PDP8e_tb.UUT.AC.sc[0:4]
-PDP8e_tb.UUT.PC.skip_pc[0:11]
-@28
-PDP8e_tb.UUT.PC.skip
-PDP8e_tb.UUT.PC.eskip
-@30
-PDP8e_tb.UUT.PC.next_pc[0:11]
 @28
 PDP8e_tb.UUT.ME.int_ena
 PDP8e_tb.UUT.ME.int_in_prog
 PDP8e_tb.UUT.ME.irq
 @30
-PDP8e_tb.address[0:14]
 PDP8e_tb.UUT.ME.savereg[0:6]
-@22
-PDP8e_tb.UUT.ME.state[4:0]
-@30
-PDP8e_tb.UUT.A[0:11]
 [pattern_trace] 1
 [pattern_trace] 0

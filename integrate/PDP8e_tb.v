@@ -23,19 +23,19 @@ module PDP8e_tb;
     reg  extd_addr;
     reg  addr_load;
     reg  clear ;
-    reg [0:14] address;
+    wire [0:14] address;
     wire led1;
     wire led2;
     wire runn;
-    wire [0:2] EMAn;
-    wire [0:11] An;
+    wire [0:14] An;
     wire [0:11] dsn;
     wire tx;
     wire tclk;
 	reg serial_io;
 
 `include "../parameters.v"
-
+    localparam clock_period = 1e9/clock_frequency;
+	
     always begin  // clock _period comes from parameters.v
         #(clock_period/2) clk100 <= 1;
         #(clock_period/2) clk100 <= 0;
@@ -45,9 +45,8 @@ module PDP8e_tb;
         #42 clk <= 1;
         #42 clk <= 0;
     end
-    always @* begin
-        address <= {~EMAn,~An};
-    end
+
+    assign address = ~An;
 
     always @(posedge clk100)
     begin
@@ -62,7 +61,6 @@ module PDP8e_tb;
         .runn (runn),
         .led1 (led1),
         .led2 (led2),
-        .EMAn (EMAn),
         .An (An),
         .dsn (dsn),
         .tx (tx),
@@ -92,11 +90,11 @@ assign single_stepn = ~single_step;
         begin
             case (test_sel)
                 1:;
-                //11: if ($time < 5000)
-                //begin
-                //    `pulse(cont);  //it would appear that a case with just pulse does not work
-                //end
-                //else $finish;
+                11: if ($time < 5000)
+                begin
+                    `pulse(cont);  //it would appear that a case with just pulse does not work
+                end
+                else $finish;
                 12: begin
                     #1000 $finish;
                 end
@@ -119,7 +117,8 @@ assign single_stepn = ~single_step;
                     $display("Passed Instruction Set Part 1");
                     #99 $finish;
                 end
-                15'o00147: $display("starting SZA Test 1");
+                15'o00147:begin $display("starting SZA Test 1"); end
+				//$finish; end
                 15'o00157: $display("starting SZA Test 2");
                 15'o00166: $display("starting SZA Test 3");
                 15'o00201: $display("starting SZA Test 4");
@@ -230,66 +229,65 @@ assign single_stepn = ~single_step;
         case(test_sel)
             1: begin
                 $dumpfile("instruction_test_pt1.vcd");
-                $dumpvars(0,address,sr,clear,cont,serial_io,UUT);
-                $readmemh( "Diagnostics/dhkaf-a.hex", UUT.MA.ram.mem,0,4095);
+                $dumpvars(0,UUT);
+                $readmemh( "Diagnostics/D0AB.hex", UUT.MA.ram.mem,0,4095);
             end
             1.1: begin
                 $dumpfile("instruction_test_pt1.1.vcd");
-                $dumpvars(0,address,sr,clear,cont,UUT.reset,UUT.state,UUT.instruction,UUT.ac,UUT.cont,UUT.MA.mdout,UUT.link);
+                $dumpvars(0,UUT);
                 $readmemh( "Diagnostics/dhkaf-a.hex", UUT.MA.ram.mem,0,4095);
             end
             2: begin
                 $dumpfile("instruction_test_pt2.vcd");
-                $dumpvars(0,address,serial_io,UUT.reset,UUT.instruction,UUT.ac,UUT.link,UUT.skip,UUT.irq,UUT.int_ena,UUT.int_inh,UUT.ac_input,UUT.mdout,UUT.int_in_prog,UUT.s_interrupt,UUT.MA.mdin,UUT.MA.write_en,UUT.isz_skip);
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/dhkag-a.hex",UUT.MA.ram.mem,0,4095);
             end
 
             3: begin
                 $dumpfile("Adder_test.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac,UUT.MA.mdout);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0CC.hex",UUT.MA.ram.mem,0,4095);
                 sr <= 12'o2416;
             end
             4: begin
                 $dumpfile("JMP_JMS_test.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0IB.hex",UUT.MA.ram.mem,0,4095);
             end
             5: begin
                 $dumpfile("TAD_test.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0EB.hex",UUT.MA.ram.mem,0,4095);
                 sr <= 12'o0400;
             end
             6:begin
                 $dumpfile("AND_test.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0DB.hex",UUT.MA.ram.mem,0,4095);
                 sr <= 12'o3400;
             end
 
             7:begin
                 $dumpfile("ISZ_test.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0FC.hex",UUT.MA.ram.mem,0,4095);
             end
 
             8:begin
                 $dumpfile("DCA_test.vcd");
-                $dumpvars(0,address,UUT.instruction,UUT.ac);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0GC.hex",UUT.MA.ram.mem,0,4095);
                 sr <= 12'o0004;
             end
             9:begin
                 $dumpfile("RJMP_test.vcd");
-                $dumpvars(0,address,UUT.instruction,UUT.ac);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0HC.hex",UUT.MA.ram.mem,0,4095);
                 sr <= 12'o0004;
             end
             10:begin
                 $dumpfile("RJMP_JMS_test.vcd");
-                $dumpvars(0,address,UUT.reset,UUT.instruction,UUT.ac);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0JB.hex",UUT.MA.ram.mem,0,4095);
                 sr <= 12'o0004;
             end
@@ -297,28 +295,28 @@ assign single_stepn = ~single_step;
             11: begin
                 $dumpfile("extended_memory.vcd");
                 $readmemh("Diagnostics/dhmca.hex",UUT.MA.ram.mem,0,8191);
-                $dumpvars(0,address,UUT);
+                $dumpvars(0,UUT);
             end
 
             12: begin
                 $dumpfile("Serial_test.vcd");
-                $dumpvars(0,address,UUT);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/d2ab.hex",UUT.MA.ram.mem,0,8191);
 				end
 				
             13: begin
                 $dumpfile("EAE_test.vcd");
-                $dumpvars(0,address,UUT);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0LB.hex",UUT.MA.ram.mem,0,8191);
                 end
             14: begin
                 $dumpfile("EAE_test.vcd");
-                $dumpvars(0,address,UUT);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0MB.hex",UUT.MA.ram.mem,0,8191);
                 end
             15: begin
                 $dumpfile("EAE_EME_test.vcd");
-                $dumpvars(0,address,UUT);
+                $dumpvars(0,UUT);
                 $readmemh("Diagnostics/dhkea.hex",UUT.MA.ram.mem,0,8191);
                 end
 
