@@ -84,7 +84,7 @@ module PDP8e (input clk,
     wire [0:11] instruction,mdout,disk2mem,mem2disk;
     wire [0:14] dmaAddr;
     wire link;
-    wire isz_skip,sskip;
+    wire sskip;
     wire int_ena,int_inh,irq;
     wire s_interrupt;
     wire gtf;
@@ -190,7 +190,6 @@ rk8e RK8E (
 `endif
         .mdout (mdout),
         .index (index),
-        .isz_skip (isz_skip));
 
 
     state_machine SM(.clk (clk100),
