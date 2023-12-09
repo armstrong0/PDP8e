@@ -15,6 +15,7 @@ module oper2(input clk100,
             if (ac == 12'o0000) ac_zero <= 1;
         else
             ac_zero <= 0;
+        skip <= 0;
         end
         else if (state == F1)
         skip <= (({instruction[0:3],instruction[11]} == 5'b11110) &&
