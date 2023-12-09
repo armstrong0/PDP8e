@@ -189,7 +189,7 @@ rk8e RK8E (
         .mem2disk (mem2disk),
 `endif
         .mdout (mdout),
-        .index (index),
+        .index (index));
 
 
     state_machine SM(.clk (clk100),
