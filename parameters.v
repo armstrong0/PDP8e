@@ -1,65 +1,65 @@
-//`define EAE
+`define EAE
 //`define RK8E
 //`define up5k
 
 // state machine encoding
-parameter     F0 = 5'b00000,
-              FW = 5'b00001,
-              F1 = 5'b00010,
-              F2 = 5'b00011,
-              F3 = 5'b00100,
+localparam    F0 = 5'd0, // 0
+              FW = 5'd1, // 1
+              F1 = 5'd2, // 2
+              F2 = 5'd3, // 3
+              F3 = 5'd4, // 4
 
-              D0 = 5'b00101,
-              DW = 5'b00110,
-              D1 = 5'b00111,
-              D2 = 5'b01000,
-              DW1 = 5'b11111,
-              D3 = 5'b01001,
+              D0 = 5'd5, // 5
+              DW = 5'd6, // 6
+              D1 = 5'd7, // 7 
+              D2 = 5'd8, // 8
+              DW1 = 5'd9, // 9
+              D3 = 5'd10, // 10
 
-              E0 = 5'b01010,
-              EW = 5'b01011,
-              E1 = 5'b01101,
-              E2 = 5'b01110,
-              E3 = 5'b01111,
+              E0 = 5'd11, // 11
+              EW = 5'd12, // 12
+              E1 = 5'd13, // 13
+              E2 = 5'd14, // 14
+              E3 = 5'd15, // 15
 
-              H0 = 5'b10000,
-              HW = 5'b10001,
-              H1 = 5'b10010,
-              H2 = 5'b10011,
-              H3 = 5'b10100,
+              H0 = 5'd16, // 16
+              HW = 5'd17, // 17
+              H1 = 5'd18, // 18
+              H2 = 5'd19, // 19
+              H3 = 5'd20, // 20
 // these could have been ifdef out but it would make no difference to the
 // resources needed
-              EAE0 = 5'b10101,
-              EAE1 = 5'b10110,
-              EAE2 = 5'b10111,
-              EAE3 = 5'b11000,
-              EAE4 = 5'b11001,
-              EAE5 = 5'b11010,
-              F2A  = 5'b11011,
-              F2B  = 5'b11100,
-              DB0 = 5'b11101,  // data break states
-              DB1 = 5'b11110;
-            //  DB2 = 5'b11111; turned into a wait state for defered
+              EAE0 = 5'd21, // 21
+              EAE1 = 5'd22, // 22
+              EAE2 = 5'd23, // 23
+              EAE3 = 5'd24, // 24 
+              EAE4 = 5'd25, // 25
+              EAE5 = 5'd26, // 26
+              F2A  = 5'd27, // 27
+              F2B  = 5'd28, // 28
+              DB0 = 5'd29,  // data break states 29
+              DB1 = 5'd30; // 30
+            //  DB2 = 5'bd31; 
 
 
 // instruction encodings
-parameter
 `ifdef EAE
-          DAD = 12'o7443,
-          DLD = 12'o7763, CAMDAD = 12'o7663, DST=12'o7445,
+localparam SAM=12'o7457, DAD = 12'o7443, DST= 12'o7445, 
+          DPIC = 12'o7773, DCM =12'o7575, DPSZ = 12'o7451,
+          DLD = 12'o7763, CAMDAD = 12'o7663, 
           SHL = 12'o7413, ASR = 12'o7415, LSR = 12'o7417,
-          MUL = 12'o7405, DIV = 12'o7407, NMI = 12'o7411,
+          MUL = 12'o7405, DIV = 12'o7407, NMI = 12'o7411;
 `endif
 `ifdef RK8E
-          CAF  = 12'o6007,  // clear all flags
+localparam CAF  = 12'o6007,  // clear all flags
           DSKP = 12'o6741,  // skip if error or done
           DCLC = 12'o6742,  // DCLC disk clear
           DLAG = 12'o6743,  // DLAG load and go
           DCLA = 12'o6744,  // DLCA load current address
           DRST = 12'o6745,  // DRST read status
-          DLDC = 12'o6746,  // DLDC load command register
+          DLDC = 12'o6746;  // DLDC load command register
 `endif
-          AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
+localparam  AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
           DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
           OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
           JMPI = 4'b1011, JM = 2'b10 ;
