@@ -1,6 +1,6 @@
 /* verilator lint_off LITENDIAN */
 
-module ac (input clk,  // have to rename the mdulate for verilator
+module Ac (input clk,  // have to rename the mdulate for verilator
     input reset,
     input clear,
     input [4:0] state,
@@ -19,7 +19,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
 
     reg [0:11] ac_tmp;
     reg [0:4] sc;
-    reg il;  // intermediate link used in EAE DAD and  SAM
     reg tmp;
 
     wire [0:12] div_temp,div_ov;
@@ -33,8 +32,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
     begin
         if (reset)
         begin
-            ac <= 12'o0000;
-            mq <= 12'o0000;
+            ac <= 12'o0;
+            mq <= 12'o0;
             link <= 1'b0;
             gtf  <= 1'b0;
             EAE_mode <= 0;
@@ -73,17 +72,17 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'b11100111????:                // cll cml cma
                 {link,ac} <= {1'b1,~ac};
                 12'b11101000????:                // cla
-                {link,ac} <= {link,12'o0000};
+                {link,ac} <= {link,12'o0};
                 12'b11101001????:                // cla cml
-                {link,ac} <= {~link,12'o0000};
+                {link,ac} <= {~link,12'o0};
                 12'b11101010????:                // cla cma
                 {link,ac} <= {link,12'o7777};
                 12'b11101011????:                // cla cma cml
                 {link,ac} <= {~link,12'o7777};
                 12'b11101100????:                // cla cll
-                {link,ac} <= {1'b0,12'o0000};
+                {link,ac} <= {1'b0,12'o0};
                 12'b11101101????:                // cla cll cml
-                {link,ac} <= {1'b1,12'o0000};
+                {link,ac} <= {1'b1,12'o0};
                 12'b11101110????:                // cla cll cma
                 {link,ac} <= {1'b0,12'o7777};
                 12'b11101111????:                // cla cll cma cml
@@ -103,7 +102,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'b111100?1???1:  //MQL
                 begin
                     mq <= ac;
-                    ac <= 12'o0000;
+                    ac <= 12'o0;
                 end
                 12'b111101?0???1: ac <= ac | mq;  //MQA
                 12'b111101?1???1:  //SWP
@@ -111,16 +110,16 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     mq <= ac;
                     ac <= mq;
                 end
-                12'b111110?0???1:  ac <= 12'o0000;  //CLA
+                12'b111110?0???1:  ac <= 12'o0;  //CLA
                 12'b111110?1???1:  // CAM
                 begin
-                    mq <= 12'o0000;
-                    ac <= 12'o0000;
+                    mq <= 12'o0;
+                    ac <= 12'o0;
                 end
                 12'b111111?0???1: ac <= mq;        // ACL
                 12'b111111?1???1:    // CLA SWP
                 begin
-                    mq <= 12'o0000;
+                    mq <= 12'o0;
                     ac <= mq;
                 end
                 default: begin
@@ -135,7 +134,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'b1110???????1:           //oper1 IAC
                 {link,ac} <= {link,ac} + 13'o00001;
                 12'b11111??????0:           //oper2 cla
-                ac <= 12'o0000;
+                ac <= 12'o0;
                 default:;
             endcase
             F2A: // EAE A mode
@@ -154,12 +153,12 @@ module ac (input clk,  // have to rename the mdulate for verilator
             F2B: //EAE Mode B
             if ((instruction & 12'b111100101111) == 12'b111100101111)
                  // 7457 SAM first phase
-                {il,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'o00001;
+                {link,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'o00001;
             else if ((instruction & 12'b111100101111) == 12'b111110111001)
                  // 7471:  skip if mode B
             begin
-                ac <= 12'o0000;
-                mq <= 12'o0000;
+                ac <= 12'o0;
+                mq <= 12'o0;
             end
 
             F3: casez(instruction)
@@ -174,7 +173,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                     {link,gtf} <= ac[0:1];
                 12'o6007: if (UF == 1'b0)  //CAF
                 begin
-                    ac   <= 12'o0000;
+                    ac   <= 12'o0;
                     link <= 1'b0;
                     gtf  <= 1'b0;
                     EAE_mode <= 0;
@@ -236,7 +235,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 else   //7403 ACS
                 begin
                     sc <= ac[7:11];
-                    ac <= 12'o0000;
+                    ac <= 12'o0;
                 end
                 12'b1111??1?0001: if (EAE_mode == 1'b1)
                     ac <= ac | {7'b0,sc };           //SCA  B mode
@@ -244,43 +243,43 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 begin // note an earlier phase has swapped ac and mq
                     if (ac == 12'o7777)
                     begin
-                        mq <= 12'o0000;
+                        mq <= 12'o0;
                         if (mq == 12'o7777)
                         begin
-                            ac <= 12'o0000;
+                            ac <= 12'o0;
                             link <= 1'b1;
                         end
                         else
                         begin
-                            ac <= mq +12'o0001;
+                            ac <= mq + 12'o0;
                             link <= 1'b0;
                         end
                     end
                     else
                     begin
-                        mq <= ac +12'o0001;
+                        mq <= ac + 12'o0;
                         ac <= mq;
                         link <= 1'b0;
                     end
                 end
                 12'b1111?1111101: if (EAE_mode == 1'b1)   //DCM 7575
                 begin // note an earlier phase has swapped ac and mq
-                    if (ac == 12'o0000)
+                    if (ac == 12'o0)
                     begin  // two's compliment of 0000 is 0000 and a carry
-                        if (mq == 12'o0000)
+                        if (mq == 12'o0)
                         begin // no need to swap they are both 0000
                             link <= 1'b1;
                         end
                         else
                         begin
                             link <= 1'b0;
-                            ac <= ~mq + 12'o0001;
+                            ac <= ~mq + 12'o0;
                             mq <= ac;
                         end
                     end
                     else
                     begin
-                        mq <= ~ac + 12'o0001;
+                        mq <= ~ac + 12'o0;
                         ac <= ~mq;
                         link <= 1'b0;
                     end
@@ -294,7 +293,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 12'b1111??1?1111:   // 7457 SAM second phase
                 if (EAE_mode == 1'b1)
                 begin
-                    link <= il;
                     ac <= ac_tmp;
                     case ({ac_tmp[0],ac[0],mq[0]})
                         3'b000,3'b010,3'b011,3'b110: gtf <= 1'b1;
@@ -319,10 +317,10 @@ module ac (input clk,  // have to rename the mdulate for verilator
                 {link,ac} <= {link,ac} + {1'b0,ac_tmp};
             else {link,ac} <= {link,ac} ;
 
-            E3: if (instruction[0:2] == DCA) ac <= 12'o0000;
+            E3: if (instruction[0:2] == DCA) ac <= 12'o0;
 `ifdef EAE
             else if (instruction == DAD)  //DAD
-                {link,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0000,il};
+                {link,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0,link};
             else if ((instruction == DLD) || (instruction ==CAMDAD)) //
                 ac <= mdout;
 `endif
@@ -333,8 +331,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
             H1:;
             H2: if (clear == 1)
             begin
-                ac <= 12'o0000;
-                mq <= 12'o0000;
+                ac <= 12'o0;
+                mq <= 12'o0;
                 link <= 1'b0;
                 gtf <= 1'b0;
                 EAE_mode <= 0;
@@ -369,8 +367,6 @@ module ac (input clk,  // have to rename the mdulate for verilator
                             EAE_loop <= 1'b1;
                             sc <= 5'd0;
                             link <= 1'b0;
-                            //mq <= {mq[1:11],1'b0};
-                            //ac <= {ac[1:11],mq[0]};
                         end
                     end
                     12'o7413, // SHL
@@ -380,8 +376,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         if (mdout[7:11] >= 5'd24 ) // then no need to shift
                         begin
                             sc <= 5'd0;
-                            ac <= 12'd0;
-                            mq <= 12'd0;
+                            ac <= 12'o0;
+                            mq <= 12'o0;
                             link  <= 1'b0;
                             EAE_loop <= 0;
                         end
@@ -397,8 +393,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         // B Mode  then no need to shift
                         // but the link needs to be cleared
                         link <= 1'b0;
-                        ac <= 12'd0;
-                        mq <= 12'd0;
+                        ac <= 12'o0;
+                        mq <= 12'o0;
                         if (instruction == LSR ) gtf <= 1'b0;
                     end
                     else if  (mdout[7:11] == 5'd0  )
@@ -423,8 +419,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                             EAE_loop <= 1'b0;
                             if ( ac[0] == 1'b0) // positive number
                             begin
-                                ac <= 12'd0;
-                                mq <= 12'd0;
+                                ac <= 12'o0;
+                                mq <= 12'o0;
                                 link <= 1'b0;
                             end
                             else
@@ -448,8 +444,8 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         EAE_loop <= 1'b0;
                         if ( ac[0] == 1'b0) // positive number
                         begin
-                            ac <= 12'd0;
-                            mq <= 12'd0;
+                            ac <= 12'o0;
+                            mq <= 12'o0;
                             link <= 1'b0;
                             gtf <= 1'b0;
                         end
@@ -484,7 +480,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
                         sc <= 5'd0;
                         EAE_loop <= 0;
                         if (EAE_mode == 1'b1)
-                            ac <= 12'o0000;
+                            ac <= 12'o0;
                     end
                     else
                     begin
@@ -590,7 +586,7 @@ module ac (input clk,  // have to rename the mdulate for verilator
             EAE2:;
             EAE3:;
             EAE4: if (instruction == DAD)  //DAD
-                {il,mq } <= {1'b0,mq} + {1'b0,mdout};
+                {link,mq } <= {1'b0,mq} + {1'b0,mdout};
             else if ((instruction == DLD)||(instruction == CAMDAD))
                 mq <= mdout;
             EAE5:;
