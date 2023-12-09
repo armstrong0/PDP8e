@@ -14,7 +14,7 @@ reg [0:11] sr;
 reg [0:2] IF,DF;
 reg loadd,depd,examd;
 wire [0:11] instruction;
-wire [0:11] ma;
+wire [0:14] addr;
 wire [0:11] mdout;
 wire isz_skip;
 integer k;
@@ -22,13 +22,18 @@ integer k;
 
 
 `include "../parameters.v"
+`include "../FPGA_image/HX_clock.v"
+
+  localparam clock_period = 1e9 / clock_frequency;
+
+
 
      ma UUT(.clk (clk),
-          .reset (reset),
+      .reset (reset),
 	  .state (state),
-          .instruction (instruction),
-	  .pc (pc),
-	  .ma (ma),
+      .instruction (instruction),
+//	  .pc (pc),
+	  .eaddr (addr),
 	  .ac (ac),
 	  .sr (sr),
 	  .IF (IF),
@@ -42,26 +47,39 @@ integer k;
 initial begin
    $readmemh("ma_test.hex", UUT.ram.mem,0,4095);
    $dumpfile("ma_results.vcd");
-   $dumpvars(0,clk,reset,state,instruction,sr,pc,ma,isz_skip,mdout,examd,depd,loadd,UUT.mdin,UUT.write_en,UUT.addr);
+   $dumpvars(0,UUT);
    reset <= 1;
    loadd <=0;
    examd <= 0;
    depd <=0;
    ac <= 12'o7070;
-   sr <= 12'o0000;
+   sr <= 12'o0200;
+
    IF <= 3'o0;
    DF <= 3'o0;
    clk <= 0;
    `CLK
    reset <= 0;
-   pc <= 12'o0200; 
+sr <= 12'o0007;
+   state <= H0;  // load addr 0007
+   `CLK 
+   loadd <= 1;   
+   state <= H1;
+   `CLK
+   state <= H2;
+   `CLK
+   loadd <= 0;
+   state <= H3;
+   `CLK
+
+  // pc <= 12'o0200; 
    state <= F0; // JMP L1  (210)
    `CLK
    state <= F1;
    `CLK
    state <= F2;
    `CLK
-   state <= F3; pc <= 12'o0210;
+   state <= F3; // pc <= 12'o0210;
    `CLK
    state <= F0; // JMP I D1    
    `CLK
@@ -146,10 +164,10 @@ initial begin
    state <= E3; 
    `CLK
 
-   pc <= pc + 12'o0001;
+   //pc <= pc + 12'o0001;
    state <= F0;  // (300) JMS S1 (277)
    `CLK   
-   state <= F1;  pc <= pc + 12'o0001;
+   state <= F1; // pc <= pc + 12'o0001;
    `CLK
    state <= F2;
    `CLK
@@ -161,7 +179,7 @@ initial begin
    `CLK
    state <= E2;
    `CLK
-   state <= E3;  pc <= ma + 12'o0001;
+   state <= E3; //  pc <= ma + 12'o0001;
    `CLK
 
   // pc <= pc + 12'o0001;
@@ -179,7 +197,7 @@ initial begin
    `CLK
    state <= D2;
    `CLK
-   state <= D3; pc <= ma; 
+   state <= D3; // pc <= ma; 
 
    `CLK
 
@@ -201,7 +219,7 @@ initial begin
    state <= E3;
    `CLK
 
-   pc <= pc + 12'o0001;
+  // pc <= pc + 12'o0001;
    state <= F0; // TAD L1
    `CLK   
    state <= F1;
@@ -219,7 +237,7 @@ initial begin
    state <= E3;
    `CLK
 
-   pc <= pc + 12'o0001;
+  // pc <= pc + 12'o0001;
    state <= F0; // AND
    `CLK   
    state <= F1;
