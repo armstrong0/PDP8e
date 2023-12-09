@@ -10,7 +10,7 @@
 `include "../serial/serial_top.v"
 `include "../oper2/oper2.v"
 `include "../ac/ac.v"
-`include "../pc/pc.v"
+//`include "../pc/pc.v"
 `include "../ma/ma.v"
 `include "../mem_ext/mem_ext.v"
 `ifdef RK8E
@@ -31,8 +31,7 @@
 module PDP8e (input clk,
     output reg led1,output reg led2,
     output runn,
-    output [0:2] EMAn,
-    output [0:11] An,
+    output [0:14] An,
     output [0:11] dsn,
 `ifdef SIM
     input clk100,
@@ -53,9 +52,7 @@ module PDP8e (input clk,
     output tx
     );
     /* I/O */
-    wire [0:2] EMA;
-    assign EMAn = ~EMA;
-    assign An = ~ma;
+    assign An = ~addr;
     wire [0:11] ds;
     assign dsn = ~ds;
     wire run;
@@ -81,7 +78,7 @@ module PDP8e (input clk,
     wire int_in_prog;
     wire trigger,addr_loadd,extd_addrd,depd,examd,contd,cleard;
     wire [0:11] pc;
-    wire [0:11] ma;
+    wire [0:14] addr;
     wire [0:11] ac,ac_input,me_bus;
     wire [0:11] mq;
     wire [0:11] instruction,mdout,disk2mem,mem2disk;
@@ -172,15 +169,14 @@ rk8e RK8E (
         .reset (reset),
         .state (state),
         .instruction (instruction),
-        .pc (pc),
-        .ma (ma),
+        .skip (skip),
+        .eskip (eskip),
+        .eaddr (addr),
         .ac (ac),
         .mq (mq),
         .sr (rsr),
         .DF (DF),
         .IF (IF),
-        .EMA (EMA),
-      //  .addr (A),
         .int_in_prog (int_in_prog),
         .addr_loadd (addr_loadd),
         .depd (depd),
@@ -196,18 +192,6 @@ rk8e RK8E (
         .index (index),
         .isz_skip (isz_skip));
 
-    pc PC(.clk (clk100),
-        .reset (reset),
-        .state (state),
-        .instruction (instruction),
-        .ma (ma),
-      //  .mdout (mdout),
-        .pc (pc),
-        .int_in_prog (int_in_prog),
-        .skip (skip),
-        .isz_skip (isz_skip),
-        .eskip (eskip)
-    );
 
     state_machine SM(.clk (clk100),
         .reset (reset),
@@ -239,7 +223,7 @@ rk8e RK8E (
         .cont (contd),
         .trigger (trigger));
 
-    ac AC(.clk (clk100),
+    Ac AC(.clk (clk100),
         .reset (reset),
         .state (state),
         .clear (cleard),

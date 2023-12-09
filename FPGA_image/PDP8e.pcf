@@ -8,21 +8,21 @@ set_io --warn-no-port clk P7 # global input  - good for clocks
 
 set_io --warn-no-port runn A4
 
-set_io --warn-no-port EMAn[0] M7
-set_io --warn-no-port EMAn[1] M6
-set_io --warn-no-port EMAn[2] P3
-set_io --warn-no-port An[0] P2
-set_io --warn-no-port An[1] M3
-set_io --warn-no-port An[2] M1 
-set_io --warn-no-port An[3] K3
-set_io --warn-no-port An[4] J1 
-set_io --warn-no-port An[5] H1
-set_io --warn-no-port An[6] G1
-set_io --warn-no-port An[7] E1
-set_io --warn-no-port An[8] C1
-set_io --warn-no-port An[9] C3
-set_io --warn-no-port An[10] A1
-set_io --warn-no-port An[11] A3
+set_io --warn-no-port An[0] M7
+set_io --warn-no-port An[1] M6
+set_io --warn-no-port An[2] P3
+set_io --warn-no-port An[3] P2
+set_io --warn-no-port An[4] M3
+set_io --warn-no-port An[5] M1 
+set_io --warn-no-port An[6] K3
+set_io --warn-no-port An[7] J1 
+set_io --warn-no-port An[8] H1
+set_io --warn-no-port An[9] G1
+set_io --warn-no-port An[10] E1
+set_io --warn-no-port An[11] C1
+set_io --warn-no-port An[12] C3
+set_io --warn-no-port An[13] A1
+set_io --warn-no-port An[14] A3
 
 
 
