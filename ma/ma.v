@@ -81,12 +81,54 @@ module ma (
           eaddr[3:14] <= pc + 12'o0001;  // set up for fetch of immediate operand or address
         end
         F1: ;
-        F2A, F2B, F2: begin
+        F2: begin
           current_page <= pc[0:4];
           mdout <= mdtmp;
           skip_pc <= pc + 12'o0002;
           next_pc <= pc + 12'o0001;
 
+        end
+		F2A: begin
+		casez (instruction)
+          12'b1111??0?0011,  // SCL - ACS
+          12'b1111??0?0101,  // 7405 MUY
+          12'b1111??0?0111,  // 7407 DIV
+          12'b1111??0?1011,  // 7413 SHL
+          12'b1111??0?1101,  // 7415 ASR
+          12'b1111??0?1111,  // 7417 LSR
+          12'b1111??1?0101,  // SCA - MUL
+          12'b1111??1?0111,  // SCA - DIV
+          12'b1111?1111011,  // SCA - SHL
+          12'b1111?1111101,  // SCA - ASR
+          12'b1111??1?1111,  // SCA - LSR
+          12'b1111??1?0011:  // SCA - SCL
+		  	next_pc <= pc + 12'o2; // skip the operand
+		  default
+		  	next_pc <= pc + 12'o1;
+        endcase
+		  mdout <= mdtmp;
+        end
+		F2B:
+		begin
+		casez(instruction)
+		  12'b1111??0?1011,  // 7413 SHL
+          12'b1111??0?1101,  // 7415 ASR
+          12'b1111??0?1111,  // 7417 LSR
+          12'b1111??0?0101,  // 7405 MUY
+          12'b1111??0?0111,  // 7407 DIV
+          12'b1111??1?0011,  // DAD - DLD 7443
+          12'b1111??1?0101:  // DST 7445
+		  begin
+		     eaddr <= {DF,mdtmp};
+             next_pc <= pc + 12'o2; // skip the operand
+		  end
+		  default:
+		  begin
+		     next_pc <= pc + 12'o1;
+			 skip_pc <= pc + 12'o2;
+		  end
+		  endcase
+          mdout <= mdtmp;
         end
         F3: begin
           casez (instruction[0:4])
@@ -109,7 +151,7 @@ module ma (
             5'b11???:  // 6 and 7 OPR and IOT
             if ((skip == 1) || (eskip == 1)) begin
               eaddr   <= {IF, skip_pc};
-              next_pc <= skip_pc;
+			  next_pc <= skip_pc;
             end else eaddr <= {IF, next_pc};
           endcase
         end
@@ -118,30 +160,37 @@ module ma (
         DW: begin
           mdout <= mdtmp;
         end
-        D1:
+        D1: begin
         if (index == 1'b1) begin
           mdin <= mdout + 12'o0001;
           idx_tmp <= mdout + 12'o0001;
           write_en <= 1;
         end
-        D2: begin  // only get here if we have auto indexing
-          eaddr[3:14] <= idx_tmp;
-        end
+		else eaddr[3:14] <= mdout;
+		end
+        D2:;
         D3: begin
-          if  ((instruction[0:2] == AND) ||
-                 (instruction[0:2] == TAD) ||
-                 (instruction[0:2] == ISZ) ||
-                 (instruction[0:2] == DCA) || 
-                ((instruction & 12'b111100000001) == 12'b111100000001))
-            eaddr[0:2] <= DF;
-          if (index == 1) begin
-            index <= 0;
-            eaddr[3:14] <= idx_tmp;
-            if (instruction[0:2] == JMP) next_pc <= idx_tmp;
-          end else begin
-            eaddr[3:14] <= mdout;
-            if (instruction[0:2] == JMP) next_pc <= mdout;
-          end
+		  if (index == 0) eaddr[3:14] <= mdout ;
+		  else begin
+		      eaddr[3:14] <= idx_tmp;
+		      index <= 0;
+		  end;
+          casez (instruction[0:2])
+                AND,
+				TAD,
+				ISZ,
+				DCA: eaddr[0:2] <= DF;
+				JMP: if (index)
+				   next_pc <= idx_tmp; // both use IF which is set for F0
+				   else
+				   next_pc <= mdout; // si the right address is ready for 
+				   // interrupt processing
+
+				JMS:;
+				OPR:; 
+				IOT:; // should never get here
+				default:;
+			endcase
         end
         E0: ;
         EW: begin
@@ -209,12 +258,13 @@ module ma (
             mdin <= mq;
             write_en <= 1'b1;
           end
-          mdout <= mdtmp;
+          //mdout <= mdtmp;
 
         end
         EAE3: begin
           eaddr[3:14] <= eaddr[3:14] + 1;
           mdin <= ac;
+          mdout <= mdtmp;
         end
 
         EAE4: begin
@@ -223,9 +273,10 @@ module ma (
             write_en <= 1'b1;
           end
 
-          mdout <= mdtmp;
+          //mdout <= mdtmp;
         end
-        EAE5: ;
+        EAE5: 
+          mdout <= mdtmp;
 `endif
 `ifdef RK8E
         DB0:

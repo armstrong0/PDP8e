@@ -12,7 +12,7 @@ module ram (din, addr, write_en, clk, dout);// 8196 x 12
            //$readmemh("loader.hex",mem,0,4095);// both bin and rim loaders
            //$readmemh("utils.hex",mem,0,4095);// both bin and rim loaders
            //$readmemh("focal.hex",mem,0,4095);
-           //$readmemh("focal_loader.hex",mem,0,4095);
+           $readmemh("focal_loader.hex",mem,0,4095);
            //$readmemh("tit_interrupt.hex",mem,0,4095);
            //$readmemh("../integrate3/Diagnostics/D0AB.hex", mem,0,4095);
            //$readmemh("../integrate3/Diagnostics/dhkaf-a.hex", mem,0,4095);
@@ -30,7 +30,7 @@ module ram (din, addr, write_en, clk, dout);// 8196 x 12
            //$readmemh("../integrate3/Diagnostics/d2ab.hex",mem,0,4095);
            //$readmemh("../EAE/d0la.hex",mem,0,8191);
 
-           $readmemh("toggle-in-tests.hex",mem,0,4095);
+           //$readmemh("toggle-in-tests.hex",mem,0,4095);
         end
 `endif
 `include "../parameters.v"
