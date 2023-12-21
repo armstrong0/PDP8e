@@ -94,7 +94,7 @@ module PDP8e (input clk,
     wire UF;
     wire UI;
     reg [0:11] rsr;
-    wire EAE_mode,EAE_loop,EAE_skip;
+    wire EAE_mode,EAE_loop;
     wire sw_active;
     wire index;
 `ifdef RK8E
@@ -210,8 +210,6 @@ rk8e RK8E (
 
         .EAE_loop (EAE_loop),
         .EAE_mode (EAE_mode),
-        .EAE_skip (EAE_skip),
-        .gtf (gtf),
 `ifdef RK8E
         .break_in_prog (break_in_prog),
         .data_break (data_break),
@@ -243,6 +241,9 @@ rk8e RK8E (
         .state (state),
         .instruction (instruction),
         .ac (ac),
+		.mq (mq),
+		.EAE_mode (EAE_mode),
+		.gtf (gtf),
         .l (link),
         .skip (skip));
 
@@ -310,8 +311,6 @@ rk8e RK8E (
         .disk_bus (disk_bus),
         .disk_skip (disk_skip),
 `endif
-        .EAE_skip (EAE_skip),
-        .EAE_mode (EAE_mode),
         .sskip (sskip),
         .mskip (mskip),
         .skip (eskip));

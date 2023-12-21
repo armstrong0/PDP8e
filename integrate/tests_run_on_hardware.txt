@@ -1,16 +1,16 @@
-dhkaf-a-pb Instruction Test Part 1 PASS 
-maindec-08-dhkag-a-pb  Instruction Test Part 2 PASS
-MAINDEC-8E-D0CC-AddTest.pt     PASS  
-MAINDEC-8E-D0DB-Random-AND.pt  PASS 
-MAINDEC-8E-D0EB-Random-TAD.pt  PASS
-MAINDEC-8E-D0FC-Random-ISZ.pt  PASS
-MAINDEC-8E-D0GC-Random-DCA.pt  PASS
-MAINDEC-8E-D0HC-Random-JMP.pt  PASS
-MAINDEC-8E-D0IB-Basic-JMP-JMS.pt  PASS
-MAINDEC-8E-D0JB-Random-JMP-JMS.pt PASS
-MAINDEC-8E-D0LB-PB EAE except MUY / DIV PASS
-MAINDEC-8E-D0MB-PB EAE        MUY / DIV PASS
-maindec-08-dhkea-e-pb EAE Extended Memory PASS
-maindec-08-dhmca-a-pb memory extention  PASS
+1) dhkaf-a-pb Instruction Test Part 1 PASS 
+2) maindec-08-dhkag-a-pb  Instruction Test Part 2 PASS
+3) MAINDEC-8E-D0CC-AddTest.pt     PASS  
+4) MAINDEC-8E-D0IB-Basic-JMP-JMS.pt  PASS <HC
+5) MAINDEC-8E-D0EB-Random-TAD.pt  PASS
+6) MAINDEC-8E-D0DB-Random-AND.pt  PASS 
+7) MAINDEC-8E-D0FC-Random-ISZ.pt  PASS
+8) MAINDEC-8E-D0GC-Random-DCA.pt  PASS
+9) MAINDEC-8E-D0HC-Random-JMP.pt  PASS
+10) MAINDEC-8E-D0JB-Random-JMP-JMS.pt PASS
+11) MAINDEC-dhmca-a1-r1 Memory Extention and Time Share Control 
+12) MAINDEC-8E-D0LB-PB EAE except MUY / DIV PASS
+13) MAINDEC-8E-D0MB-PB EAE        MUY / DIV PASS
+14) maindec-08-dhkea-e-pb EAE Extended Memory PASS
 maindec-8e-d2ab-pb -serial tests NOT run on hardware
 MAINDEC-8E-D1AA-Memory-Checkerboard.pt Doesn't  make sense with SS memory..

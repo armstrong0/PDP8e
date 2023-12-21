@@ -107,16 +107,16 @@ t10: t10.o
 	gtkwave RJMP_JMS_test.vcd PDP8e.gtkw &
 
 t11: t11.o
-	#    gtkwave extended_memory.vcd PDP8e.gtkw &
+	    gtkwave extended_memory.vcd PDP8e.gtkw &
 
 t12: t12.o
 	gtkwave Serial_test.vcd t12.gtkw &
 
 t13: t13.o
-	gtkwave EAE_test.vcd PDP8e.gtkw &
+	gtkwave EAE_test1.vcd PDP8e.gtkw &
 	
 t14: t14.o
-	gtkwave EAE_test.vcd PDP8e.gtkw &
+	gtkwave EAE_test2.vcd PDP8e.gtkw &
 
 t15: t15.o
 	gtkwave EAE_EME_test.vcd PDP8e.gtkw &

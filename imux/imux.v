@@ -16,8 +16,6 @@ module imux(
 `endif
     input sskip,
     input mskip,
-    input EAE_skip,
-    input EAE_mode,
     output reg skip,
     output reg [0:11] in_bus,
     output reg [0:11] bus_display);
@@ -66,11 +64,8 @@ module imux(
 
     always @(*) begin //again for verilator
         casez (instruction[0:11] )
-            12'o600?: skip = mskip ;
-            // EAE instructions that use the next word as
-            // an operand, ???? stands for normal MQ ops
-            12'b1111???????1:  // EAE ops
-            skip = EAE_skip;
+		    12'o6003: skip <= mskip;
+		    12'o6000: skip <= mskip;
             12'o603?,12'o604?: skip = sskip;
             12'o625?: skip = mskip;
 `ifdef RK8E

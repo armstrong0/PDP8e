@@ -323,7 +323,7 @@ module PDP8e_tb;
       end
       13: begin
         $dumpfile("EAE_Test1.vcd");
-        $readmemh("d0lb.hex", UUT.MA.ram.mem, 0, 8191);
+        $readmemh("../integrate/d0lb.hex", UUT.MA.ram.mem, 0, 8191);
         $dumpvars(0, UUT);
       end
 
@@ -482,10 +482,12 @@ module PDP8e_tb;
         //sr <= 12'o3600;  // nmi
         //sr <= 12'o4200;  // nmi1
         //sr <= 12'o4400;  // nmi2
+		sr <= 12'o2600;  // dpic
         #200 `pulse(addr_load);
-        sr <= 12'o4002;  // no printout stop on error, test a only
+        //sr <= 12'o4002;  // no printout stop on error, test a only
+		sr <= 12'o4003;  // no printout stop on error test b only
         #400 `pulse(cont);
-        #1000 $finish;
+        #1000000 $finish;
         //#7000000 $finish;
 
       end

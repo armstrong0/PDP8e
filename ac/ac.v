@@ -239,7 +239,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                 end
                 12'b1111??1?0001: if (EAE_mode == 1'b1)
                     ac <= ac | {7'b0,sc };           //SCA  B mode
-                12'b1111?1111011: if (EAE_mode == 1'b1)  //DPIC 757n
+                12'b111101111011: if (EAE_mode == 1'b1)  //DPIC 7573 XXXXX,7773
                 begin // note an earlier phase has swapped ac and mq
                     if (ac == 12'o7777)
                     begin
@@ -251,13 +251,13 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         end
                         else
                         begin
-                            ac <= mq + 12'o0;
+                            ac <= mq + 12'o01;
                             link <= 1'b0;
                         end
                     end
                     else
                     begin
-                        mq <= ac + 12'o0;
+                        mq <= ac + 12'o01;
                         ac <= mq;
                         link <= 1'b0;
                     end
@@ -273,13 +273,13 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         else
                         begin
                             link <= 1'b0;
-                            ac <= ~mq + 12'o0;
+                            ac <= ~mq + 12'o01;
                             mq <= ac;
                         end
                     end
                     else
                     begin
-                        mq <= ~ac + 12'o0;
+                        mq <= ~ac + 12'o01;
                         ac <= ~mq;
                         link <= 1'b0;
                     end

@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Fri Dec  8 21:31:50 2023
+[*] Wed Dec 13 21:18:34 2023
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/integrate/instruction_test_pt1.1.vcd"
-[dumpfile_mtime] "Fri Dec  8 21:30:28 2023"
-[dumpfile_size] 26794
+[dumpfile_mtime] "Wed Dec 13 21:17:07 2023"
+[dumpfile_size] 52091
 [savefile] "/home/armstrong/Desktop/PDP8e/integrate/PDP8e.gtkw"
-[timestart] 13299300
+[timestart] 1776604800
 [size] 1920 987
 [pos] -461 -192
-*-17.318272 13917050 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-15.318272 1776759250 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
+[treeopen] PDP8e_tb.UUT.MA.
 [sst_width] 214
 [signals_width] 166
 [sst_expanded] 1
@@ -35,9 +36,9 @@ PDP8e_tb.UUT.ac[0:11]
 -group_end
 @30
 PDP8e_tb.UUT.mq[0:11]
-@c00031
+@c00030
 PDP8e_tb.UUT.instruction[0:11]
-@29
+@28
 (0)PDP8e_tb.UUT.instruction[0:11]
 (1)PDP8e_tb.UUT.instruction[0:11]
 (2)PDP8e_tb.UUT.instruction[0:11]
@@ -50,8 +51,12 @@ PDP8e_tb.UUT.instruction[0:11]
 (9)PDP8e_tb.UUT.instruction[0:11]
 (10)PDP8e_tb.UUT.instruction[0:11]
 (11)PDP8e_tb.UUT.instruction[0:11]
-@1401201
+@1401200
 -group_end
+@28
+PDP8e_tb.UUT.MA.index
+@31
+PDP8e_tb.UUT.MA.idx_tmp[0:11]
 @30
 PDP8e_tb.UUT.MA.mdin[0:11]
 PDP8e_tb.UUT.MA.mdout[0:11]

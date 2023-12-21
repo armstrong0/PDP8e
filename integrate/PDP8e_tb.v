@@ -305,12 +305,14 @@ assign single_stepn = ~single_step;
 				end
 				
             13: begin
-                $dumpfile("EAE_test.vcd");
+			    $write("EAE Test 1");
+                $dumpfile("EAE_test1.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0LB.hex",UUT.MA.ram.mem,0,8191);
                 end
             14: begin
-                $dumpfile("EAE_test.vcd");
+			    $write("EAE Test 2");
+                $dumpfile("EAE_test2.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0MB.hex",UUT.MA.ram.mem,0,8191);
                 end
@@ -429,65 +431,68 @@ assign single_stepn = ~single_step;
                 #150000000  $finish;
             end
             11:begin
-                sr <= 12'o2600;  //test 15
+                //sr <= 12'o0200;  
+                sr <= 12'o4001;  // test 7  
                 #1000 ;
                 `pulse(addr_load);
                 sr <= 12'o0001; // simulation has 8k, reads 0000 for
 				// non-exsistant memory
                 #1000 `pulse(cont);
                 // #1000  `pulse(cont);
-                #18000 $finish;
+                #18000000 $finish;
                 //#5000000 $finish;
             end
             12: begin
                 # 100 $display("in test 12"); ;
                 sr<= 12'o0020;
-                #5000 `pulse1(addr_load);
+                #5000 `pulse(addr_load);
                 sr <= 12'o0002;
-                #5000 `pulse1(dep);
+                #5000 `pulse(dep);
                 sr <= 12'o0304;
-                #5000 `pulse1(dep);
+                #5000 `pulse(dep);
                 sr <= 12'o1200;
-                #5000 `pulse1(dep);
+                #5000 `pulse(dep);
                 sr <= 12'o0200;
-                #5000 `pulse1(addr_load);
+                #5000 `pulse(addr_load);
                 sr <= 12'o0001;   //prog1
-                #5000 `pulse1(cont);
-                #890000 `pulse1(cont);
+                #5000 `pulse(cont);
+                #890000 `pulse(cont);
                 #5000  sr <=12'o6006; //do one routine sr 6:11 has number
 				//wait(UUT.state == H0);
                 #10000000000 $finish;
             end
 			13: begin
-			    sr <= 12'o0115;
-                #500 `pulse1(addr_load);
-				sr <= 12'o2525; // set mode B
-				#500 `pulse1(dep);
-				sr <= 12'o4667;
-                #500 `pulse1(addr_load);
-				sr <= 12'o5000;
-                #500 `pulse1(clear);
-                #500 `pulse1(cont);
-				#10000 $finish;
+			    sr <= 12'o3030;
+                #500 `pulse(addr_load);
+				//sr <= 12'o2525; // set mode B
+				//#500 `pulse(dep);
+				//sr <= 12'o4667;
+				//sr <= 12'o2600;  //DPIC
+                //#500 `pulse(addr_load);
+				sr <= 12'o4000;
+                #500 `pulse(clear);
+                #500 `pulse(cont);
+				#1000000 $finish;
 			end
 
 			14: begin
 			    sr <= 12'o0115;
-                #500 `pulse1(addr_load);
+                #500 `pulse(addr_load);
 				sr <= 12'o2525; // set mode B
-				#500 `pulse1(dep);
-				sr <= 12'o1264;
-                #500 `pulse1(addr_load);
+				#500 `pulse(dep);
+				// sr <= 12'o1264;
+				sr <= 12'o3030;
+                #500 `pulse(addr_load);
 				sr <= 12'o5003;
-                #500 `pulse1(clear);
-                #500 `pulse1(cont);
+                #500 `pulse(clear);
+                #500 `pulse(cont);
 				#10000 $finish;
 			end
 			15: begin
 				sr <= 12'o0200;
-                #500 `pulse1(addr_load);
-                #500 `pulse1(clear);
-                #500 `pulse1(cont);  // have to fake out the uart
+                #500 `pulse(addr_load);
+                #500 `pulse(clear);
+                #500 `pulse(cont);  // have to fake out the uart
 				#100000 $finish;
 				end
 
