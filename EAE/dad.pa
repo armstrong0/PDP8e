@@ -1,73 +1,94 @@
-	CAM=7621
-	SWAB=7431
+    CAM=7621
+    SWAB=7431
     DPSZ=7451 
     DPIC=7573 
-	DAD=7443
-	DLD=7763
-	DST=7445
-	swp=7521
-//	*0010   // new to check auto increment
-//	K7777
-//	K1234
-//	0
-//	0
-//	0
+    DAD=7443
+    DLD=7763
+	CAMDAD=7663
+    DST=7445
+    swp=7521
+    
 	field 1
-	*4000
-	3000
-	3001
-	3000
-	0000
+    *4000
+operand,    3000
+    3001
+    3000
+    0000
   
     field 0
 
-    /*100
-	 
-	/K7777, 7777
-	/K3777, 3777
-	/K1234, 1234
-	/K4567, 4567
+    *300
+     
+     K7777, 7777
+            7777
+	K0110, 0110		
+    *110  
 
-	*110
 	5000
-	4776
-	5000
-	7777
+    4776
+    5000
+    7777
 
+	*150
+store, 0
+      0
+operand3,  5000
+    4776
+    5000
+    7777
+    
+	*5000
+ operand2, 3000
+    3001
 	
     *200
-	swab  // first check to see if double add works
-	      // see if double add with auto increment works
-		  // see that the carry propogates from mq to ac
+    swab  // first check to see if double add works
+          // see that the carry propogates from mq to ac
 
-	    cla
+        cla
+    tad 110
+    swp
+    cla
+    tad 111
+
+    6211  //cdf 1
+    dad
+    operand
+    nop
+    cla
+    6201  //cdf 0
 	tad 110
-	swp
+	swp 
 	cla
 	tad 111
-
-	6211  //cdf 1
 	dad
-	4000
+	operand2
+    nop
 	nop
-	6201  //cdf 0
-	cla
-	tad 112
-	swp
-	cla
-	tad 113
-	6211 / cdf 1
-	dad 
-	4002
+	camdad
+	operand3
+    6211  //cdf 1
+    dad
+	operand
+    6201  //cdf 0
+    dld
+    operand3
+	// now store
+	DST
+    store
 	hlt
-	
 
 
 
-	
-	
-	
-	hlt
-	$
+    hlt
+    
+
+
+
+    
+    
+    
+    hlt
+    $
 
 

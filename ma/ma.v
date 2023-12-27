@@ -88,46 +88,44 @@ module ma (
           next_pc <= pc + 12'o0001;
 
         end
-		F2A: begin
-		casez (instruction)
-          12'b1111??0?0011,  // SCL - ACS
-          12'b1111??0?0101,  // 7405 MUY
-          12'b1111??0?0111,  // 7407 DIV
-          12'b1111??0?1011,  // 7413 SHL
-          12'b1111??0?1101,  // 7415 ASR
-          12'b1111??0?1111,  // 7417 LSR
-          12'b1111??1?0101,  // SCA - MUL
-          12'b1111??1?0111,  // SCA - DIV
-          12'b1111?1111011,  // SCA - SHL
-          12'b1111?1111101,  // SCA - ASR
-          12'b1111??1?1111,  // SCA - LSR
-          12'b1111??1?0011:  // SCA - SCL
-		  	next_pc <= pc + 12'o2; // skip the operand
-		  default
-		  	next_pc <= pc + 12'o1;
-        endcase
-		  mdout <= mdtmp;
+        F2A: begin
+          casez (instruction)
+            12'b1111??0?0011,  // SCL - ACS
+            12'b1111??0?0101,  // 7405 MUY
+            12'b1111??0?0111,  // 7407 DIV
+            12'b1111??0?1011,  // 7413 SHL
+            12'b1111??0?1101,  // 7415 ASR
+            12'b1111??0?1111,  // 7417 LSR
+            12'b1111??1?0101,  // SCA - MUL
+            12'b1111??1?0111,  // SCA - DIV
+            12'b1111?1111011,  // SCA - SHL
+            12'b1111?1111101,  // SCA - ASR
+            12'b1111??1?1111,  // SCA - LSR
+            12'b1111??1?0011:  // SCA - SCL
+            next_pc <= pc + 12'o2;  // skip the operand
+            default next_pc <= pc + 12'o1;
+          endcase
+          mdout <= mdtmp;
         end
-		F2B:
-		begin
-		casez(instruction)
-		  12'b1111??0?1011,  // 7413 SHL
-          12'b1111??0?1101,  // 7415 ASR
-          12'b1111??0?1111,  // 7417 LSR
-          12'b1111??0?0101,  // 7405 MUY
-          12'b1111??0?0111,  // 7407 DIV
-          12'b1111??1?0011,  // DAD - DLD 7443
-          12'b1111??1?0101:  // DST 7445
+        F2B: begin
+          casez (instruction)
+            12'b1111??0?1011,  // 7413 SHL
+            12'b1111??0?1101,  // 7415 ASR
+            12'b1111??0?1111,  // 7417 LSR
+            12'b1111??0?0101,  // 7405 MUY
+            12'b1111??0?0111,  // 7407 DIV
+            12'b1111??1?0011,  // DAD - DLD 7443 CAMDAD
+            12'b1111??1?0101:  // DST 7445
 		  begin
-		     eaddr <= {DF,mdtmp};
-             next_pc <= pc + 12'o2; // skip the operand
-		  end
-		  default:
-		  begin
-		     next_pc <= pc + 12'o1;
-			 skip_pc <= pc + 12'o2;
-		  end
-		  endcase
+              // eaddr has the address of the operand,
+              // the memory cycle will be finished by the defer cycle
+              next_pc <= pc + 12'o2;  // skip the operand
+            end
+            default: begin
+              next_pc <= pc + 12'o1;
+              skip_pc <= pc + 12'o2;
+            end
+          endcase
           mdout <= mdtmp;
         end
         F3: begin
@@ -151,7 +149,7 @@ module ma (
             5'b11???:  // 6 and 7 OPR and IOT
             if ((skip == 1) || (eskip == 1)) begin
               eaddr   <= {IF, skip_pc};
-			  next_pc <= skip_pc;
+              next_pc <= skip_pc;
             end else eaddr <= {IF, next_pc};
           endcase
         end
@@ -161,38 +159,38 @@ module ma (
           mdout <= mdtmp;
         end
         D1: begin
-        if (index == 1'b1) begin
-          mdin <= mdout + 12'o0001;
-          idx_tmp <= mdout + 12'o0001;
-          write_en <= 1;
+          if (index == 1'b1) begin
+            mdin <= mdout + 12'o0001;
+            idx_tmp <= mdout + 12'o0001;
+            write_en <= 1;
+          end else eaddr[3:14] <= mdout;
         end
-		else eaddr[3:14] <= mdout;
-		end
-        D2:;
+        D2: ;
         D3: begin
-		  if (index == 0) eaddr[3:14] <= mdout ;
-		  else begin
-		      eaddr[3:14] <= idx_tmp;
-		      index <= 0;
-		  end;
+          if (index == 0) eaddr[3:14] <= mdout;
+          else begin
+            eaddr[3:14] <= idx_tmp;
+            index <= 0;
+          end
+          ;
           casez (instruction[0:2])
-                AND,
-				TAD,
-				ISZ,
-				DCA: eaddr[0:2] <= DF;
-				JMP: if (index)
-				   next_pc <= idx_tmp; // both use IF which is set for F0
-				   else
-				   next_pc <= mdout; // si the right address is ready for 
-				   // interrupt processing
+            AND, TAD, ISZ, DCA, OPR: eaddr[0:2] <= DF;
+            JMP:
+            if (index) next_pc <= idx_tmp;  // both use IF which is set for F0
+            else next_pc <= mdout;  // right address, ready for 
+            // interrupt processing
 
-				JMS:;
-				OPR:; 
-				IOT:; // should never get here
-				default:;
-			endcase
+            JMS: ;
+            IOT: ;  // should never get here
+            default: ;
+          endcase
         end
-        E0: ;
+        E0: begin
+          if ((instruction & 12'b111100101111) == DST) begin
+            mdin <= mq;
+            write_en <= 1'b1;
+          end
+        end
         EW: begin
           if (int_in_prog == 1) begin
             instruction <= 12'o4000;
@@ -202,6 +200,11 @@ module ma (
             case (instruction[0:2])
               ISZ, AND, TAD: ;
               JMS: mdin <= next_pc;
+              OPR: begin
+                eaddr[3:14] <= eaddr[3:14] + 1;
+                mdin <= ac;
+                mdout <= mdtmp;
+              end
               default: ;
             endcase
           mdout <= mdtmp;
@@ -221,6 +224,12 @@ module ma (
             mdin <= ac;
             write_en <= 1;
           end
+          OPR: begin
+            if ((instruction & 12'b111100101111) == DST) begin
+              mdin <= ac;
+              write_en <= 1'b1;
+            end
+          end
           default: ;
         endcase
         E2: begin
@@ -232,7 +241,9 @@ module ma (
               eaddr   <= 15'o0001;
               next_pc <= 12'o0001;
             end else next_pc <= eaddr[3:14] + 1;
+            OPR: ;
           endcase
+          mdout <= mdtmp;
         end
         E3: begin
           // on interrupt we go to IF 0 set up in E2 above
@@ -251,33 +262,6 @@ module ma (
         end
         H2: if ((depd == 1'b1) | (examd == 1'b1)) eaddr[3:14] <= eaddr[3:14] + 12'o0001;
         H3: ;
-        // EAE accesses
-`ifdef EAE
-        EAE2: begin
-          if ((instruction & 12'b111100101111) == DST) begin
-            mdin <= mq;
-            write_en <= 1'b1;
-          end
-          //mdout <= mdtmp;
-
-        end
-        EAE3: begin
-          eaddr[3:14] <= eaddr[3:14] + 1;
-          mdin <= ac;
-          mdout <= mdtmp;
-        end
-
-        EAE4: begin
-          if ((instruction & 12'b111100101111) == DST) begin
-            mdin <= ac;
-            write_en <= 1'b1;
-          end
-
-          //mdout <= mdtmp;
-        end
-        EAE5: 
-          mdout <= mdtmp;
-`endif
 `ifdef RK8E
         DB0:
         if (to_disk == 1'b0) begin

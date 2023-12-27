@@ -23,7 +23,7 @@ module state_machine (
     input to_disk,
     output reg break_in_prog,
 `endif
-  //  output reg EAE_skip,
+    //  output reg EAE_skip,
     output reg int_in_prog,
     output reg [4:0] state
 );
@@ -47,7 +47,7 @@ module state_machine (
       data_break <= 1'b0;
       break_in_prog <= 1'b0;
 `endif
-     // EAE_skip <= 1'b0;
+      // EAE_skip <= 1'b0;
     end else
       case (state)
 
@@ -102,12 +102,12 @@ module state_machine (
           12'b1111??1?1111,  // SCA - LSR
           12'b1111??1?1001,  // SCA - NMI
           12'b111100001001:  // 7411 NMI
-              state <= EAE0;  
+          state <= EAE0;
           12'b1111??0?0011,  // 7403 SCL 
           12'b1111??1?0011,  // SCA - SCL
           12'b1111??1?0001,  // SCL both A and B
           12'b1111??0?0001:
-              state <= F3;   //NOP
+          state <= F3;  //NOP
           default: state <= F3;
         endcase
 
@@ -118,13 +118,12 @@ module state_machine (
           12'b1111??0?1011,  // 7413 SHL
           12'b1111??0?1101,  // 7415 ASR
           12'b1111??0?1111:  // 7417 LSR
-            state <= EAE0;
+          state <= EAE0;
           12'b1111??0?0101,  // 7405 MUY
           12'b1111??0?0111,  // 7407 DIV
-          12'b1111??1?0011,  // DAD - DLD 7443
+          12'b1111??1?0011,  // DAD - DLD 7443 ,CAMDAD
           12'b1111??1?0101:  // DST 7445
-            //state <= D0;
-            state <= EAE2;
+          state <= D0;
           // 12'b1111??1?0111:   // SWBA 7447 taken care of in F2
           // state <= F3;
           12'b1111??1?1001,  // DPSZ 7451
@@ -169,10 +168,12 @@ module state_machine (
             state <= E0;
           end
         endcase
-        D0: if (~single_step | cont) state <= DW;
- else state <= D0;
-        DW: if (index == 1) state <= D1;
- else state <= D3;
+        D0:
+        if (~single_step | cont) state <= DW;
+        else state <= D0;
+        DW:
+        if (index == 1) state <= D1;
+        else state <= D3;
         D1: state <= D2;
         D2: state <= D3;
         //  if it is a jmp I then F0 is the desired state
@@ -182,16 +183,16 @@ module state_machine (
             int_in_prog <= 1;
             state <= E0;
           end else state <= F0;
-        end else  // if EAE instruction - execute
-        if ((instruction & 12'b111100000001) == 12'b111100000001) begin
-          state <= EAE2;
         end else state <= E0;
 
         // execute cycle
-        E0: if (~single_step | cont) state <= EW;
- else state <= E0;
+        E0:
+        if (~single_step | cont) state <= EW;
+        else state <= E0;
         EW: state <= E1;
-        E1: state <= E2;
+        E1:
+        if ((instruction & 12'b111100101101) == 12'b111100000101) state <= EAE0;  // MUL or DIV
+        else state <= E2;
         E2: state <= E3;
         E3:
         if(int_req & int_ena & ~int_inh & ~int_in_prog ) // test for interrupt
@@ -222,14 +223,14 @@ module state_machine (
         EAE0: state <= EAE1;
         EAE1: if (EAE_loop == 1) state <= EAE1;
  else state <= F3;
-        EAE2: state <= EAE3;
+        // EAE2: state <= EAE3;
         // need to vector off to EAE0 if MUL or DIV
         // if we reached this it is a mode B EAE instruction
         // only MUL and DIV have bit 6 set 0 here.
-        EAE3: if (instruction[6] == 1'b0) state <= EAE0;
- else state <= EAE4;
-        EAE4: state <= EAE5;
-        EAE5: state <= E3;  // back to normal processing
+        ////  EAE3: if (instruction[6] == 1'b0) state <= EAE0;
+        //else state <= EAE4;
+        //     EAE4: state <= EAE5;
+        //   EAE5: state <= E3;  // back to normal processing
         // data break
         DB0:  state <= DB1;
         DB1: begin

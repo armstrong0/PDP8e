@@ -309,21 +309,22 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             endcase
 
             D0,DW,D1,D2,D3:;
-            E0,EW:; // ac_tmp <= mdout;  // shorten some paths ERROR mdout still settled,
-            E1: ac_tmp <= mdout;
+            E0,EW: ac_tmp <= mdout;  // shorten some paths ERROR mdout still settled,
+            E1:  if (instruction == DAD)  //DAD
+                {link,mq } <= {1'b0,mq} + {1'b0,mdout};
+            else if ((instruction == DLD)||(instruction == CAMDAD))
+                mq <= mdout;
             E2: if (instruction[0:2] == AND)
-                ac <= ac & ac_tmp;
+                ac <= ac & mdout;
             else if (instruction[0:2] == TAD)
-                {link,ac} <= {link,ac} + {1'b0,ac_tmp};
+                {link,ac} <= {link,ac} + {1'b0,mdout};
             else {link,ac} <= {link,ac} ;
 
             E3: if (instruction[0:2] == DCA) ac <= 12'o0;
-`ifdef EAE
             else if (instruction == DAD)  //DAD
                 {link,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0,link};
             else if ((instruction == DLD) || (instruction ==CAMDAD)) //
                 ac <= mdout;
-`endif
 
 
             H0:;
@@ -342,7 +343,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             H3:;
             //   EAE stuff
 
-`ifdef EAE
             EAE0:
             begin   // set up state
                 case (instruction & 12'b111100001111)
@@ -521,7 +521,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     // here I am using restoring devision BUT since the old
                     // values are still around I use those, shifted without
                     // the subtraction
-                        ;
+                        
                         if (link == 1'b0)   // no overflow
                         begin
                             if (div_temp[0] == 1'b0)
@@ -583,14 +583,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     default:;
                 endcase
             end
-            EAE2:;
-            EAE3:;
-            EAE4: if (instruction == DAD)  //DAD
-                {link,mq } <= {1'b0,mq} + {1'b0,mdout};
-            else if ((instruction == DLD)||(instruction == CAMDAD))
-                mq <= mdout;
-            EAE5:;
-`endif
             default:;
         endcase
 
