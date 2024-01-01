@@ -1,9 +1,9 @@
 `timescale 1 ns / 10 ps
 `define pulse(arg) #1 ``arg <=1 ; #140 ``arg <= 0
 
+
 `include "../ma/ma.v"
 `include "../state_machine/state_machine.v"
-`include "../pc/pc.v"
 
 module mem_ext_tb;
 
@@ -11,7 +11,6 @@ module mem_ext_tb;
         .reset (reset),
         .instruction (instruction),
         .sr (sr),
-        .rac (rac),
         .state (state),
         .clear (clear),
         .extd_addrd (extd_addrd),
@@ -29,9 +28,7 @@ module mem_ext_tb;
         .state (state),
         .instruction (instruction),
         .int_in_prog (int_in_prog),
-        .pc (pc),
-        .ma (ma),
-        .addr (addr),
+        .eaddr (eaddr),
         .ac (ac),
         .sr (sr),
         .IF (IF),
@@ -39,8 +36,7 @@ module mem_ext_tb;
         .addr_loadd (loadd),
         .depd (depd),
         .examd (examd),
-        .mdout (mdout),
-        .isz_skip (isz_skip));
+        .mdout (mdout));
 
     state_machine SM1(.clk (clk),
         .reset (reset),
@@ -55,15 +51,6 @@ module mem_ext_tb;
         .int_inh (int_inh),
         .int_in_prog (int_in_prog));
 
-    pc PC(.clk (clk),
-        .reset (reset),
-        .pc (pc),
-        .instruction (instruction),
-        .ma (ma),
-        .skip (skip),
-        .eskip (mskip),
-        .isz_skip (isz_skip),
-        .state (state));
 
     reg clk;
     reg reset;
@@ -76,13 +63,10 @@ module mem_ext_tb;
     reg irq;
 
 
-    wire [0:11] pc;
     reg [0:11] ac;
     reg [0:11] sr;
-    reg [0:11] rac;
 
-    wire [0:11] ma;
-    wire [0:12] addr;
+    wire [0:14] eaddr;
     wire [0:11] mdout;
     wire [0:11] instruction;
     wire [4:0] state;
@@ -96,6 +80,7 @@ module mem_ext_tb;
 
 
 
+localparam  clock_period = 1e9/clock_frequency;
 `include "../parameters.v"
     initial begin
 
@@ -117,7 +102,7 @@ module mem_ext_tb;
     initial begin
         $dumpfile("mem_ext.vcd");
         $readmemh("mem_ext.hex", MA.ram.mem,0,8191);
-        $dumpvars(0,clk,reset,state,instruction,halt,cont,clear,sing_step,trigger,rac,me_bus,DF,IF,addr,pc,mskip,UF,int_inh,int_ena,irq,int_in_prog,UF,ME.IB,MA.ram.write_en);
+        $dumpvars(0,ME,MA);
         halt <= 0;
         sing_step <= 0;
         irq <=0;
@@ -125,7 +110,7 @@ module mem_ext_tb;
         `pulse(reset);
         `pulse(clear);
         sr <= 12'o0000;
-        rac <= 12'o0000;
+		ac <= 12'o0;
         `pulse(extd_addrd);
         `pulse(cont);
         #3800 int_ena <= 1;

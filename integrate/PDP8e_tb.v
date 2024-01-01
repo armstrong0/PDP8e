@@ -31,11 +31,11 @@ module PDP8e_tb;
     wire [0:11] dsn;
     wire tx;
     wire tclk;
-	reg serial_io;
+    reg serial_io;
 
 `include "../parameters.v"
     localparam clock_period = 1e9/clock_frequency;
-	
+    
     always begin  // clock _period comes from parameters.v
         #(clock_period/2) clk100 <= 1;
         #(clock_period/2) clk100 <= 0;
@@ -52,7 +52,7 @@ module PDP8e_tb;
     begin
         rx <= tx;  // used in serial tests
         serial_io <= ((UUT.instruction[0:8] == 9'o603) || 
-	                 (UUT.instruction[0:8] == 9'o604)) ;
+                     (UUT.instruction[0:8] == 9'o604)) ;
     end
     parameter test_sel=2;
 
@@ -105,7 +105,7 @@ assign single_stepn = ~single_step;
                     #1000 $finish;
                 end
             endcase
-		   //if ( $time > 3500)  #1000 $finish;
+           //if ( $time > 3500)  #1000 $finish;
         end
     end
 
@@ -118,7 +118,7 @@ assign single_stepn = ~single_step;
                     #99 $finish;
                 end
                 15'o00147:begin $display("starting SZA Test 1"); end
-				//$finish; end
+                //$finish; end
                 15'o00157: $display("starting SZA Test 2");
                 15'o00166: $display("starting SZA Test 3");
                 15'o00201: $display("starting SZA Test 4");
@@ -189,26 +189,24 @@ assign single_stepn = ~single_step;
             9:;
             10:;
             11:case (address)
+                15'o00200: $display("Starting Test 0");
                 15'o00337: $display("Starting Test 1");
                 15'o00600: $display("Starting Test 2");
                 15'o00656: $display("Starting Test 3");
-                15'o02271: $display("Starting Test 4");
-                15'o02367: $display("Finished Test 5");
-                15'o02047: $display("Starting Test 6");
-                15'o04000: $display("Starting Test 7");
-                15'o02400: $display("Starting Test 8");
-                15'o02452: $display("Starting Test 9");
-                15'o01050: $display("Starting Test 10");
+                15'o01050: $display("Finished Test 10");
                 15'o01400: $display("Starting Test 11");
                 15'o01432: $display("Starting Test 12");
                 15'o01600: $display("Starting Test 13");
+                15'o02047: $display("Starting Test 6");
                 15'o02200: $display("Starting Test 14");
+                15'o02271: $display("Starting Test 4");
+                15'o02331: $display("Starting Test 5");
+                15'o02400: $display("Starting Test 8");
+                15'o02452: $display("Starting Test 9");
+                15'o02452: $display("Starting Test 15");
                 15'o02600: $display("Starting Test 15");
-                15'o03200: $display("Starting Test 15 Part 2");
-                15'o03400: $display("Starting Test 15 Part 3");
-
                 15'o03502: $display("Starting Test 16");
-                15'o01565: $display("Finished complete tests!");
+                15'o04000: $display("Starting Test 7");
                 default:;
             endcase
             default:;
@@ -302,16 +300,16 @@ assign single_stepn = ~single_step;
                 $dumpfile("Serial_test.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/d2ab.hex",UUT.MA.ram.mem,0,8191);
-				end
-				
+                end
+                
             13: begin
-			    $write("EAE Test 1");
+                $write("EAE Test 1");
                 $dumpfile("EAE_test1.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0LB.hex",UUT.MA.ram.mem,0,8191);
                 end
             14: begin
-			    $write("EAE Test 2");
+                $write("EAE Test 2");
                 $dumpfile("EAE_test2.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0MB.hex",UUT.MA.ram.mem,0,8191);
@@ -325,7 +323,7 @@ assign single_stepn = ~single_step;
         endcase
         #0 halt <= 1;
         #1 reset <= 1;
-		#1 clear <= 0;
+        #1 clear <= 0;
         #(clock_period*10) reset <=0;
         #1 single_step <= 0;
         #1 sw <= 0;
@@ -431,15 +429,15 @@ assign single_stepn = ~single_step;
                 #150000000  $finish;
             end
             11:begin
-                //sr <= 12'o0200;  
-                sr <= 12'o4001;  // test 7  
+                sr <= 12'o0200;  
+                //sr <= 12'o2600;  // test 15  
                 #1000 ;
                 `pulse(addr_load);
                 sr <= 12'o0001; // simulation has 8k, reads 0000 for
-				// non-exsistant memory
+                // non-exsistant memory
                 #1000 `pulse(cont);
                 // #1000  `pulse(cont);
-                #18000000 $finish;
+                #184000000 $finish;
                 //#5000000 $finish;
             end
             12: begin
@@ -458,43 +456,43 @@ assign single_stepn = ~single_step;
                 #5000 `pulse(cont);
                 #890000 `pulse(cont);
                 #5000  sr <=12'o6006; //do one routine sr 6:11 has number
-				//wait(UUT.state == H0);
+                //wait(UUT.state == H0);
                 #10000000000 $finish;
             end
-			13: begin
-			    sr <= 12'o3030;
+            13: begin
+                sr <= 12'o3030;
                 #500 `pulse(addr_load);
-				//sr <= 12'o2525; // set mode B
-				//#500 `pulse(dep);
-				//sr <= 12'o4667;
-				//sr <= 12'o2600;  //DPIC
+                //sr <= 12'o2525; // set mode B
+                //#500 `pulse(dep);
+                //sr <= 12'o4667;
+                //sr <= 12'o2600;  //DPIC
                 //#500 `pulse(addr_load);
-				sr <= 12'o4000;
+                sr <= 12'o4000;
                 #500 `pulse(clear);
                 #500 `pulse(cont);
-				#1000000 $finish;
-			end
+                #1000000 $finish;
+            end
 
-			14: begin
-			    sr <= 12'o0115;
+            14: begin
+                sr <= 12'o0115;
                 #500 `pulse(addr_load);
-				sr <= 12'o2525; // set mode B
-				#500 `pulse(dep);
-				// sr <= 12'o1264;
-				sr <= 12'o3030;
+                sr <= 12'o2525; // set mode B
+                #500 `pulse(dep);
+                // sr <= 12'o1264;
+                sr <= 12'o3030;
                 #500 `pulse(addr_load);
-				sr <= 12'o5003;
+                sr <= 12'o5003;
                 #500 `pulse(clear);
                 #500 `pulse(cont);
-				#10000 $finish;
-			end
-			15: begin
-				sr <= 12'o0200;
+                #10000 $finish;
+            end
+            15: begin
+                sr <= 12'o0200;
                 #500 `pulse(addr_load);
                 #500 `pulse(clear);
                 #500 `pulse(cont);  // have to fake out the uart
-				#100000 $finish;
-				end
+                #100000 $finish;
+                end
 
 
 

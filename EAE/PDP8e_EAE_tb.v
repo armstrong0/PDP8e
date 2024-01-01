@@ -86,25 +86,13 @@ module PDP8e_tb;
 
   always @(posedge clk) begin
 
-    if ((UUT.instruction == 12'b1111??????10) && (UUT.state == H0)) begin
-      case (test_sel)
-        1: ;
-        //11: if ($time < 5000)
-        //begin
-        //    `pulse(cont);  //it would appear that a case with just pulse does not work
-        //end
-        //else $finish;
-        12: begin
-          #1000 $finish;
-        end
-        default:
+    if (((UUT.instruction & 12'o7402) == 12'o7402) && (UUT.state == H0)) begin
         if ($time > 5000) begin
           $display("Stopped %d because of a Halt", $time);
           $display("Address:%o", address);
           #1000 $finish;
         end
-      endcase
-    end
+	end	
   end
 
   always @(posedge clk) begin
@@ -496,6 +484,7 @@ module PDP8e_tb;
         //sr <= 12'o5000;
         #1000 sr <= 12'o0200;
         #1000 `pulse(addr_load);
+		#100 sr <= 12'o1;  // for extended memory test, one extended bank
         #1000 `pulse(cont);
         #28000 $finish;
       end

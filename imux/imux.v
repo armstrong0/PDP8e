@@ -64,8 +64,8 @@ module imux(
 
     always @(*) begin //again for verilator
         casez (instruction[0:11] )
-		    12'o6003: skip <= mskip;
-		    12'o6000: skip <= mskip;
+            12'o6003: skip <= mskip;
+            12'o6000: skip <= mskip;
             12'o603?,12'o604?: skip = sskip;
             12'o625?: skip = mskip;
 `ifdef RK8E

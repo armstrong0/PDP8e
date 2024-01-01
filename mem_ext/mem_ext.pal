@@ -1,4 +1,3 @@
-TITLE "extended mem test"
 
 *0
 	0000
@@ -15,8 +14,8 @@ ADDT,  5557
 DCAT,  7577
 *150
 F1IT,   F1target
-* 200
-	6204  // CINT   Clear user int
+  * 200
+start,	6204  // CINT   Clear user int
 	6254  // SINT   Skip on user interrupt
 	6274  // SUF    sets the user buffer FF inhibits interrupts until next JMP 
       // or JMS at which time UB FF -> UF FF

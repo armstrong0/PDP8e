@@ -1,14 +1,14 @@
 [*]
-[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Wed Apr  6 17:38:16 2022
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Thu Dec 28 21:05:39 2023
 [*]
-[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/mem_ext/mem_ext.vcd"
-[dumpfile_mtime] "Wed Apr  6 17:38:01 2022"
-[dumpfile_size] 12124
-[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/mem_ext/mem_ext.gtkw"
+[dumpfile] "/home/armstrong/Desktop/PDP8e/mem_ext/mem_ext.vcd"
+[dumpfile_mtime] "Thu Dec 28 21:05:15 2023"
+[dumpfile_size] 30073
+[savefile] "/home/armstrong/Desktop/PDP8e/mem_ext/mem_ext.gtkw"
 [timestart] 0
-[size] 1680 971
-[pos] -163 -144
+[size] 1680 937
+[pos] -1 -1
 *-19.497473 141000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] mem_ext_tb.
 [treeopen] mem_ext_tb.MA.
@@ -16,34 +16,14 @@
 [signals_width] 166
 [sst_expanded] 1
 [sst_vpaned_height] 288
-@28
-mem_ext_tb.clk
-@30
-mem_ext_tb.instruction[0:11]
-@28
-mem_ext_tb.int_inh
-@30
-mem_ext_tb.me_bus[0:11]
-mem_ext_tb.rac[0:11]
-@28
-mem_ext_tb.reset
-@22
-mem_ext_tb.state[3:0]
-@30
-mem_ext_tb.addr[0:12]
-mem_ext_tb.pc[0:11]
-@28
-mem_ext_tb.UF
-mem_ext_tb.mskip
 @30
 mem_ext_tb.ME.IB[0:2]
-mem_ext_tb.DF[0:2]
-mem_ext_tb.IF[0:2]
+mem_ext_tb.ME.instruction[0:11]
 @28
-mem_ext_tb.MA.ram.write_en
-mem_ext_tb.int_ena
-mem_ext_tb.int_in_prog
-@29
-mem_ext_tb.irq
+mem_ext_tb.ME.IF[0:2]
+@22
+mem_ext_tb.ME.state[4:0]
+@23
+mem_ext_tb.MA.eaddr[0:14]
 [pattern_trace] 1
 [pattern_trace] 0

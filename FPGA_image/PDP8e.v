@@ -10,7 +10,6 @@
 `include "../serial/serial_top.v"
 `include "../oper2/oper2.v"
 `include "../ac/ac.v"
-//`include "../pc/pc.v"
 `include "../ma/ma.v"
 `include "../mem_ext/mem_ext.v"
 `ifdef RK8E

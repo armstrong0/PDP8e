@@ -1,4 +1,3 @@
-`define EAE
 //`define RK8E
 //`define up5k
 

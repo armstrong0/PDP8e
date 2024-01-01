@@ -116,7 +116,7 @@ module ma (
             12'b1111??0?0111,  // 7407 DIV
             12'b1111??1?0011,  // DAD - DLD 7443 CAMDAD
             12'b1111??1?0101:  // DST 7445
-		  begin
+          begin
               // eaddr has the address of the operand,
               // the memory cycle will be finished by the defer cycle
               next_pc <= pc + 12'o2;  // skip the operand
@@ -175,10 +175,12 @@ module ma (
           ;
           casez (instruction[0:2])
             AND, TAD, ISZ, DCA, OPR: eaddr[0:2] <= DF;
-            JMP:
-            if (index) next_pc <= idx_tmp;  // both use IF which is set for F0
+            JMP: begin
+            if (index) next_pc <= idx_tmp;  // both use IF which is set in F0
             else next_pc <= mdout;  // right address, ready for 
             // interrupt processing
+			  eaddr[0:2] <= IF;
+			end
 
             JMS: ;
             IOT: ;  // should never get here
