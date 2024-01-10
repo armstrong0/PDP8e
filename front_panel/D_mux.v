@@ -28,7 +28,7 @@ module D_mux (
         ES = 0;
         HS = 0;
       end
-      D0, DW, D1, D2, DW1, D3: begin
+      D0, DW, D1, D2, D3: begin
         run_led = 1;
         FS = 0;
         DS = 1;

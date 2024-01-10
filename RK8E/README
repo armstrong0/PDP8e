@@ -1,6 +1,9 @@
  This module implements some of an RK8E disk controller.
  NOTE: There is an rk8 and an rk8e controller.  This is an RK8E!
 
+  January 10, 2024 - Part of the boot process is working, the first sector of the drive is read, the boot code in that sctor copies the parts of the sector in field 0 and field 1.  The copy is correct.  The controller is set up to read the next sector but the rk8e module does not respond correctly...
+  
+
  This set of files when compiled and fitted implements the interface between the CPU and an SD card.  The SD card provides the storage for the 4 RK05 disk packs.  A typical SD card has the ability to store the equivalent of hundreds of RK05 disk images.  
 
  I contemplated writing all my own code for this function.  However Rob Doyle

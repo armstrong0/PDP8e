@@ -1,4 +1,4 @@
-//`define RK8E
+`define RK8E
 //`define up5k
 
 // state machine encoding
@@ -12,7 +12,7 @@ D0 = 5'd5,  // 5
 DW = 5'd6,  // 6
 D1 = 5'd7,  // 7 
 D2 = 5'd8,  // 8
-DW1 = 5'd9,  // 9
+//DW1 = 5'd9,  // 9
 D3 = 5'd10,  // 10
 
 E0 = 5'd11,  // 11
@@ -31,8 +31,8 @@ EAE1 = 5'd22,  // 22
 F2A = 5'd27,  // 27
 F2B = 5'd28,  // 28
 DB0 = 5'd29,  // data break states 29
-DB1 = 5'd30;  // 30
-//DB2 = 5'bd31; 
+DB1 = 5'd30,  // 30
+DB2 = 5'd31;  // 31
 //EAE2 = 5'd23, // 23
 //EAE3 = 5'd24, // 24 
 //EAE4 = 5'd25, // 25
@@ -66,7 +66,7 @@ localparam  AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
 
 `ifdef SIM
 // calculate in nanoseconds
-parameter real clock_frequency = 84000000;
+localparam real clock_frequency = 84000000;
 parameter real baud_rate = 115200;
 `elsif TSIM
 // calculate in nanoseconds
@@ -82,11 +82,11 @@ parameter real baud_rate = 9600;
 // the counts here have to be for 1/2 clock.
 // Error on the low side, especially for 4 MHz
 // frequencies will not be exact.
-`ifdef RK8E
+//`ifdef RK8E
 parameter real slow_spi = 400000;
 parameter real fast_spi = 2000000;
 // go too high and the state machines don't work!
-`endif
+//`endif
 
 
 

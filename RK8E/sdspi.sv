@@ -49,7 +49,7 @@
 //--
 // RK8E Secure Digital SPI Interface Entity
 // --
-
+`include "../FPGA_image/HX_clock.v"
 `include "../parameters.v"
 
    parameter slow_dev = $rtoi(clock_frequency/(slow_spi*2));

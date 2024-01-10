@@ -228,7 +228,7 @@ assign single_stepn = ~single_step;
             1: begin
                 $dumpfile("instruction_test_pt1.vcd");
                 $dumpvars(0,UUT);
-                $readmemh( "Diagnostics/D0AB.hex", UUT.MA.ram.mem,0,4095);
+                $readmemh( "Diagnostics/D0AB.hex", UUT.MA.ram.mem,0,8191);
             end
             1.1: begin
                 $dumpfile("instruction_test_pt1.1.vcd");

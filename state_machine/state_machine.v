@@ -17,7 +17,6 @@ module state_machine (
     input EAE_mode,
     input EAE_loop,
     input index,  // auto increment occuring
-    input gtf,
 `ifdef RK8E
     input data_break,  // data break write is to disk read is from disk
     input to_disk,
@@ -57,7 +56,6 @@ module state_machine (
           else if (halt & ~cont) state <= H0;
           else state <= FW;
           int_in_prog <= 0;
-          //EAE_skip <= 1'b0;
         end
         FW: state <= F1;
         F1:
@@ -149,23 +147,55 @@ module state_machine (
               begin
               int_in_prog <= 1;
               state <= E0;
+              if (data_break == 1'b1) begin
+                next_state <= E0;  // interupt processing
+                state <= DB0;
+                break_in_prog <= 1'b1;
+              end
+
+            end else if (data_break == 1'b1) begin
+              next_state <= F0;  // new instruction 
+              state <= DB0;
+              break_in_prog <= 1'b1;
             end else state <= F0;
           end
           12'b0??1????????,  // AND TAD ISZ DCA defer cycle
-          12'b10?1????????: // JMS, JMP defer
-          begin
+          12'b10?1????????:  // JMS, JMP defer
+          if (data_break == 1'b1) begin
+            next_state <= D0;
+            state <= DB0;
+            break_in_prog <= 1'b1;
+          end else begin
             state <= D0;
           end
           12'b1010????????:  // JMP Direct
           if (int_req & int_ena & ~int_inh) begin
             int_in_prog <= 1;
             state <= E0;
+            if (data_break == 1'b1) begin
+              next_state <= E0;  // interupt processing
+              state <= DB0;
+              break_in_prog <= 1'b1;
+            end
+          end else if (data_break == 1'b1) begin
+            next_state <= F0;  // new instruction
+            state <= DB0;
+            break_in_prog <= 1'b1;
           end else state <= F0;
 
-          12'b1000????????:  // JMS direct
-          state <= E0;
-          default: begin  // non defered 
-            state <= E0;
+          12'b1000????????:  // JMS direct 
+          if (data_break == 1'b1) begin
+            next_state <= E0;
+            state <= DB0;
+            break_in_prog <= 1'b1;
+          end else state <= E0;
+          default: begin
+            if (data_break == 1'b1) begin
+              next_state <= E0;
+              state <= DB0;
+              break_in_prog <= 1'b1;
+            end else  // non defered 
+              state <= E0;
           end
         endcase
         D0:
@@ -181,41 +211,54 @@ module state_machine (
         if (instruction[0:3] == JMPI) begin
           if (int_req & int_ena & ~int_inh) begin
             int_in_prog <= 1;
-            state <= E0;
+            state <= E0;  // interupt processing
+            if (data_break == 1'b1) begin
+              next_state <= E0;  // interupt processing
+              state <= DB0;
+              break_in_prog <= 1'b1;
+            end
           end else state <= F0;
+        end else if (data_break == 1'b1) begin
+          next_state <= E0;
+          state <= DB0;
+          break_in_prog <= 1'b1;
         end else state <= E0;
 
         // execute cycle
-        E0:
-        if (~single_step | cont) state <= EW;
-        else state <= E0;
+        E0: begin
+          if (~single_step | cont) state <= EW;
+          else state <= E0;
+        end
         EW: state <= E1;
-        E1:
-        if ((instruction & 12'b111100101101) == 12'b111100000101) state <= EAE0;  // MUL or DIV
-        else state <= E2;
+        E1: begin
+          if ((instruction & 12'o7455) == 12'o7405) state <= EAE0;  // MUL or DIV
+          else state <= E2;
+        end
         E2: state <= E3;
         E3:
+        // data break has higher priority but we need to figure out what our
+        // next state will be 
         if(int_req & int_ena & ~int_inh & ~int_in_prog ) // test for interrupt
                 begin
           int_in_prog <= 1;
           state <= E0;
-          /*if (data_break == 1'b1) begin
+          if (data_break == 1'b1) begin
             next_state <= E0;
             state <= DB0;
             break_in_prog <= 1'b1;
-          end */
-        end else  /* if (data_break == 1'b1) begin
+          end
+        end else if (data_break == 1'b1) begin
           next_state <= F0;
           state <= DB0;
           break_in_prog <= 1'b1;
-        end else */
-
-          state <= F0;
+        end else state <= F0;
 
         H0: state <= HW;
-        HW: if (trigger & ~cont) state <= H1;
- else if (~cont) state <= H0;
- else state <= F0;
+        HW: begin
+          if (trigger & ~cont) state <= H1;
+          else if (~cont) state <= H0;
+          else state <= F0;
+        end
         H1: state <= H2;
         H2: state <= H3;
         H3: state <= H0;
@@ -223,17 +266,11 @@ module state_machine (
         EAE0: state <= EAE1;
         EAE1: if (EAE_loop == 1) state <= EAE1;
  else state <= F3;
-        // EAE2: state <= EAE3;
-        // need to vector off to EAE0 if MUL or DIV
-        // if we reached this it is a mode B EAE instruction
-        // only MUL and DIV have bit 6 set 0 here.
-        ////  EAE3: if (instruction[6] == 1'b0) state <= EAE0;
-        //else state <= EAE4;
-        //     EAE4: state <= EAE5;
-        //   EAE5: state <= E3;  // back to normal processing
+
         // data break
-        DB0:  state <= DB1;
-        DB1: begin
+        DB0: state <= DB1;
+        DB1: state <= DB2;
+        DB2: begin
           state <= next_state;
           break_in_prog <= 1'b0;
         end

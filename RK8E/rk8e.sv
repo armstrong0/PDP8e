@@ -242,7 +242,7 @@ bit 11 msb of cylinder
         default: status[0] <= 1'b0;
       endcase
       last_sdstate <= sdstate;
-      if (sdstate != sdstateREADY) sdOP <= sdopNOP;
+      //if (sdstate != sdstateREADY) sdOP <= sdopNOP;
 
     end
   end

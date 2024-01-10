@@ -4,7 +4,7 @@ AMC: state_machine_AMC.v state_machine_AMC_tb.v ../ram/ram.v ops.txt
 	iverilog -DTSIM  state_machine_AMC.v state_machine_AMC_tb.v ../ram/ram.v -o AMC
 
 DB: state_machine.v state_machine_db_tb.v
-	iverilog state_machine.v state_machine_db_tb.v -DSIM -DRK8E -o DB
+	iverilog state_machine.v state_machine_db_tb.v ../ram/ram.v -DSIM -DRK8E -o DB
 
 state_design: state_machine.v state_machine_tb.v ../ram/ram.v ops.txt
 	iverilog -DSIM -DRK8E state_machine.v state_machine_tb.v ../ram/ram.v -o state_design

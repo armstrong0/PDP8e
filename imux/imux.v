@@ -10,10 +10,10 @@ module imux(
     input [0:11] ac,
     input [0:11] mem_reg_bus,
     input [0:11] serial_data_bus,
-`ifdef RK8E
+//`ifdef RK8E
     input [0:11] disk_bus,
     input disk_skip,
-`endif
+//`endif
     input sskip,
     input mskip,
     output reg skip,
@@ -64,8 +64,8 @@ module imux(
 
     always @(*) begin //again for verilator
         casez (instruction[0:11] )
-            12'o6003: skip <= mskip;
-            12'o6000: skip <= mskip;
+            12'o6003: skip = mskip;
+            12'o6000: skip = mskip;
             12'o603?,12'o604?: skip = sskip;
             12'o625?: skip = mskip;
 `ifdef RK8E

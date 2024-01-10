@@ -34,6 +34,7 @@ module ma (
 
   reg [0:4] current_page;
   reg [0:11] mdin, idx_tmp, pc, next_pc, skip_pc;
+  reg [0:14] saveAddr;
   reg write_en;
   wire [0:11] mdtmp;
   `include "../parameters.v"
@@ -130,7 +131,7 @@ module ma (
         end
         F3: begin
           casez (instruction[0:4])
-            5'b0???0: eaddr <= {IF, 5'b00000, instruction[5:11]};
+            5'b0???0: eaddr <= {IF, 5'b0, instruction[5:11]};
             5'b0???1: eaddr <= {IF, current_page, instruction[5:11]};
             5'b100?0:  // JMS page 0
             eaddr <= {IF, 5'b0, instruction[5:11]};
@@ -176,11 +177,11 @@ module ma (
           casez (instruction[0:2])
             AND, TAD, ISZ, DCA, OPR: eaddr[0:2] <= DF;
             JMP: begin
-            if (index) next_pc <= idx_tmp;  // both use IF which is set in F0
-            else next_pc <= mdout;  // right address, ready for 
-            // interrupt processing
-			  eaddr[0:2] <= IF;
-			end
+              if (index) next_pc <= idx_tmp;  // both use IF which is set in F0
+              else next_pc <= mdout;  // right address, ready for 
+              // interrupt processing
+              eaddr[0:2] <= IF;
+            end
 
             JMS: ;
             IOT: ;  // should never get here
@@ -202,6 +203,7 @@ module ma (
             case (instruction[0:2])
               ISZ, AND, TAD: ;
               JMS: mdin <= next_pc;
+			  DCA: mdin <= ac;
               OPR: begin
                 eaddr[3:14] <= eaddr[3:14] + 1;
                 mdin <= ac;
@@ -237,7 +239,7 @@ module ma (
         E2: begin
           case (instruction[0:2])
             ISZ: ;
-            DCA: ;
+            DCA: mdin <= ac;
             JMS:
             if (int_in_prog) begin
               eaddr   <= 15'o0001;
@@ -265,18 +267,23 @@ module ma (
         H2: if ((depd == 1'b1) | (examd == 1'b1)) eaddr[3:14] <= eaddr[3:14] + 12'o0001;
         H3: ;
 `ifdef RK8E
-        DB0:
-        if (to_disk == 1'b0) begin
-          mdin <= disk2mem;
-          write_en <= 1'b1;
+        DB0: begin
+          saveAddr <= eaddr;
+          eaddr <= dmaAddr;
+          if (to_disk == 1'b0) begin
+            mdin <= disk2mem;
+            write_en <= 1'b1;
+          end
         end
         DB1: begin
           mdin <= disk2mem;
+        end
+        DB2: begin
           if (to_disk == 1'b1) begin
             mem2disk <= mdtmp;
           end
+          eaddr <= saveAddr;
         end
-
 `endif
 
         default: ;
