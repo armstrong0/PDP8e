@@ -225,11 +225,14 @@ bit 11 msb of cylinder
       // change to a case statement on sdstate
       case (sdstate)
         sdstateINIT: ;  // SD Initializing
-        sdstateREADY:  // SD Ready for commands
+        sdstateREADY:   // SD Ready for commands
         if (last_sdstate != sdstateREADY) status[0] <= 1'b1;
-        sdstateREAD,  // SD Reading
-        sdstateWRITE:
-        status[0] <= 1'b0;  // SD Writing
+        sdstateREAD,    // SD Reading
+        sdstateWRITE:// SD Writing
+		begin
+            status[0] <= 1'b0;
+		    if (last_sdstate == sdstateREADY) sdOP <= sdopNOP;
+		end
         sdstateDONE: begin
           if ((last_sdstate == sdstateREAD) || (last_sdstate == sdstateWRITE))
             status[0] <= 1'b1;  // SD Done
@@ -242,7 +245,6 @@ bit 11 msb of cylinder
         default: status[0] <= 1'b0;
       endcase
       last_sdstate <= sdstate;
-      //if (sdstate != sdstateREADY) sdOP <= sdopNOP;
 
     end
   end

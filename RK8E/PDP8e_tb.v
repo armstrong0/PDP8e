@@ -135,7 +135,7 @@ module PDP8e_tb;
     #100 pll_locked <= 1;
     #1 halt <= 0;
     #5000;
-    sr <= 12'o0026;
+    sr <= 12'o0026;  // loop until disk is ready
     `PULSE(addr_load);
     #1000;
     sr <= 12'o6741;
@@ -144,10 +144,10 @@ module PDP8e_tb;
     sr <= 12'o5026;
     `PULSE(dep);
     #1000;
-    sr <= 12'o6743;
+    sr <= 12'o6743; // DLAG
     `PULSE(dep);
     #1000;
-    sr <= 12'o5030;
+    sr <= 12'o5031; // JMP .
     `PULSE(dep);
     #1000;
     sr <= 12'o0026;
@@ -166,7 +166,7 @@ module PDP8e_tb;
     //  $display("hit trap!!");
     //  $finish;
 
-    #50000 $finish;
+    #8000000 $finish;
 
 
   end
