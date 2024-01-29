@@ -156,16 +156,20 @@ module PDP8e_tb;
     `PULSE(cont);
 
 	wait(halt_addr == 1);
-	//#100 halt <= 1;
-    //  $writememh("a200", UUT.MA.ram.mem, 128, 255);
-    //  $writememh("a047", UUT.MA.ram.mem, 39, 127);
-    //  $writememh("ram_contents", UUT.MA.ram.mem, 0, 8191);
-    //  $writememh("ram256", UUT.MA.ram.mem, 0, 255);
-    //  $writememh("b7600", UUT.MA.ram.mem, 3968, 4095);
-    //  $writememh("b17647", UUT.MA.ram.mem, 8103, 8191);
-    //  $display("hit trap!!");
-    //  $finish;
 
+//`define first 1
+
+`ifdef first	
+	#100 halt <= 1;
+      $writememh("a200", UUT.MA.ram.mem, 128, 255);
+      $writememh("a047", UUT.MA.ram.mem, 39, 127);
+      $writememh("ram_contents", UUT.MA.ram.mem, 0, 8191);
+      $writememh("ram256", UUT.MA.ram.mem, 0, 255);
+      $writememh("b7600", UUT.MA.ram.mem, 3968, 4095);
+      $writememh("b17647", UUT.MA.ram.mem, 8103, 8191);
+      $display("hit trap!!");
+      $finish;
+`endif
     #8000000 $finish;
 
 

@@ -202,7 +202,10 @@ module ma (
           end else
             case (instruction[0:2])
               ISZ, AND, TAD: ;
-              JMS: mdin <= next_pc;
+              JMS: begin
+			       mdin <= next_pc;
+				   eaddr[0:2] <= IF; // handles JMS across fields
+				   end
 			  DCA: mdin <= ac;
               OPR: begin
                 eaddr[3:14] <= eaddr[3:14] + 1;

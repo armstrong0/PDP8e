@@ -158,7 +158,7 @@ module mem_ext (
           UF <= UB;
         end
         D1, D2, D3: ;
-        E0:
+        E0:begin
         if (int_in_prog == 1'b1) begin
           savereg <= {UF, IF, DF};
           IF <= 3'o0;
@@ -168,8 +168,7 @@ module mem_ext (
           int_ena <= 0;
           int_delay <= 0;
         end
-        E1: ;
-        E2: begin
+        else
           if (instruction[0:2] == JMS) begin
             if (int_inh == 1'b1) begin
               IF <= IB;
@@ -178,8 +177,11 @@ module mem_ext (
             end
           end
         end
-        E3: ;
-        H0: ;
+		EW:;
+		E1:;
+        E2:;
+        E3:;
+        H0:;
         H1:
         if (extd_addrd == 1'b1) begin
           IF <= sr[6:8];
