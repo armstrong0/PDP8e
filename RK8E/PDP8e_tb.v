@@ -33,6 +33,9 @@ module PDP8e_tb;
 
   wire diskio;
   assign diskio = (UUT.instruction[0:8] == 9'o674);
+  wire serialio;
+  assign serialio = ((UUT.instruction[0:8] == 9'o603) || 
+                    (UUT.instruction[0:8] == 9'o604));
   wire DLAC;
   assign DLAC = (UUT.instruction == 12'o6744);
   wire troublesome;
@@ -116,7 +119,7 @@ module PDP8e_tb;
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SDCard.vcd");
     $readmemh("zero.hex", UUT.MA.ram.mem, 0, 8191);
-    $dumpvars(0, halt_addr,address, diskio, troublesome, UUT);
+    $dumpvars(0, halt_addr,address, diskio,serialio,UUT);
     sr <= 12'o0004;
 
     #1 reset <= 1;
@@ -170,7 +173,7 @@ module PDP8e_tb;
       $display("hit trap!!");
       $finish;
 `endif
-    #8000000 $finish;
+    #13000000 $finish;
 
 
   end

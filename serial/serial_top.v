@@ -33,6 +33,7 @@ module serial_top(
     always @(posedge clk)
     begin
         if (rx_flag == 1) serial_bus <= {4'b0000,rx_serial_bus};
+		else serial_bus <= 12'o0;
     end
 
 

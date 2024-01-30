@@ -235,7 +235,10 @@ bit 11 msb of cylinder
 		end
         sdstateDONE: begin
           if ((last_sdstate == sdstateREAD) || (last_sdstate == sdstateWRITE))
+		  begin
             status[0] <= 1'b1;  // SD Done
+			car <= dmaADDR[3:14];
+		  end	
         end
         sdstateINFAIL,  // SD Initialization Failed
         sdstateRWFAIL: begin
