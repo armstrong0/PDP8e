@@ -205,6 +205,7 @@ echo "Test B only with SR = 0003"
 echo "Test A only with SR = 0002"
 echo "Test both modes with SR=0000"
 echo "Full test with printout set SR3=1"
+echo "That is SR = 0400"
 echo "If doing a partial test a CR LF is printed at the end of each pass"
 echo "If doing a full A/B test KE8 2 is printed at the end of each pass"
 echo "All tests should run in less than one minute"
@@ -231,7 +232,7 @@ echo "Stop the test once satisfied, close minicom"
 
 15) prompt
 ;;
- *) echo "Invalid response enter a number between 1 and 13"
+ *) echo "Invalid response enter a number between 1 and 14"
 
 esac
  
