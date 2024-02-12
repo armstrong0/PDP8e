@@ -12,7 +12,6 @@ D0 = 5'd5,  // 5
 DW = 5'd6,  // 6
 D1 = 5'd7,  // 7 
 D2 = 5'd8,  // 8
-//DW1 = 5'd9,  // 9
 D3 = 5'd10,  // 10
 
 E0 = 5'd11,  // 11
@@ -33,6 +32,7 @@ F2B = 5'd28,  // 28
 DB0 = 5'd29,  // data break states 29
 DB1 = 5'd30,  // 30
 DB2 = 5'd31;  // 31
+//DW1 = 5'd9,  // 9
 //EAE2 = 5'd23, // 23
 //EAE3 = 5'd24, // 24 
 //EAE4 = 5'd25, // 25
@@ -40,11 +40,20 @@ DB2 = 5'd31;  // 31
 
 
 // instruction encodings
-localparam SAM=12'o7457, DAD = 12'o7443, DST= 12'o7445, 
-          DPIC = 12'o7773, DCM =12'o7575, DPSZ = 12'o7451,
-          DLD = 12'o7763, CAMDAD = 12'o7663, 
-          SHL = 12'o7413, ASR = 12'o7415, LSR = 12'o7417,
-          MUL = 12'o7405, DIV = 12'o7407, NMI = 12'o7411;
+localparam SAM=12'o7457,
+DAD  = 12'o7443,
+DST  = 12'o7445, 
+DPIC = 12'o7773,
+DCM  = 12'o7575,
+DPSZ = 12'o7451,
+DLD  = 12'o7763,
+CAMDAD = 12'o7663, 
+SHL = 12'o7413,
+ASR = 12'o7415,
+LSR = 12'o7417,
+MUL = 12'o7405,
+DIV = 12'o7407,
+NMI = 12'o7411;
 
 
 `ifdef RK8E
@@ -56,10 +65,17 @@ DCLA = 12'o6744,  // DLCA load current address
 DRST = 12'o6745,  // DRST read status
 DLDC = 12'o6746;  // DLDC load command register
 `endif
-localparam  AND = 3'b000, TAD = 3'b001, ISZ = 3'b010,
-          DCA = 3'b011, JMS = 3'b100, JMP = 3'b101,
-          OPR = 3'b111, IOT = 3'b110, JMPD =4'b1010,
-          JMPI = 4'b1011, JM = 2'b10 ;
+localparam  AND = 3'b000, 
+TAD = 3'b001,
+ISZ = 3'b010,
+DCA = 3'b011,
+JMS = 3'b100,
+JMP = 3'b101,
+OPR = 3'b111,
+IOT = 3'b110,
+JMPD =4'b1010,
+JMPI = 4'b1011,
+JM = 2'b10 ;
 // clock_frequency is defined in the top level verilog file 
 // or in an included file..
 
@@ -83,8 +99,8 @@ parameter real baud_rate = 9600;
 // Error on the low side, especially for 4 MHz
 // frequencies will not be exact.
 //`ifdef RK8E
-parameter real slow_spi = 400000;
-parameter real fast_spi = 2000000;
+parameter real slow_spi = 10000;
+parameter real fast_spi = 50000;
 // go too high and the state machines don't work!
 //`endif
 
