@@ -46,6 +46,7 @@ module rk8e
 );
 
   wire                flag;
+  reg          [3:0]  toggle;
   reg          [0:11] cmd_reg;  // command register
   reg          [0:11] car;  // current address register
   reg          [0:11] dar;  // disk address  
@@ -60,16 +61,15 @@ module rk8e
   sdOP_t              sdOP;
   sdDISKaddr_t        sdDISKaddr;  //! Disk Address
   wire         [0:14] dmaADDR;  //! DMA Address
-  //  wire         [0:11] dmaDOUT;
-  wire dmaRD, dmaWR, dmaREQ;
-  logic     [0:14] sdMEMaddr;  //! Memory Address
-  logic            sdLEN;  //! Sector Length
-  sdSTAT_t         sdSTAT;  //! Status
+  wire                dmaRD, dmaWR, dmaREQ;
+  logic        [0:14] sdMEMaddr;  //! Memory Address
+  logic               sdLEN;  //! Sector Length
+  sdSTAT_t            sdSTAT;  //! Status
 
-  sdSTATE_t        sdstate;
-  sdSTATE_t        last_sdstate;
+  sdSTATE_t           sdstate;
+  sdSTATE_t           last_sdstate;
 
-  assign sdLEN = cmd_reg[5];
+  assign              sdLEN = cmd_reg[5];
 
   sd SD (
       .clk       (clk),
@@ -164,6 +164,7 @@ bit 11 msb of cylinder
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
       last_sdstate  <= sdstateINIT;
+      toggle        <= 4'b0;
     end else if ((state == F1) && (UF == 1'b0)) begin
       skip <= 1'b0;
       case (instruction)
@@ -202,7 +203,34 @@ bit 11 msb of cylinder
           // execute now, cmd does not yet hold the cmd from ac
           if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
         end
-        12'o6747: ;  // DMAN not implemented
+        12'o6747: case (toggle) 
+                   0: begin
+                      disk_bus <= {toggle,sdSTAT.debug};
+                      toggle <= 4'b0001;
+                      end
+                   1: begin 
+                      disk_bus <= {toggle,sdSTAT.err};   
+                      toggle <= 4'b0010;
+                      end
+                   2: begin
+                      disk_bus <= {toggle,sdSTAT.val};
+                      toggle <= 4'b0011;
+                      end
+                   3: begin  
+                      disk_bus <= {toggle,sdSTAT.rdCNT};
+                      toggle <= 4'b0100;
+                      end
+                   4: begin  
+                      disk_bus <= {toggle,sdSTAT.rdCNT};
+                      toggle <= 4'b0101;
+                      end
+                   5: begin      
+                      disk_bus <= {toggle,sdSTAT.state};
+                      toggle <= 4'b0;
+                      end
+                      
+                    default:toggle <= 4'b0;
+                endcase    
         12'o6007:    // CAF
           begin
           status        <= 12'o0000;
@@ -229,16 +257,16 @@ bit 11 msb of cylinder
         if (last_sdstate != sdstateREADY) status[0] <= 1'b1;
         sdstateREAD,    // SD Reading
         sdstateWRITE:// SD Writing
-		begin
+        begin
             status[0] <= 1'b0;
-		    if (last_sdstate == sdstateREADY) sdOP <= sdopNOP;
-		end
+            if (last_sdstate == sdstateREADY) sdOP <= sdopNOP;
+        end
         sdstateDONE: begin
           if ((last_sdstate == sdstateREAD) || (last_sdstate == sdstateWRITE))
-		  begin
+          begin
             status[0] <= 1'b1;  // SD Done
-			car <= dmaADDR[3:14];
-		  end	
+            car <= dmaADDR[3:14];
+          end    
         end
         sdstateINFAIL,  // SD Initialization Failed
         sdstateRWFAIL: begin

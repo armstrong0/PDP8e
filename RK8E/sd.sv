@@ -212,9 +212,10 @@ module sd
   sdBYTE_t err;  //! Error State
   sdBYTE_t val;  //! Error Value
   sdSTATE_t sdSTATE;  //! State
-  localparam logic [0:15] nCR = 8;  //! NCR from SD Spec
+  localparam logic [0:15] nCR = 10;    //! NCR from SD Spec !Change from 8 to
+                                       // 10 so we have 80 clocks
   localparam logic [0:15] nAC = 1023;  //! NAC from SD Spec
-  localparam logic [0:15] nWR = 20;  //! NWR from SD Spec
+  localparam logic [0:15] nWR = 20;    //! NWR from SD Spec
 
 
 

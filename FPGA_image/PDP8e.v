@@ -43,8 +43,8 @@ module PDP8e (input clk,
     input single_stepn, input haltn, input examn, input contn,
     input extd_addrn, input addr_loadn, input clearn,
 `ifdef RK8E
-    output  sdMOSI,
     input   sdMISO,
+    output  sdMOSI,
     output  sdSCLK,sdCS,
 `endif
     input rx,

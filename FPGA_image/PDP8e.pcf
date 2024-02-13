@@ -78,6 +78,6 @@ set_io --warn-no-port dsel[5] A11
 set_io --warn-no-port sdCS   E12
 set_io --warn-no-port sdSCLK D12
 set_io --warn-no-port sdMOSI C12
-set_io --warn-no-port sdMISO B14
+set_io --warn-no-port -pullup yes sdMISO B14
  
 

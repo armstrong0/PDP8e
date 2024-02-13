@@ -56,7 +56,8 @@ module imux(
             12'o6214,12'o6224,12'o6234:        // memory manage unit
             in_bus = mem_reg_bus;
 `ifdef RK8E
-            12'o6745: in_bus = disk_bus;      // RK8E disk
+            12'o6745,
+            12'o6747:in_bus = disk_bus;      // RK8E disk
 `endif
             default: in_bus = 12'o0000;
         endcase

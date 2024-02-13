@@ -190,6 +190,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     ac <= ac | input_bus;
                 else ac <= ac;
                 12'o6036,12'o6214,12'o6224,12'o6234,  //extended memory
+                12'o6747,   // DMAN
                 12'o6745:   // DISK status read
                 if (UF == 1'b0)
                     ac <= input_bus;
