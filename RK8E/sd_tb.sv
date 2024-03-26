@@ -22,7 +22,9 @@ module sd_tb;
   sdSTAT_t            sdSTAT;
 
 
-  `include "../parameters.v"
+//  `include "../parameters.v"
+`include "../FPGA_image/HX_clock.v"
+localparam clock_period = 1e9 / clock_frequency;
 
 sd SD (
       .clk       (clk),
@@ -83,7 +85,8 @@ sd SD (
     sdLEN <= 1'b0;
     dmaGNT <= 1'b0;
     dmaDIN <= 12'o5252;
-    #1600000 sdOP <= sdopRD;  // read
+
+    #1000000 sdOP <= sdopRD;  // read
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= sdopNOP;  // only read one sector

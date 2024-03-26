@@ -231,7 +231,6 @@ module sd
       val     <= 8'b0;
       rdCNT   <= 8'b0;
       wrCNT   <= 8'b0;
-      spiOP   <= spiNOP;
       bytecnt <= 0;
       dmaRD   <= 1'b0;
       dmaWR   <= 1'b0;
@@ -247,7 +246,7 @@ module sd
       dmaRD   <= 1'b0;
       dmaWR   <= 1'b0;
       memREQ  <= 1'b0;
-      spiOP   <= spiNOP;
+      spiOP   <= spiCSH;
       timeout <= 499999;
       sdSTATE <= sdstateINIT;
       state   <= stateRESET;

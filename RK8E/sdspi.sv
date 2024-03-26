@@ -50,7 +50,6 @@
 // RK8E Secure Digital SPI Interface Entity
 // --
 `include "../FPGA_image/HX_clock.v"
-`include "../parameters.v"
 
    parameter slow_dev = $rtoi(clock_frequency/(slow_spi*2));
    parameter nu_divcnt_bits = $clog2(slow_dev);
@@ -112,8 +111,8 @@ module sdspi
   always @(posedge clk) begin
     if (rst == 1'b1) begin
       spiDONE <= 1'b0;
-      txd     <= 8'b1;
-      rxd     <= 8'b1;
+      txd     <= 8'b11111111;
+      rxd     <= 8'b11111111;
       spiCS   <= 1'b1;
       bitcnt  <= 3'b0;
       clkcnt  <= 0;

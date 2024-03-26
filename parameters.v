@@ -95,12 +95,11 @@ parameter real baud_rate = 9600;
 //    parameter real clock_period = 1/clock_frequency*1e9;
 
 // define the slow and fast clocks of the sd card
-// the counts here have to be for 1/2 clock.
 // Error on the low side, especially for 4 MHz
-// frequencies will not be exact.
+// frequencies will not be exact.  Frequencies are in Hz
 //`ifdef RK8E
-parameter real slow_spi = 10000;
-parameter real fast_spi = 50000;
+parameter real slow_spi = 1000000;
+parameter real fast_spi = 4000000;
 // go too high and the state machines don't work!
 //`endif
 

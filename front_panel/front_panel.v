@@ -52,7 +52,7 @@ module front_panel (input clk,
 // module)
 
 // don't really care what state the state machine is in as every processed
-// switch press is validated for the proper state elsewhare
+// switch press is validated for the proper state elsewhere
     always @(posedge clk)
     begin
         if (reset)
