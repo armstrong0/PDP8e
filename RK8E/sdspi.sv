@@ -104,9 +104,8 @@ module sdspi
     sdopNOP,    // SD NOP
     sdopABORT,  // Abort Read or Write
     sdopRD,     // Read SD disk
-    sdopWR
-  } sdop_t;  // Write SD disk
-
+    sdopWR      // Write SD disk
+  } sdOP_t; 
 
   always @(posedge clk) begin
     if (rst == 1'b1) begin
