@@ -212,10 +212,10 @@ module sd
   sdBYTE_t err;  //! Error State
   sdBYTE_t val;  //! Error Value
   sdSTATE_t sdSTATE;  //! State
-  localparam logic [0:15] nCR = 10;    //! NCR from SD Spec !Change from 8 to
-                                       // 10 so we have 80 clocks
+  localparam logic [0:15] nCR = 10;  //! NCR from SD Spec !Change from 8 to
+                                     // 10 so we have 80 clocks
   localparam logic [0:15] nAC = 1023;  //! NAC from SD Spec
-  localparam logic [0:15] nWR = 20;    //! NWR from SD Spec
+  localparam logic [0:15] nWR = 20;  //! NWR from SD Spec
 
 
 
@@ -1491,15 +1491,16 @@ module sd
         stateRWFAIL:  sdSTAT.debug <= 8'b1111_0011;
         default:      sdSTAT.debug <= 8'b1111_0100;
       endcase
-
-      dmaADDR      <= memADDR;
-      dmaREQ       <= memREQ;
-      sdSTAT.err   <= err;
-      sdSTAT.val   <= val;
-      sdSTAT.rdCNT <= rdCNT;
-      sdSTAT.wrCNT <= wrCNT;
-      sdSTAT.state <= sdSTATE;
-
     end
+    // asynchronous assignements to output signals
+    dmaADDR      = memADDR;
+    dmaREQ       = memREQ;
+    sdSTAT.err   = err;
+    sdSTAT.val   = val;
+    sdSTAT.rdCNT = rdCNT;
+    sdSTAT.wrCNT = wrCNT;
+    sdSTAT.state = sdSTATE;
+
+
   end
 endmodule
