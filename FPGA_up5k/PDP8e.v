@@ -11,7 +11,6 @@
 `include "../serial/serial_top.v"
 `include "../oper2/oper2.v"
 `include "../ac/ac.v"
-`include "../pc/pc.v"
 `include "../ma/ma.v"
 `include "../mem_ext/mem_ext.v"
 `ifdef RK8E
@@ -48,8 +47,7 @@ module PDP8e (input clk,
     output  sdSCLK,sdCS
     );
     /* I/O */
-    wire [0:2] EMA;
-    wire [0:11] A;
+    wire [0:14] addr;
     wire [0:11] ds;
     wire run;
 
@@ -88,6 +86,7 @@ module PDP8e (input clk,
     reg [0:11] rsr;
     wire EAE_mode,EAE_loop,EAE_skip;
     wire sw_active;
+    wire index;
 `ifdef RK8E    
     wire data_break,to_disk;
     wire disk_interrupt,disk_skip;
@@ -129,8 +128,8 @@ module PDP8e (input clk,
 scan_matrix SX (
 	.clk (clk100),
 	.reset (reset),
-	.EMA (EMA),
-	.A (A),
+	.EMA (addr[0:2]),
+	.A (addr[3:14]),
 	.LC (LC),
 	.LR (LR),
 	.SC (SC),
@@ -175,30 +174,29 @@ rk8e RK8E (
         .reset (reset),
         .state (state),
         .instruction (instruction),
-        .pc (pc),
-        .ma (ma),
+	.skip (skip),
+        .eskip (eskip),
+        .eaddr (addr),
         .ac (ac),
         .mq (mq),
-        .sw (sw),
         .sr (rsr),
         .DF (DF),
         .IF (IF),
-        .EMA (EMA),
-        .addr (A),
-        .int_in_prog (int_in_prog),
+       .int_in_prog (int_in_prog),
         .addr_loadd (addr_loadd),
         .depd (depd),
         .examd (examd),
+	.sw (sw),
 `ifdef RK8E		
-		.to_disk (to_disk),
-		.disk2mem (disk2mem),
-		.dmaAddr (dmaAddr),
-		.mem2disk (mem2disk),
+.to_disk (to_disk),
+.disk2mem (disk2mem),
+.dmaAddr (dmaAddr),
+.mem2disk (mem2disk),
 `endif		
         .mdout (mdout),
-        .isz_skip (isz_skip));
+        .index (index));
 
-    pc PC(.clk (clk100),
+/*    pc PC(.clk (clk100),
         .reset (reset),
         .state (state),
         .instruction (instruction),
@@ -210,7 +208,7 @@ rk8e RK8E (
         .isz_skip (isz_skip),
         .eskip (eskip)
     );
-
+*/
     state_machine SM(.clk (clk100),
         .reset (reset),
         .state (state),
@@ -219,8 +217,8 @@ rk8e RK8E (
         .mq (mq),
         .EAE_loop (EAE_loop),
         .EAE_mode (EAE_mode),
-        .EAE_skip (EAE_skip),
-        .gtf (gtf),
+       // .EAE_skip (EAE_skip),
+       // .gtf (gtf),
         .int_req (irq),
         .int_inh (int_inh),
         .int_ena (int_ena),
@@ -236,7 +234,7 @@ rk8e RK8E (
         .cont (contd),
         .trigger (trigger));
 
-    ac AC(.clk (clk100),
+    Ac AC(.clk (clk100),
         .reset (reset),
         .state (state),
         .clear (cleard),
@@ -324,8 +322,8 @@ rk8e RK8E (
         .disk_bus (disk_bus),
         .disk_skip (disk_skip),
 `endif		
-        .EAE_skip (EAE_skip),
-        .EAE_mode (EAE_mode),
+      //  .EAE_skip (EAE_skip),
+      //  .EAE_mode (EAE_mode),
         .sskip (sskip),
         .mskip (mskip),
         .skip (eskip));
