@@ -1,0 +1,11 @@
+This directory contains disk images.  
+dd if=systemdisk.rk05        of=/dev/sdb seek=0 count=6496
+dd if=advent.rk05            of=/dev/sdb seek=8192  count=6496
+dd if=diagpack2.rk05         of=/dev/sdb seek=16384 count=6496
+dd if=diag-games-kermit.rk05 of=/dev/sdb seek=24576 count=6496
+
+
+https://opencores.org/projects/pdp8/quick%20start
+
+8 k works memory os8 needs to be told that it can only use 8 k the command to do that is in build and is core
+

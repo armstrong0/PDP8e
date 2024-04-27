@@ -101,8 +101,15 @@ parameter real baud_rate = 9600;
 parameter real slow_spi = 1000000;
 parameter real fast_spi = 4000000;
 // go too high and the state machines don't work!
-//`endif
 
+// define the startup delay allowed for the sd card
+// units of milliseconds
+
+`ifdef SIM
+parameter sd_delay = 1;
+`else
+parameter sd_delay = 500;
+`endif
 
 
 parameter MAX_FIELD = 3'b001;

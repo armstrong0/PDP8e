@@ -26,7 +26,7 @@ module rk8e
     input      [ 4:0] state,
     input      [0:11] ac,
     input             UF,
-    output reg [0:11] disk_bus,       //from the point of view of the CPU
+    output reg [0:11] disk_bus,       // input to the  CPU
     /* verilator lint_off SYMRSVDWORD */
     output reg        interrupt,
     /* verilator lint_on SYMRSVDWORD */
@@ -48,9 +48,10 @@ module rk8e
   wire                flag;
   reg          [ 3:0] toggle;
   reg          [0:11] cmd_reg;  // command register
-  reg          [0:11] car;  // current address register
-  reg          [0:11] dar;  // disk address  
-  reg          [0:11] status;  // status register
+  reg          [0:11] car;      // current address register
+  reg          [0:11] dar;      // disk address  
+  reg          [0:11] status;   // status register
+  logic               sd_reset; // delayed reset deassertion for the sd card
 
 
   // need a write protect for each drive
@@ -60,20 +61,20 @@ module rk8e
   reg                 dmaGNT;
   sdOP_t              sdOP;
   sdDISKaddr_t        sdDISKaddr;  //! Disk Address
-  wire         [0:14] dmaADDR;  //! DMA Address
+  wire         [0:14] dmaADDR;     //! DMA Address
   wire dmaRD, dmaWR, dmaREQ;
-  logic     [0:14] sdMEMaddr;  //! Memory Address
-  logic            sdLEN;  //! Sector Length
-  sdSTAT_t         sdSTAT;  //! Status
+  logic        [0:14] sdMEMaddr;   //! Memory Address
+  logic               sdLEN;       //! Sector Length
+  sdSTAT_t            sdSTAT;      //! Status
 
-  sdSTATE_t        sdstate;
-  sdSTATE_t        last_sdstate;
+  sdSTATE_t           sdstate;
+  sdSTATE_t           last_sdstate;
 
   assign sdLEN = cmd_reg[5];
 
   sd SD (
       .clk       (clk),
-      .reset     (reset),       //! Clock/Reset
+      .reset     (sd_reset),    //! Clock/Reset
       .clear     (clear),       //! IOCLR
       // PDP8 Interface
       .dmaDIN    (dmaDIN),      //! DMA Data Into Disk
@@ -165,6 +166,7 @@ bit 11 msb of cylinder
       write_lock[3] <= 1'b0;
       last_sdstate  <= sdstateINIT;
       toggle        <= 4'b0;
+	  sd_reset      <= 1'b1;
     end else if ((state == F1) && (UF == 1'b0)) begin
       skip <= 1'b0;
       case (instruction)
@@ -254,10 +256,10 @@ bit 11 msb of cylinder
       // change to a case statement on sdstate
       case (sdstate)
         sdstateINIT: ;  // SD Initializing
-        sdstateREADY:  // SD Ready for commands
+        sdstateREADY:   // SD Ready for commands
         if (last_sdstate != sdstateREADY) status[0] <= 1'b1;
-        sdstateREAD,  // SD Reading
-        sdstateWRITE:// SD Writing
+        sdstateREAD,    // SD Reading
+        sdstateWRITE:   // SD Writing
         begin
           status[0] <= 1'b0;
           if (last_sdstate == sdstateREADY) sdOP <= sdopNOP;

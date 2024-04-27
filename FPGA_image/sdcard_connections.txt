@@ -1,0 +1,15 @@
+
+The micro SD card is plugged into a microSD to SD card adaptor.  The pins of
+the adaptor are soldered to a right angle wirewrap pin header.
+
+FPGA module    signal   SD adapter
+E12 (sd_CS)    CS       1
+C12 (sd_MOSI)  DI       2
+B14 (sd_MIS))  D0       7
+D12 (sd_SCLK)  SCLK     5
+
+GND            VSS      3
+GND            VSS      6
++3.3           VDD      4
+               NC       8
+			   NC		9
