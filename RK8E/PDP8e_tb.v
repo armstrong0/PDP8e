@@ -178,7 +178,9 @@ module PDP8e_tb;
       $display("hit trap!!");
       $finish;
 `endif
-    #13000000 $finish;
+     wait(serialio ==1);
+     #2000 $finish;
+   // #13000000 $finish;
 
 
   end
