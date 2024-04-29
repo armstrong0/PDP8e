@@ -51,7 +51,12 @@ module rk8e
   reg          [0:11] car;      // current address register
   reg          [0:11] dar;      // disk address  
   reg          [0:11] status;   // status register
+  
   logic               sd_reset; // delayed reset deassertion for the sd card
+  logic         [9:0] ms_cntr;  // down counter for sd delay
+  
+  localparam     clocks_per_msec = clock_frequency/1000;
+  logic          [$clog2(clocks_per_msec):0] ms_clock;  
 
 
   // need a write protect for each drive
@@ -150,6 +155,27 @@ bit 11 msb of cylinder
     if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
     else dmaGNT <= 1'b0;
 
+    if ((reset == 1'b0) && (sd_reset == 1'b1))
+    begin
+       if (ms_clock == 0)
+       begin
+           if (ms_cntr == 0)
+           begin
+               sd_reset <= 1'b0;  // done, allow sd card to be used
+           end       
+           else
+              begin
+              ms_cntr <= ms_cntr - 1;
+              ms_clock <= clocks_per_msec;
+              end
+        end
+        else
+        begin
+           ms_clock <= ms_clock -1;
+        end
+    end       
+
+
     if ((reset == 1'b1) || (clear == 1'b1)) begin
       skip          <= 1'b0;
       status        <= 12'o0000;
@@ -165,8 +191,13 @@ bit 11 msb of cylinder
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
       last_sdstate  <= sdstateINIT;
+      
       toggle        <= 4'b0;
-	  sd_reset      <= 1'b1;
+
+      sd_reset      <= 1'b1;
+      ms_clock <= clocks_per_msec;
+      ms_cntr <= sd_delay;
+
     end else if ((state == F1) && (UF == 1'b0)) begin
       skip <= 1'b0;
       case (instruction)
