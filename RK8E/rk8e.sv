@@ -141,7 +141,7 @@ bit 11 msb of cylinder
 
   always @(posedge clk) begin
     sdstate <= sdSTAT.state;
-    if (dmaWR == 1'b1) begin
+    if ((dmaWR == 1'b1) || (dmaRD == 1'b1)) begin
       dmaAddr <= dmaADDR;  // register and pass through
       data_break <= 1'b1;
     end
@@ -203,12 +203,16 @@ bit 11 msb of cylinder
       case (instruction)
         12'o6740: ;
         12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
-        12'o6742:  // DCLC real RK8e has four options here we only do two
-        if (ac[11] == 1'b0) status <= 12'o0000;
-        else begin
-          status <= 12'o0000;
-          sdOP   <= sdopABORT;  // stop whatever is in process
-        end
+        12'o6742:  // DCLC has four options 
+        case (ac[10:11])
+           2'b00,2'b11: status <= 12'o0000;
+           2'b01: begin 
+               status <= 12'o0000;
+               sdOP   <= sdopABORT;  // stop whatever is in process
+              end
+           2'b10: status <= 12'o4000;
+          default:;
+          endcase 
         12'o6743:    // DLAG load address and go
           begin
           dar <= ac;
@@ -232,7 +236,8 @@ bit 11 msb of cylinder
         12'o6746: // DLDC load command register
           begin
           cmd_reg <= ac;
-          status  <= 12'o0000;
+          if (ac[4] == 1'b1) status <= 12'o4000; // set done on seek
+          else  status  <= 12'o0000;
           // execute now, cmd does not yet hold the cmd from ac
           if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
         end
