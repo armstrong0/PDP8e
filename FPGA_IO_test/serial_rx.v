@@ -25,10 +25,10 @@ module serial_rx (
   if (reset == 1) 
   begin
     rx_counter <= 0;
-	bit_cnt  <= 0;
-	rx_state <= 0;
-	rx_char  <= 0;
-	rx_temp  <= 0;
+    bit_cnt  <= 0;
+    rx_state <= 0;
+    rx_char  <= 0;
+    rx_temp  <= 0;
   end
   else  case (rx_state)
       0: // idle state

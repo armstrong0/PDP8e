@@ -1,4 +1,4 @@
-all: view_tx verilog format sim sim_basic rk8e.v full_read sdsim.v
+all: view_tx view_rw verilog format sim sim_basic rk8e.v full_read sdsim.v
 
 
 view_tx: sd_types.svh sdspi_types.svh sdspi.sv spi_tb.sv
@@ -50,6 +50,15 @@ full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v rk8e.sv sdsim.v
 	vvp sdcard.o -fst
 	gtkwave SDCard.vcd full_debug.gtkw &
 
+rw.hex: rw.pa
+	~/.local/bin/palbart rw.pa -o rw.bin
+	~/.local/bin/mem_gen_bin rw.bin rwq.hex
+
+view_rw: ../FPGA_image/PDP8e.v RW_tb.v rk8e.sv sdsim.v rw.hex
+	~/.local/bin/sv2v -DSIM rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v  
+	iverilog -DSIM -DRK8E ../FPGA_image/PDP8e.v RW_tb.v sdsim.v -o sdcard.o 
+	vvp sdcard.o -fst
+	gtkwave SDCard.vcd full_debug.gtkw &
 
 
 
@@ -61,5 +70,8 @@ clean:
 	rm -rf rk8e.v
 	rm -rf a.out
 	rm -rf *.o
+	rm -rf rw.hex
+	rm -rf rw.bin
+	
 	
 	
