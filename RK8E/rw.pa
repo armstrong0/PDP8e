@@ -1,0 +1,44 @@
+* 0
+    text "this is text"
+* 20
+    space, 40
+    char,
+    cntr,  7777-137  / o7777 - 95base 10
+    charcntr,
+    loc, 1000
+
+* 200
+jms writechars
+jms writechars
+jms writechars
+jms writechars
+jms writechars
+jms writechars
+/ write
+hlt
+
+ / use zero page for variables
+ / read a sector into 400 - 777 octal
+ / construct two sectors of ascii space through del -1
+ / will require 6 x 95 to fill two full secotor 
+ / make sure that a copy of the systemdisk is present
+ / write two sectors starting at 1000 octal and going to 1777 octal
+ / halt
+
+ / subroutine to write charactors
+writechars, 0 
+    cla
+    tad space
+    dca char
+    tad cntr
+    dca charcntr
+loop, tad char
+    dca i loc
+    isz loc
+    isz char  / cant ever skip
+    isz charcntr
+    jmp loop
+    jmp i writechar
+
+$
+
