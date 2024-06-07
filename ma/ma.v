@@ -68,6 +68,9 @@ module ma (
       current_page <= 0;
       write_en <= 0;
       index <= 1'b0;
+      mem2disk <= 12'o0;
+      idx_tmp <= 12'o0;
+      mdin <= 12'o0;
     end else begin
       write_en <= 0;
       eaddr[3:14] <= eaddr[3:14];

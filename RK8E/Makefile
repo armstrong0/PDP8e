@@ -52,7 +52,7 @@ full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v rk8e.sv sdsim.v
 
 rw.hex: rw.pa
 	~/bin/palbart rw.pa 
-	~/bin/mem_gen_bin rw.bin rwq.hex
+	~/bin/mem_gen_bin rw.bin rw.hex
 
 view_rw: ../FPGA_image/PDP8e.v RW_tb.v rk8e.sv sdsim.v rw.hex
 	~/.local/bin/sv2v -DSIM rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v  

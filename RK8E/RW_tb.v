@@ -62,8 +62,8 @@ module PDP8e_tb;
 
   always @* begin
     address = ~An;
-	halt_addr =  ((UUT.MA.eaddr == 15'o00011) && (UUT.SM.state == FW));
-	
+    halt_addr =  ((UUT.MA.eaddr == 15'o00011) && (UUT.SM.state == FW));
+    
   end
 
   PDP8e UUT (
@@ -118,7 +118,7 @@ module PDP8e_tb;
     #1 halt <= 1;
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SDCard.vcd");
-    $readmemh("zero.hex", UUT.MA.ram.mem, 0, 8191);
+    $readmemh("rw.hex", UUT.MA.ram.mem, 0, 8191);
     $dumpvars(0, halt_addr,address, diskio,serialio,UUT);
     sr <= 12'o0004;
 
@@ -131,7 +131,7 @@ module PDP8e_tb;
     #1 extd_addr <= 0;
     #1 addr_load <= 0;
     #1 dep <= 0;
-	#1 clear <= 0;
+    #1 clear <= 0;
     #1 dsel <= 6'b001000;
     #1 sr <= 12'o0200;
     #1 pll_locked <= 0;
@@ -139,36 +139,12 @@ module PDP8e_tb;
     #100 pll_locked <= 1;
     #1 halt <= 0;
     #5000;
-    sr <= 12'o0030;  // loop until disk is ready
+    sr <= 12'o0200;  // loop until disk is ready
     `PULSE(addr_load);
-    #1000;
-    sr <= 12'o6743; // DLAG
-    `PULSE(dep);
-    #1000;
-    sr <= 12'o5031;
-    `PULSE(dep);
-    #1000;
-    sr <= 12'o6747; // starting here allows the reading of the diagnostics
-    // if the boot procedure works this will all be overwritten
-    `PULSE(dep);
-    #1000;
-	sr <= 12'o7402; // HLT pressing cont will mode to the next diagnostic
-	`PULSE(dep);
-	#1000;
-    sr <= 12'o5032; // JMP .
-    `PULSE(dep);
-    #1000;
-    sr <= 12'o0030;
-    `PULSE(addr_load);
-    #1000000;
+    #2000000
     `PULSE(cont);
 
-	wait(halt_addr == 1);
-
-//`define first 1
-
-     #2000 $finish;
-   // #13000000 $finish;
+     #17000000 $finish;
 
 
   end

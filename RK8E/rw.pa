@@ -1,13 +1,21 @@
-* 0
-    text "this is text"
+
+
+
 * 20
     space, 40
-    char,
+    char,  0
     cntr,  7777-137  / o7777 - 95base 10
-    charcntr,
-    loc, 1000
+    charcntr,0
+    startloc, 1000
+    loc, 0
+    diskloc, 4000
+    readloc, 0400
+    wrtcmd, 4000
 
 * 200
+cla
+tad startloc
+dca loc
 jms writechars
 jms writechars
 jms writechars
@@ -15,16 +23,52 @@ jms writechars
 jms writechars
 jms writechars
 / write
-hlt
+waitrdy, DSKP /dskp
+jmp waitrdy
 
  / use zero page for variables
  / read a sector into 400 - 777 octal
  / construct two sectors of ascii space through del -1
- / will require 6 x 95 to fill two full secotor 
+ / will require 6 x 95 to fill two full sectors 
  / make sure that a copy of the systemdisk is present
  / write two sectors starting at 1000 octal and going to 1777 octal
  / halt
 
+cla
+dldc  // load command with read 
+tad readloc
+dcla  //  going to addrss 400
+dlag 
+
+wtrd2, dskp
+jmp wtrd2
+cla
+tad startloc   // load start of the charactor array
+dcla
+cla
+tad wrtcmd
+dldc
+cla
+tad diskloc
+/ need to load command register with a write
+
+dlag
+
+wtrd3, dskp
+jmp wtrd3
+dlag   //  should be able to chain writes in memory and disk
+
+wtrd4, dskp
+jmp wtrd4
+hlt   / finished
+
+
+
+
+
+
+
+hlt
  / subroutine to write charactors
 writechars, 0 
     cla
