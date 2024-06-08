@@ -254,8 +254,13 @@ module state_machine (
         end else state <= F0;
 
         H0: state <= HW;
-        HW: begin
-          if (trigger & ~cont) state <= H1;
+        HW: begin 
+        if (data_break == 1'b1) begin
+          next_state <= H0;
+          state <= DB0;
+          break_in_prog <= 1'b1;
+        end 
+        else if (trigger & ~cont) state <= H1;
           else if (~cont) state <= H0;
           else state <= F0;
         end
