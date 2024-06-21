@@ -83,7 +83,7 @@ JM = 2'b10 ;
 `ifdef SIM
 // calculate in nanoseconds
 localparam real clock_frequency = 84000000;
-parameter real baud_rate = 115200;
+parameter real baud_rate = 1000000; //11 clocks per output 
 `elsif TSIM
 // calculate in nanoseconds
 parameter real clock_frequency = 5000000;

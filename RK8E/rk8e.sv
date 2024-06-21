@@ -293,7 +293,12 @@ bit 11 msb of cylinder
       case (sdstate)
         sdstateINIT: ;  // SD Initializing
         sdstateREADY:   // SD Ready for commands
-        if (last_sdstate != sdstateREADY) status[0] <= 1'b1;
+        begin
+        if (last_sdstate != sdstateREADY) begin
+            status[0] <= 1'b1;
+            car <= dmaADDR[3:14];
+        end
+        end
         sdstateREAD,    // SD Reading
         sdstateWRITE:   // SD Writing
         begin
@@ -303,7 +308,6 @@ bit 11 msb of cylinder
         sdstateDONE: begin
           if ((last_sdstate == sdstateREAD) || (last_sdstate == sdstateWRITE)) begin
             status[0] <= 1'b1;  // SD Done
-            car <= dmaADDR[3:14];
           end
         end
         sdstateINFAIL,  // SD Initialization Failed

@@ -484,14 +484,14 @@ assign single_stepn = ~single_step;
                 sr <= 12'o5003;
                 #500 `pulse(clear);
                 #500 `pulse(cont);
-                #10000 $finish;
+                #1000000 $finish;
             end
             15: begin
                 sr <= 12'o0200;
                 #500 `pulse(addr_load);
                 #500 `pulse(clear);
                 #500 `pulse(cont);  // have to fake out the uart
-                #100000 $finish;
+                #10000000 $finish;
                 end
 
 

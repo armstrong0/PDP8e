@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Sun Dec 31 20:51:04 2023
+[*] Thu Jun 13 00:45:25 2024
 [*]
-[dumpfile] "/home/armstrong/Desktop/PDP8e/integrate/extended_memory.vcd"
-[dumpfile_mtime] "Sat Dec 30 01:02:39 2023"
-[dumpfile_size] 14784467
+[dumpfile] "/home/armstrong/Desktop/PDP8e/integrate/instruction_test_pt2.vcd"
+[dumpfile_mtime] "Thu Jun 13 00:41:47 2024"
+[dumpfile_size] 18507357
 [savefile] "/home/armstrong/Desktop/PDP8e/integrate/PDP8e.gtkw"
-[timestart] 82327752400
+[timestart] 5000
 [size] 1920 989
 [pos] -461 -193
-*-15.318272 82327966350 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-32.333733 210148050 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
 [treeopen] PDP8e_tb.UUT.MA.

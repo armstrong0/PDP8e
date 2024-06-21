@@ -69,56 +69,71 @@ t15.o: ../FPGA_image/PDP8e.v PDP8e_tb.v
 	vvp t15.o -fst
 
 t1: t1.o  
-	# rm -f t1.o
-	# gtkwave instruction_test_pt1.vcd PDP8e.gtkw & 
+	 rm -f t1.o
+	 gtkwave instruction_test_pt1.vcd PDP8e.gtkw & 
 	
 t1.1: t1.1.o  
-	# rm -f t1.1.o
-	# gtkwave instruction_test_pt1.1.vcd PDP8e.gtkw & 
+	 rm -f t1.1.o
+	 gtkwave instruction_test_pt1.1.vcd PDP8e.gtkw & 
 	
 t2: t2.o  
-	# gtkwave instruction_test_pt2.vcd PDP8e.gtkw &
+	 rm -f t1.1.o
+	 gtkwave instruction_test_pt2.vcd PDP8e.gtkw &
 
 t2.1: t2.1.o  
-	# gtkwave instruction_test_pt2.vcd PDP8e.gtkw &
+	 rm -f t1.1.o
+	 gtkwave instruction_test_pt2.vcd PDP8e.gtkw &
 
 t3: t3.o  
-	 # gtkwave Adder_test.vcd PDP8e.gtkw  &
+	 rm -f t3.o
+	 gtkwave Adder_test.vcd PDP8e.gtkw  &
 	
 t4: t4.o   
+	rm -f t4.o
 	gtkwave JMP_JMS_test.vcd PDP8e.gtkw &
 	
 t5: t5.o  
+	rm -f t5.o
 	gtkwave TAD_test.vcd PDP8e.gtkw &
 	
 t6: t6.o 
+	rm -f t6.o
 	gtkwave AND_test.vcd PDP8e.gtkw &
 
 t7: t7.o 
+	rm -f t7.o
 	gtkwave ISZ_test.vcd PDP8e.gtkw &
 
 t8: t8.o 
+	rm -f t8.o
 	gtkwave DCA_test.vcd PDP8e.gtkw &
 
 t9: t9.o 
+	rm -f t9.o
 	gtkwave RJMP_test.vcd PDP8e.gtkw &
 
 t10: t10.o 
+	rm -f t10.o
 	gtkwave RJMP_JMS_test.vcd PDP8e.gtkw &
 
 t11: t11.o
-	    gtkwave extended_memory.vcd PDP8e.gtkw &
+	rm -f t11.o
+	gtkwave extended_memory.vcd PDP8e.gtkw &
 
 t12: t12.o
+	rm -f t12.o
 	gtkwave Serial_test.vcd t12.gtkw &
 
 t13: t13.o
+	rm -f t13.o
 	gtkwave EAE_test1.vcd PDP8e.gtkw &
 	
 t14: t14.o
+	rm -f t14.o
 	gtkwave EAE_test2.vcd PDP8e.gtkw &
 
 t15: t15.o
+	rm -f t15.o
 	gtkwave EAE_EME_test.vcd PDP8e.gtkw &
 	
 	

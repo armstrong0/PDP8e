@@ -60,11 +60,6 @@ module PDP8e_tb;
     #42 clk <= 0;
   end
 
-  always @* begin
-    address = ~An;
-	halt_addr =  ((UUT.MA.eaddr == 15'o00011) && (UUT.SM.state == FW));
-	
-  end
 
   PDP8e UUT (
       .clk(clk),
@@ -119,7 +114,7 @@ module PDP8e_tb;
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SDCard.vcd");
     $readmemh("zero.hex", UUT.MA.ram.mem, 0, 8191);
-    $dumpvars(0, halt_addr,address, diskio,serialio,UUT);
+    $dumpvars(0,address, diskio,serialio,UUT);
     sr <= 12'o0004;
 
     #1 reset <= 1;
@@ -163,7 +158,6 @@ module PDP8e_tb;
     #1000000;
     `PULSE(cont);
 
-	wait(halt_addr == 1);
 
 //`define first 1
 
@@ -179,8 +173,8 @@ module PDP8e_tb;
       $finish;
 `endif
      wait(serialio ==1);
-     #2000 $finish;
-   // #13000000 $finish;
+     //#12000 $finish;
+    #100000 $finish;
 
 
   end

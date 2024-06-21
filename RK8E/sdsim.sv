@@ -99,7 +99,7 @@ module sdsim (
     // read the image file
     $write("Reading Disk Image...");
    // imageFILE = $fopen("advent.rk05", "rb");
-    imageFILE = $fopen("../media/systemdisk.rk05", "rb");
+    imageFILE = $fopen("../media/systemdisk.rk05", "r+b");
     c = $fread(image, imageFILE, 0, 256);
     $write("Done Reading Disk Image.");
     $display();
