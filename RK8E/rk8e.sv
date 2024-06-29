@@ -45,35 +45,39 @@ module rk8e
 
 );
 
-  wire                flag;
-  reg          [ 3:0] toggle;
-  reg          [0:11] cmd_reg;  // command register
-  reg          [0:11] car;      // current address register
-  reg          [0:11] dar;      // disk address  
-  reg          [0:11] status;   // status register
-  
-  logic               sd_reset; // delayed reset deassertion for the sd card
-  logic         [9:0] ms_cntr;  // down counter for sd delay
-  
-  localparam     clocks_per_msec = clock_frequency/1000;
-  logic          [$clog2(clocks_per_msec):0] ms_clock;  
+  wire         flag;
+  reg   [ 3:0] toggle;
+  reg   [0:11] cmd_reg;  // command register
+  reg   [0:11] car;  // current address register
+  reg   [0:11] dar;  // disk address  
+  reg   [0:11] status;  // status register
 
+  logic        sd_reset;  // delayed reset deassertion for the sd card
+  logic [ 9:0] ms_cntr;  // down counter for sd delay
+  // verilog_format: off
+  // verible-verilog format took the indentation of ms_clock and applied it !!!
+  localparam clocks_per_msec = clock_frequency / 1000;
+  logic        [$clog2(clocks_per_msec):0] ms_clock;
+
+  logic        oneKHz;
+
+  // verilog_format: on
 
   // need a write protect for each drive
+
   reg          [ 0:3] write_lock;
   reg                 disk_flag;
   reg                 sint_ena;
   reg                 dmaGNT;
   sdOP_t              sdOP;
   sdDISKaddr_t        sdDISKaddr;  //! Disk Address
-  wire         [0:14] dmaADDR;     //! DMA Address
+  wire         [0:14] dmaADDR;  //! DMA Address
   wire dmaRD, dmaWR, dmaREQ;
-  logic        [0:14] sdMEMaddr;   //! Memory Address
-  logic               sdLEN;       //! Sector Length
-  sdSTAT_t            sdSTAT;      //! Status
-
-  sdSTATE_t           sdstate;
-  sdSTATE_t           last_sdstate;
+  logic     [0:14] sdMEMaddr;  //! Memory Address
+  logic            sdLEN;  //! Sector Length
+  sdSTAT_t         sdSTAT;  //! Status
+  sdSTATE_t        sdstate;
+  sdSTATE_t        last_sdstate;
 
   assign sdLEN = cmd_reg[5];
 
@@ -140,40 +144,31 @@ bit 11 msb of cylinder
   assign disk_flag  = (status != 12'o0000);
 
   always @(posedge clk) begin
-    sdstate <= sdSTAT.state;
-    if ((dmaWR == 1'b1) || (dmaRD == 1'b1)) begin
-      dmaAddr <= dmaADDR;  // register and pass through
-      data_break <= 1'b1;
-    end
-    if (state == DB1) // data break is happening so reset request
-    begin
-      data_break <= 1'b0;
-    end
-
-    if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
-    else interrupt <= 0;
-    if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
-    else dmaGNT <= 1'b0;
-
-    if ((reset == 1'b0) && (sd_reset == 1'b1))
-    begin
-       if (ms_clock == 0)
-       begin
-           if (ms_cntr == 0)
-           begin
-               sd_reset <= 1'b0;  // done, allow sd card to be used
-           end       
-           else
-              begin
+    if (reset == 1) begin
+      ms_clock <= clocks_per_msec / 2;
+      sd_reset <= 1'b1;
+      oneKHz   <= 0;
+      ms_cntr  <= sd_delay;
+    end else begin
+      if (ms_clock == 0) begin
+        ms_clock <= clocks_per_msec / 2;
+        if (oneKHz == 1'b0) oneKHz <= 1'b1;
+        else begin
+          oneKHz <= 1'b0;
+          if (sd_reset == 1'b1) begin
+            if (ms_cntr == 0) begin
+              sd_reset <= 1'b0;  // done, allow sd card to be used
+            end else begin
               ms_cntr <= ms_cntr - 1;
-              ms_clock <= clocks_per_msec;
-              end
+            end
+          end
         end
-        else
-        begin
-           ms_clock <= ms_clock -1;
-        end
-    end       
+      end else ms_clock <= ms_clock - 1;
+
+    end
+  end
+
+  always @(posedge clk) begin
 
 
     if ((reset == 1'b1) || (clear == 1'b1)) begin
@@ -191,117 +186,36 @@ bit 11 msb of cylinder
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
       last_sdstate  <= sdstateINIT;
-      
+
       toggle        <= 4'b0;
 
-      sd_reset      <= 1'b1;
-      ms_clock <= clocks_per_msec;
-      ms_cntr <= sd_delay;
+    end else begin
+      // the following happens on every clock so nothing gets missed
+      //
+      sdstate <= sdSTAT.state;
+      if ((dmaWR == 1'b1) || (dmaRD == 1'b1)) begin
+        dmaAddr <= dmaADDR;  // register and pass through
+        data_break <= 1'b1;
+      end
+      if (state == DB1) // data break is happening so reset request
+      begin
+        data_break <= 1'b0;
+      end
+      if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
+      else interrupt <= 0;
+      if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
+      else dmaGNT <= 1'b0;
 
-    end else if ((state == F1) && (UF == 1'b0)) begin
-      skip <= 1'b0;
-      case (instruction)
-        12'o6740: ;
-        12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
-        12'o6742:  // DCLC has four options 
-        case (ac[10:11])
-           2'b00,2'b11: status <= 12'o0000;
-           2'b01: begin 
-               status <= 12'o0000;
-               sdOP   <= sdopABORT;  // stop whatever is in process
-              end
-           2'b10: status <= 12'o4000;
-          default:;
-          endcase 
-        12'o6743:    // DLAG load address and go
-          begin
-          dar <= ac;
-          if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
-          else if ((cmd_reg[0:2] == 3'b000) ||  // read
-              (cmd_reg[0:2] == 3'b001)) begin
-            to_disk <= 1'b0;
-            sdOP <= sdopRD;
-          end else if ((cmd_reg[0:2] == 3'b100) ||  // write
-              (cmd_reg[0:2] == 3'b101))
-            // need to check here for write protect
-            if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
-              status[7] <= 1'b1;
-            end else begin
-              sdOP <= sdopWR;
-              to_disk <= 1'b1;
-            end
-        end
-        12'o6744: car <= ac;  // DLCA load current address
-        12'o6745: disk_bus <= status;  // DRST
-        12'o6746: // DLDC load command register
-          begin
-          cmd_reg <= ac;
-          if (ac[4] == 1'b1) status <= 12'o4000; // set done on seek
-          else  status  <= 12'o0000;
-          // execute now, cmd does not yet hold the cmd from ac
-          if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
-        end
-        12'o6747:
-        case (toggle)
-          0: begin
-            disk_bus <= {toggle, sdSTAT.debug};
-            toggle   <= 4'b0001;
-          end
-          1: begin
-            disk_bus <= {toggle, sdSTAT.err};
-            toggle   <= 4'b0010;
-          end
-          2: begin
-            disk_bus <= {toggle, sdSTAT.val};
-            toggle   <= 4'b0011;
-          end
-          3: begin
-            disk_bus <= {toggle, sdSTAT.rdCNT};
-            toggle   <= 4'b0100;
-          end
-          4: begin
-            disk_bus <= {toggle, sdSTAT.rdCNT};
-            toggle   <= 4'b0101;
-          end
-          5: begin
-            disk_bus <= {toggle, sdSTAT.state};
-            toggle   <= 4'b0;
-          end
-
-          default: toggle <= 4'b0;
-        endcase
-        12'o6007:    // CAF
-          begin
-          status        <= 12'o0000;
-          car           <= 12'o0000;
-          dar           <= 12'o0000;
-          cmd_reg       <= 12'o0000;
-          sdOP          <= sdopNOP;
-          to_disk       <= 1'b0;
-          // with a real rk05 the operator would press a switch on the disk to
-          // clear the write protect, we have no switch, so a reset, clear or
-          // CAF resets the write protect flag
-          write_lock[0] <= 1'b0;
-          write_lock[1] <= 1'b0;
-          write_lock[2] <= 1'b0;
-          write_lock[3] <= 1'b0;
-        end
-        default:  ;
-      endcase
-
-      // change to a case statement on sdstate
       case (sdstate)
         sdstateINIT: ;  // SD Initializing
-        sdstateREADY:   // SD Ready for commands
-        begin
-        if (last_sdstate != sdstateREADY) begin
+        sdstateREADY: begin  // SD Ready for commands
+          if (last_sdstate == sdstateDONE) begin
             status[0] <= 1'b1;
             car <= dmaADDR[3:14];
+          end
         end
-        end
-        sdstateREAD,    // SD Reading
-        sdstateWRITE:   // SD Writing
-        begin
+        sdstateREAD,  // SD Reading
+        sdstateWRITE: begin  // SD Writing
           status[0] <= 1'b0;
           if (last_sdstate == sdstateREADY) sdOP <= sdopNOP;
         end
@@ -311,15 +225,119 @@ bit 11 msb of cylinder
           end
         end
         sdstateINFAIL,  // SD Initialization Failed
-        sdstateRWFAIL: begin
+        sdstateRWFAIL: begin  // SD Read or Write failed
           status[0]  <= 1'b0;
           status[10] <= 1'b1;
         end
-        default: status[0] <= 1'b0;
+        default:     status[0] <= 1'b0;
       endcase
       last_sdstate <= sdstate;
 
+
+      // the following is the interface between the CPU and the sd controller
+      // it only runs when the CPU is in state F1 and in system mode
+
+      if ((sd_reset == 0) && (state == F1) && (UF == 1'b0)) begin
+        skip <= 1'b0;
+        case (instruction)
+          12'o6740: ;
+          12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
+          12'o6742:  // DCLC has four options 
+          case (ac[10:11])
+            2'b00, 2'b11: status <= 12'o0000;
+            2'b01: begin
+              status <= 12'o0000;
+              sdOP   <= sdopABORT;  // stop whatever is in process
+            end
+            2'b10: status <= 12'o4000;
+            default: ;
+          endcase
+          12'o6743:    // DLAG load address and go
+          begin
+            dar <= ac;
+            if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
+            case (cmd_reg[0:2])
+              3'b000,3'b001:  // read
+            begin
+                to_disk <= 1'b0;
+                sdOP <= sdopRD;
+              end
+              3'b010:  status[0] <= 1'b1;  // seek - really a nop 
+              3'b100, 3'b101: begin  // write
+                // need to check here for write protect
+                if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
+                  status[7] <= 1'b1;
+                end else begin
+                  sdOP <= sdopWR;
+                  to_disk <= 1'b1;
+                end
+              end
+              default: ;
+            endcase
+          end
+          12'o6744: car <= ac;  // DLCA load current address
+          12'o6745: disk_bus <= status;  // DRST
+          12'o6746: // DLDC load command register
+          begin
+            cmd_reg <= ac;
+            if (ac[4] == 1'b1) status <= 12'o4000;  // set done on seek
+            else status <= 12'o0000;
+            // execute now, cmd does not yet hold the cmd from ac
+            if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
+          end
+          // maintenance mode debugging NOT what is describe in the RK8E
+          // manual, this essentially reads out various status values from the
+          // sd controller
+          12'o6747:
+          case (toggle)
+            0: begin
+              disk_bus <= {toggle, sdSTAT.debug};
+              toggle   <= 4'b0001;
+            end
+            1: begin
+              disk_bus <= {toggle, sdSTAT.err};
+              toggle   <= 4'b0010;
+            end
+            2: begin
+              disk_bus <= {toggle, sdSTAT.val};
+              toggle   <= 4'b0011;
+            end
+            3: begin
+              disk_bus <= {toggle, sdSTAT.rdCNT};
+              toggle   <= 4'b0100;
+            end
+            4: begin
+              disk_bus <= {toggle, sdSTAT.rdCNT};
+              toggle   <= 4'b0101;
+            end
+            5: begin
+              disk_bus <= {toggle, sdSTAT.state};
+              toggle   <= 4'b0;
+            end
+
+            default: toggle <= 4'b0;
+          endcase
+          12'o6007:    // CAF
+          begin
+            status        <= 12'o0000;
+            car           <= 12'o0000;
+            dar           <= 12'o0000;
+            cmd_reg       <= 12'o0000;
+            sdOP          <= sdopNOP;
+            to_disk       <= 1'b0;
+            // with a real rk05 the operator would press a switch on the disk to
+            // clear the write protect, we have no switch, so a reset, clear or
+            // CAF resets the write protect flag
+            write_lock[0] <= 1'b0;
+            write_lock[1] <= 1'b0;
+            write_lock[2] <= 1'b0;
+            write_lock[3] <= 1'b0;
+          end
+          default:  ;
+        endcase
+      end
     end
+
   end
 endmodule
 
