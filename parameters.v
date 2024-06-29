@@ -89,7 +89,8 @@ parameter real baud_rate = 1000000; //11 clocks per output
 parameter real clock_frequency = 5000000;
 parameter real baud_rate = 1200;
 `else
-parameter real baud_rate = 9600;
+//parameter real baud_rate = 9600;
+parameter real baud_rate = 38400;
 `endif
 
 //    parameter real clock_period = 1/clock_frequency*1e9;
@@ -106,7 +107,7 @@ parameter real fast_spi = 1000000;
 // units of milliseconds
 
 `ifdef SIM
-parameter sd_delay = 1;
+parameter sd_delay = 2;
 `else
 parameter sd_delay = 500;
 `endif
