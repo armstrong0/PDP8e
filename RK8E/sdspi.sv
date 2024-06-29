@@ -51,13 +51,13 @@
 // --
 `include "../FPGA_image/HX_clock.v"
 
-   parameter slow_dev = $rtoi(clock_frequency/(slow_spi*2));
-   parameter nu_divcnt_bits = $clog2(slow_dev);
-   parameter SlowDiv = slow_dev[nu_divcnt_bits-1:0];
-   parameter fast_dev = $rtoi(clock_frequency/(fast_spi*2));
-   parameter FastDiv = fast_dev[nu_divcnt_bits-1:0];
-   parameter LoSpiFreq = clock_frequency/(SlowDiv*2);
-   parameter HiSpiFreq = clock_frequency/(FastDiv*2);
+parameter slow_dev = $rtoi(clock_frequency / (slow_spi * 2));
+parameter nu_divcnt_bits = $clog2(slow_dev);
+parameter SlowDiv = slow_dev[nu_divcnt_bits-1:0];
+parameter fast_dev = $rtoi(clock_frequency / (fast_spi * 2));
+parameter FastDiv = fast_dev[nu_divcnt_bits-1:0];
+parameter LoSpiFreq = clock_frequency / (SlowDiv * 2);
+parameter HiSpiFreq = clock_frequency / (FastDiv * 2);
 
 
 
@@ -105,7 +105,7 @@ module sdspi
     sdopABORT,  // Abort Read or Write
     sdopRD,     // Read SD disk
     sdopWR      // Write SD disk
-  } sdOP_t; 
+  } sdOP_t;
 
   always @(posedge clk) begin
     if (rst == 1'b1) begin

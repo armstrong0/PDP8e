@@ -22,11 +22,11 @@ module sd_tb;
   sdSTAT_t            sdSTAT;
 
 
-//  `include "../parameters.v"
-`include "../FPGA_image/HX_clock.v"
-localparam clock_period = 1e9 / clock_frequency;
+  //  `include "../parameters.v"
+  `include "../FPGA_image/HX_clock.v"
+  localparam clock_period = 1e9 / clock_frequency;
 
-sd SD (
+  sd SD (
       .clk       (clk),
       .reset     (reset),       //! Clock/Reset
       .clear     (clear),       //! IOCLR

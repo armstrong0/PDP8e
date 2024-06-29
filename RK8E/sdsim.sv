@@ -86,7 +86,7 @@ module sdsim (
   typedef logic [0:7] byte_t;
 
   typedef byte_t [0:3325951] image_t;  // reduced the image file size, so gtkwave 
-                                    //doesn't segfault
+  //doesn't segfault
   image_t image;
   logic [1:0] clkstat;
   integer c;
@@ -98,7 +98,6 @@ module sdsim (
     // sdWP <= 1'b0;
     // read the image file
     $write("Reading Disk Image...");
-   // imageFILE = $fopen("advent.rk05", "rb");
     imageFILE = $fopen("../media/systemdisk.rk05", "r+b");
     c = $fread(image, imageFILE, 0, 256);
     $write("Done Reading Disk Image.");

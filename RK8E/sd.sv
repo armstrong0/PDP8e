@@ -1092,7 +1092,7 @@ module sd
             spiTXD  <= 8'hfe;
             bytecnt <= 1;
 
-            memREQ <= 1'b1;  // moved one state earlier
+            memREQ  <= 1'b1;  // moved one state earlier
           end else if (spiDONE == 1'b1) begin
             bytecnt <= 0;
             state   <= stateWRITE05;
