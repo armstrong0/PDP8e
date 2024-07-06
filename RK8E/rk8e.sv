@@ -256,13 +256,14 @@ bit 11 msb of cylinder
           begin
             dar <= ac;
             if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
+            else  // we have a valid cylinder
             case (cmd_reg[0:2])
-              3'b000,3'b001:  // read
-            begin
+              3'b000,3'b001: begin  // read
                 to_disk <= 1'b0;
                 sdOP <= sdopRD;
               end
-              3'b010:  status[0] <= 1'b1;  // seek - really a nop 
+              3'b010: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1;  // seek 
+              // really a nop 
               3'b100, 3'b101: begin  // write
                 // need to check here for write protect
                 if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition

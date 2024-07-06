@@ -1,22 +1,22 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Fri Jun 21 01:13:16 2024
+[*] Wed Jun 26 02:07:53 2024
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/RK8E/SDCard.vcd"
-[dumpfile_mtime] "Fri Jun 21 01:05:57 2024"
-[dumpfile_size] 1293151
+[dumpfile_mtime] "Wed Jun 26 02:05:51 2024"
+[dumpfile_size] 1385148
 [savefile] "/home/armstrong/Desktop/PDP8e/RK8E/full_debug.gtkw"
-[timestart] 6000
-[size] 1868 937
-[pos] -1 -1
-*-31.851629 27183973250 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 18011100000
+[size] 1920 989
+[pos] -461 -193
+*-26.851629 18454100000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
 [treeopen] PDP8e_tb.UUT.RK8E.
 [sst_width] 263
 [signals_width] 166
 [sst_expanded] 1
-[sst_vpaned_height] 314
+[sst_vpaned_height] 582
 @28
 PDP8e_tb.UUT.MA.write_en
 @30
@@ -69,5 +69,12 @@ PDP8e_tb.UUT.RK8E.SD.spiTXD[0:7]
 @28
 PDP8e_tb.UUT.RK8E.dmaREQ
 PDP8e_tb.UUT.RK8E.dmaGNT
+@22
+PDP8e_tb.UUT.RK8E.ms_cntr[9:0]
+PDP8e_tb.UUT.RK8E.ms_clock[17:0]
+@28
+PDP8e_tb.UUT.RK8E.sd_reset
+@421
+PDP8e_tb.UUT.RK8E.sd_delay
 [pattern_trace] 1
 [pattern_trace] 0

@@ -40,6 +40,10 @@ module imux(
                 12'o6036: bus_display <= lin_bus;
                 12'o6044: bus_display <= lac;
                 12'o6046: bus_display <= lac;
+                12'o6743,
+                12'o6744,
+                12'o6746: bus_display <= lac;
+                12'o6745: bus_display <= linbus;
 
                 default:
                 bus_display <= bus_display; // hold last value
@@ -58,6 +62,7 @@ module imux(
 `ifdef RK8E
             12'o6745,
             12'o6747:in_bus = disk_bus;      // RK8E disk
+            // note we are not showing the disk transfers!
 `endif
             default: in_bus = 12'o0000;
         endcase
