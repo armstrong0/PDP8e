@@ -33,6 +33,7 @@ module rk8e
     output reg        data_break,
     output reg        to_disk,
     input             break_in_prog,
+    output reg        disk_rdy,
     output reg        skip,
     output reg [0:14] dmaAddr,
     input      [0:11] dmaDIN,
@@ -179,6 +180,7 @@ bit 11 msb of cylinder
       cmd_reg       <= 12'o0000;
       dmaAddr       <= 15'o00000;
       data_break    <= 1'b0;
+      disk_rdy      <= 1'b0;
       to_disk       <= 1'b0;
       sdOP          <= sdopNOP;
       write_lock[0] <= 1'b0;
@@ -209,6 +211,7 @@ bit 11 msb of cylinder
       case (sdstate)
         sdstateINIT: ;  // SD Initializing
         sdstateREADY: begin  // SD Ready for commands
+          disk_rdy <= 1'b1;
           if (last_sdstate == sdstateDONE) begin
             status[0] <= 1'b1;
             car <= dmaADDR[3:14];

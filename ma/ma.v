@@ -277,12 +277,12 @@ module ma (
           saveAddr <= eaddr;
           eaddr <= dmaAddr;
           mdin <= disk2mem;
-          if (to_disk == 1'b0) begin
-            write_en <= 1'b1;
-          end
+         // if (to_disk == 1'b0) begin
+         //   write_en <= 1'b1;
+         // end
         end
         DB1: begin
-        if (disk2mem == 1) begin write_en <= 1'b1;end
+        if (to_disk == 1) begin write_en <= 1'b1;end
           mdin <= disk2mem;
         end
         DB2: begin

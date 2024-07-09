@@ -155,26 +155,13 @@ module PDP8e_tb;
     #1000;
     sr <= 12'o0030;
     `PULSE(addr_load);
-    #1000000;
+    #100000;
     `PULSE(cont);
+    #5000000 $finish;
 
-
-//`define first 1
-
-`ifdef first	
-	#100 halt <= 1;
-      $writememh("a200", UUT.MA.ram.mem, 128, 255);
-      $writememh("a047", UUT.MA.ram.mem, 39, 127);
-      $writememh("ram_contents", UUT.MA.ram.mem, 0, 8191);
-      $writememh("ram256", UUT.MA.ram.mem, 0, 255);
-      $writememh("b7600", UUT.MA.ram.mem, 3968, 4095);
-      $writememh("b17647", UUT.MA.ram.mem, 8103, 8191);
-      $display("hit trap!!");
-      $finish;
-`endif
      wait(serialio ==1);
      //#12000 $finish;
-    #100000 $finish;
+    #5000000 $finish;
 
 
   end

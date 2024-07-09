@@ -56,6 +56,7 @@ module state_machine (
           else if (halt & ~cont) state <= H0;
           else state <= FW;
           int_in_prog <= 0;
+          break_in_prog <= 0;
         end
         FW: state <= F1;
         F1:

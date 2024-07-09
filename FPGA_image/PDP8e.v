@@ -96,6 +96,7 @@ module PDP8e (input clk,
     wire EAE_mode,EAE_loop;
     wire sw_active;
     wire index;
+    wire disk_rdy;
 `ifdef RK8E
     wire data_break,to_disk;
     wire disk_interrupt,disk_skip;
@@ -153,6 +154,7 @@ rk8e RK8E (
     .interrupt (disk_interrupt),
     .data_break (data_break),
     .to_disk (to_disk ),
+    .disk_rdy (disk_rdy),
     .break_in_prog (break_in_prog ),
     .skip (disk_skip) ,
     .dmaDIN (mem2disk),
@@ -264,11 +266,11 @@ rk8e RK8E (
         .dsel (dsel),
         .state (state),
 `ifdef RK8E
-        .state1 ( {instruction[0:2],2'b00,sw,1'b0,break_in_prog,EAE_mode} ),
+        .state1 ( {instruction[0:2],2'b00,sw,disk_rdy,break_in_prog,EAE_mode} ),
 `else
         .state1 ( {instruction[0:2],2'b00,sw,2'b00,EAE_mode} ),
 `endif
-        .status ({link,gtf,irq,1'b0,int_ena,{UF,IF,DF}}),
+        .status ({link,gtf,irq,int_inh,int_ena,{UF,IF,DF}}),
         .ac (ac),
         .mb (mdout),
         .mq (mq),

@@ -16,7 +16,7 @@ sdsim.v:sdsim.sv
 
 verilog: rk8e.sv sd.sv rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv
 	~/.local/bin/sv2v sd_types.svh sdspi_types.svh sdspi.sv sd.sv > sd.v	
-	~/.local/bin/sv2v -DSIM rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v 
+	~/.local/bin/sv2v rk8e.sv sd_types.svh sdspi_types.svh sdspi.sv sd.sv >rk8e.v 
 	~/.local/bin/sv2v sdsim.sv > sdsim.v
 
 format:
