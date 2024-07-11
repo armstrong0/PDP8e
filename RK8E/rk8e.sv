@@ -291,7 +291,12 @@ bit 11 msb of cylinder
           end
           // maintenance mode debugging NOT what is describe in the RK8E
           // manual, this essentially reads out various status values from the
-          // sd controller
+          // sd controller.  Putting a program into memory such as:
+          //    0030  6747  /DMAN
+          //    0031  7402  /HLT
+          //    0032  5030  /JMP 0030
+          //    start at 0030 then press continue, view the ac it will have an
+          //    index to the value in bits 0:3 and the value in 4:11
           12'o6747:
           case (toggle)
             0: begin
@@ -311,11 +316,12 @@ bit 11 msb of cylinder
               toggle   <= 4'b0100;
             end
             4: begin
-              disk_bus <= {toggle, sdSTAT.rdCNT};
+              disk_bus <= {toggle, sdSTAT.wrCNT};
               toggle   <= 4'b0101;
             end
             5: begin
-              disk_bus <= {toggle, sdSTAT.state};
+              // sdSTAT.state is only 3 bits, pack to make 8
+              disk_bus <= {toggle,5'b0, sdSTAT.state};
               toggle   <= 4'b0;
             end
 
