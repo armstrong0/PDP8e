@@ -43,7 +43,7 @@ module imux(
                 12'o6743,
                 12'o6744,
                 12'o6746: bus_display <= lac;
-                12'o6745: bus_display <= linbus;
+                12'o6745: bus_display <= lin_bus;
 
                 default:
                 bus_display <= bus_display; // hold last value
