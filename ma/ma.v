@@ -282,7 +282,7 @@ module ma (
          // end
         end
         DB1: begin
-        if (to_disk == 1) begin write_en <= 1'b1;end
+        if (to_disk == 0) begin write_en <= 1'b1;end
           mdin <= disk2mem;
         end
         DB2: begin

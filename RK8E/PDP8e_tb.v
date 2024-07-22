@@ -155,13 +155,12 @@ module PDP8e_tb;
     #1000;
     sr <= 12'o0030;
     `PULSE(addr_load);
-    #100000;
-    `PULSE(cont);
-    #5000000 $finish;
+     wait(UUT.disk_rdy == 1);
 
+    #1000;
+    `PULSE(cont);
      wait(serialio ==1);
-     //#12000 $finish;
-    #5000000 $finish;
+    #50000 $finish;
 
 
   end

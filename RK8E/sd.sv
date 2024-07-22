@@ -206,7 +206,7 @@ module sd
   logic [0:3] memBUF;  //! Memory Buffer
   logic memREQ;  //! DMA Request
   logic abort;  //! Abort this command
-  logic [0:18] timeout;  //! Timeout
+  logic [0:19] timeout;  //! Timeout
   sdBYTE_t rdCNT;  //! Read Counter
   sdBYTE_t wrCNT;  //! Write Counter
   sdBYTE_t err;  //! Error State
@@ -222,7 +222,7 @@ module sd
   //!
   //! SD_STATE:
   //! This process assumes a 50 MHz clock
-  //
+  //! Now calculates timout based on logic clock from paramters.v maybe
 
   always @(posedge clk) begin
 
@@ -246,7 +246,7 @@ module sd
       dmaRD   <= 1'b0;
       dmaWR   <= 1'b0;
       spiOP   <= spiCSH;
-      timeout <= 499999;
+      timeout <= 1000000;
       sdSTATE <= sdstateINIT;
       state   <= stateRESET;
     end else begin

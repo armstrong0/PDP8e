@@ -33,6 +33,7 @@ module rk8e
     output reg        data_break,
     output reg        to_disk,
     input             break_in_prog,
+    input [9:0]       sd_delay,
     output reg        disk_rdy,
     output reg        skip,
     output reg [0:14] dmaAddr,
@@ -247,9 +248,9 @@ bit 11 msb of cylinder
           12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
           12'o6742:  // DCLC has four options 
           case (ac[10:11])
-            2'b00, 2'b11: status <= 12'o0000;
+            2'b00, 2'b11: status <= 12'o4000;
             2'b01: begin
-              status <= 12'o0000;
+              status <= 12'o4000;
               sdOP   <= sdopABORT;  // stop whatever is in process
             end
             2'b10: status <= 12'o4000;
