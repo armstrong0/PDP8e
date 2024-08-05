@@ -1,0 +1,89 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Mon Jul 22 20:17:31 2024
+[*]
+[dumpfile] "/home/armstrong/Desktop/PDP8e/sd_debug/SDCard.vcd"
+[dumpfile_mtime] "Mon Jul 22 00:39:07 2024"
+[dumpfile_size] 5398263
+[savefile] "/home/armstrong/Desktop/PDP8e/sd_debug/full_debug.gtkw"
+[timestart] 13989533000
+[size] 1920 989
+[pos] -461 -193
+*-18.615831 13991002550 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] PDP8e_tb.
+[treeopen] PDP8e_tb.UUT.
+[treeopen] PDP8e_tb.UUT.RK8E.
+[sst_width] 263
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 608
+@28
+PDP8e_tb.UUT.MA.write_en
+PDP8e_tb.UUT.RK8E.oneKHz
+@22
+PDP8e_tb.UUT.RK8E.ms_clock[17:0]
+@28
+PDP8e_tb.UUT.RK8E.sd_reset
+@29
+PDP8e_tb.serial_tx
+@28
+PDP8e_tb.UUT.disk_rdy
+@30
+PDP8e_tb.UUT.MA.dmaAddr[0:14]
+PDP8e_tb.UUT.AC.ac[0:11]
+@24
+PDP8e_tb.UUT.RK8E.state[4:0]
+@30
+PDP8e_tb.UUT.RK8E.instruction[0:11]
+PDP8e_tb.UUT.MA.eaddr[0:14]
+PDP8e_tb.UUT.MA.idx_tmp[0:11]
+@28
+PDP8e_tb.UUT.halt
+PDP8e_tb.UUT.RK8E.data_break
+@30
+PDP8e_tb.UUT.disk2mem[0:11]
+@28
+PDP8e_tb.diskio
+PDP8e_tb.UUT.RK8E.dmaRD
+@30
+PDP8e_tb.UUT.RK8E.dmaWR
+@28
+PDP8e_tb.UUT.IM.disk_skip
+@22
+PDP8e_tb.UUT.RK8E.status[0:11]
+@30
+PDP8e_tb.UUT.RK8E.dar[0:11]
+PDP8e_tb.UUT.RK8E.car[0:11]
+PDP8e_tb.UUT.RK8E.cmd_reg[0:11]
+@28
+PDP8e_tb.UUT.MA.index
+@30
+PDP8e_tb.UUT.MA.mdin[0:11]
+PDP8e_tb.UUT.MA.mdout[0:11]
+@28
+PDP8e_tb.UUT.RK8E.sdstate[2:0]
+PDP8e_tb.UUT.RK8E.sdOP[1:0]
+PDP8e_tb.UUT.sdCS
+PDP8e_tb.UUT.sdMISO
+PDP8e_tb.UUT.sdMOSI
+PDP8e_tb.UUT.sdSCLK
+@22
+PDP8e_tb.UUT.RK8E.SD.state[5:0]
+@28
+PDP8e_tb.UUT.to_disk
+@22
+PDP8e_tb.UUT.mem2disk[0:11]
+@28
+PDP8e_tb.serialio
+PDP8e_tb.UUT.tx
+@22
+PDP8e_tb.UUT.RK8E.SD.spiTXD[0:7]
+@28
+PDP8e_tb.UUT.RK8E.dmaREQ
+PDP8e_tb.UUT.RK8E.dmaGNT
+PDP8e_tb.UUT.int_in_prog
+PDP8e_tb.UUT.irq
+@22
+PDP8e_tb.UUT.RK8E.SD.spiRXD[0:7]
+[pattern_trace] 1
+[pattern_trace] 0
