@@ -1,29 +1,30 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Sat Sep 23 20:59:44 2023
+[*] Sat Aug 17 20:53:34 2024
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.vcd"
-[dumpfile_mtime] "Sat Sep 23 20:55:23 2023"
-[dumpfile_size] 9247
+[dumpfile_mtime] "Sat Aug 17 20:52:35 2024"
+[dumpfile_size] 16562
 [savefile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.gtkw"
 [timestart] 0
-[size] 1600 900
-[pos] -1 -28
-*-19.390337 1150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1920 989
+[pos] -161 -43
+*-20.067373 1150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] front_panel_tb.
 [sst_width] 263
 [signals_width] 158
 [sst_expanded] 1
-[sst_vpaned_height] 258
+[sst_vpaned_height] 288
 @28
-front_panel_tb.UUT.trigger1
 front_panel_tb.UUT.sing_step
 front_panel_tb.UUT.halt
 front_panel_tb.UUT.cont
 front_panel_tb.UUT.sw_active
-front_panel_tb.UUT.trigger1
-@29
 front_panel_tb.UUT.triggerd
+front_panel_tb.UUT.dsel[5:0]
+front_panel_tb.UUT.dsel_sw
+@29
+front_panel_tb.UUT.dseld
 @28
 front_panel_tb.UUT.contd
 front_panel_tb.UUT.dep

@@ -7,6 +7,9 @@ module front_panel_tb;
     wire contd;
     wire cleard , extd_addrd , addr_loadd , depd , examd;
 
+    reg dsel_sw;
+    wire [5:0] dsel;
+
     reg [4:0] state;
     wire [0:2] trig_stateo;
     wire [0:4] count;
@@ -27,6 +30,9 @@ module front_panel_tb;
         .examd (examd),
         .cont (cont),
         .contd (contd),
+
+        .dsel_sw (dsel_sw),
+        .dsel (dsel),
         .reset (reset),
         .state (state));
 
@@ -50,6 +56,8 @@ module front_panel_tb;
         cont <= 0;
         sing_step <= 0;
         state <= H0;
+
+        dsel_sw <= 0;
 
         #15 reset <= 1;
         #40 reset <= 0;
@@ -76,6 +84,21 @@ module front_panel_tb;
 
         #500 cont <= 1;
         #50 cont <= 0;
+        #500 dsel_sw <= 1;
+        #50 dsel_sw <=0;
+
+        #500 dsel_sw <= 1;
+        #50 dsel_sw <=0;
+        #500 dsel_sw <= 1;
+        #50 dsel_sw <=0;
+        #500 dsel_sw <= 1;
+        #50 dsel_sw <=0;
+        #500 dsel_sw <= 1;
+        #50 dsel_sw <=0;
+        #500 dsel_sw <= 1;
+        #50 dsel_sw <=0;
+        #500 dsel_sw <= 1;
+        #50 dsel_sw <=0;
 
         #500 $finish;
     end
