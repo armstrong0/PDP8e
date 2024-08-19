@@ -1,4 +1,7 @@
-all:  full_read palbart dumprk05.bin dumprk05 dumprk05.hex
+all:  full_read palbart dumprk05.bin dumprk05 dumprk05.hex dump_vcd
+
+dump_pac: dump_pac.c
+	gcc dump_pac.c -o dump_pac	
 
 
 palbart: palbart.c
@@ -10,6 +13,10 @@ dumprk05: dumprk05.c
 dumprk05.bin: dumprk05.pal
 	./palbart dumprk05.pal
 
+dumprk05.hex: dumprk05.bin
+	mem_gen_bin dumprk05.bin dumprk05.hex
+	
+
 ../RK8E/sdsim.v: ../RK8E/sdsim.sv
 	~/.local/bin/sv2v ../RK8E/sdsim.sv > ../RK8E/sdsim.v
 
@@ -19,7 +26,7 @@ dumprk05.bin: dumprk05.pal
 	
 
 full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/rk8e.v ../RK8E/sdsim.v
-	iverilog -DSIM -DRK8E ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/sdsim.v -o sdcard.o 
+	iverilog -g2012 -DSIM -DRK8E ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/sdsim.v -o sdcard.o 
 	vvp sdcard.o -fst
 	gtkwave SDCard.vcd full_debug.gtkw &
 
@@ -29,5 +36,6 @@ clean:
 	rm -rf  *.vcd
 	rm -rf a.out
 	rm -rf *.o *.lst SDcard.vcd
+	rm -rf dump_pac dump_rk05
 	
 	

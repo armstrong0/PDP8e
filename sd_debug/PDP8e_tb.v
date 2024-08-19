@@ -2,6 +2,30 @@
 `timescale 1 ns / 10 ps
 `define PULSE(arg) #1 ``arg <=1 ; #(20*clock_period) ``arg <= 0
 
+module la_ram (din, reset, instruction,state, clk);// 8196 x 12
+
+  `include "../parameters.v"
+    localparam addr_width = 15;
+    localparam data_width = 12;
+    reg [14:0] addr;
+    input [data_width-1:0] din;
+    input reset, clk;
+    input [0:11] instruction;
+    input [4:0] state;
+    reg [data_width-1:0] mem [(1<<addr_width)-1:0];
+    
+    always @(posedge clk)
+    begin
+    if (reset ==1) addr <= 0;
+    else if ( instruction ==12'o6046)
+    begin if (state == F2) 
+    mem[addr] <= din;
+    else if (state == F3)
+	addr <= addr +1;
+	end
+    end
+    endmodule
+
 
 
 module PDP8e_tb;
@@ -106,7 +130,12 @@ module PDP8e_tb;
       .sdMISO(sdMISO)
   );
 
-
+ la_ram LARAM(
+       .clk (clk100),
+       .reset (reset),
+       .din (UUT.ac),
+       .state (UUT.state),
+       .instruction (UUT.instruction));
 
 
   initial begin
@@ -146,8 +175,11 @@ module PDP8e_tb;
     `PULSE(cont);
     //#1000 $finish;
     #20000000 $finish;
+ 
 
-
+  end
+ final begin
+	 $writememh("dumpac.hex",LARAM.mem,0,1250); // 0, 16383);
   end
 
 endmodule
