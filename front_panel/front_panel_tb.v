@@ -6,9 +6,10 @@ module front_panel_tb;
     reg clear, extd_addr,addr_load,dep,exam,sing_step,cont;
     wire contd;
     wire cleard , extd_addrd , addr_loadd , depd , examd;
+   
 
     reg dsel_sw;
-    wire [5:0] dsel;
+    wire [4:0] dsel;
 
     reg [4:0] state;
     wire [0:2] trig_stateo;

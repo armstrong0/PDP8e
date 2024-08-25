@@ -1,14 +1,14 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Sat Aug 17 20:53:34 2024
+[*] Sun Aug 25 21:32:32 2024
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.vcd"
-[dumpfile_mtime] "Sat Aug 17 20:52:35 2024"
+[dumpfile_mtime] "Sun Aug 25 21:31:58 2024"
 [dumpfile_size] 16562
 [savefile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.gtkw"
-[timestart] 0
-[size] 1920 989
-[pos] -161 -43
+[timestart] 263000
+[size] 1868 937
+[pos] -1 -1
 *-20.067373 1150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] front_panel_tb.
 [sst_width] 263

@@ -38,7 +38,11 @@ module PDP8e (input clk,
     input reset,
 `endif
     input [0:11] sr,
-    input [0:5] dsel,
+
+    //input [0:5] dsel,
+    input dsel_swn,
+    output [0:4] dsel_led, // two output drive low, 3 drive high combo lights one LED
+    
     input dep, input sw,
     input single_stepn, input haltn, input examn, input contn,
     input extd_addrn, input addr_loadn, input clearn,
@@ -72,6 +76,9 @@ module PDP8e (input clk,
     wire single_step;
     assign single_step = ~single_stepn;
 
+    wire dsel_sw;
+    assign dsel_sw = ~dsel_swn;
+
 
     wire mskip,skip,eskip;
     wire int_in_prog;
@@ -96,6 +103,8 @@ module PDP8e (input clk,
     wire EAE_mode,EAE_loop;
     wire sw_active;
     wire index;
+
+    wire [0:5] dsel;
     wire disk_rdy;
 `ifdef RK8E
     wire data_break,to_disk;
@@ -265,6 +274,7 @@ rk8e RK8E (
     D_mux DM(.clk (clk100),
         .reset (reset),
         .dsel (dsel),
+        .dsel_led (dsel_led),
         .state (state),
 `ifdef RK8E
         .state1 ( {instruction[0:2],2'b00,sw,disk_rdy,break_in_prog,EAE_mode} ),
@@ -297,6 +307,8 @@ rk8e RK8E (
         .depd (depd),
         .examd (examd),
         .contd (contd),
+        .dsel_sw (dsel_sw),
+        .dsel (dsel),
         .triggerd (trigger),
         .sw_active (sw_active));
 

@@ -11,7 +11,7 @@ module front_panel (input clk,
     input halt,
     input dsel_sw,
     output reg sw_active,   
-    output triggerd,cleard, extd_addrd, addr_loadd, depd, examd, contd,
+    output triggerd,cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld,
     output reg [5:0] dsel
 );
 
@@ -28,7 +28,7 @@ module front_panel (input clk,
     reg [7:0] switchd;
     reg [6:0] switchl;
     reg [2:0] trig_state;
-    reg desld;
+    //reg dseld;
 
     reg [dbnce_nu_bits:0] trig_cnt;  // the highest order bit is always dbnce_nu_bits !
     reg trigger1;
