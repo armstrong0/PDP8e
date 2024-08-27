@@ -10,7 +10,7 @@ module front_panel (input clk,
     input sing_step,
     input halt,
     input dsel_sw,
-    output reg sw_active,   
+    output reg sw_active,
     output triggerd,cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld,
     output reg [5:0] dsel
 );
@@ -97,7 +97,7 @@ module front_panel (input clk,
                 TRIG2: begin
                     trig_state <= TRIG3;
                     switchd <= switchd;
-                    if (dseld == 1) dsel <= {dsel[0] ,dsel[5:1]};  // rotate the display select 
+                    if (dseld == 1) dsel <= {dsel[0] ,dsel[5:1]};  // rotate the display select
                 end
                 TRIG3: begin
                     trig_state <= DELAY;
