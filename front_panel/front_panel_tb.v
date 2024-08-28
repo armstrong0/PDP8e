@@ -38,6 +38,7 @@ module front_panel_tb;
 
         .dsel_sw (dsel_sw),
         .dsel (dsel),
+        .dsel_led (dsel_led),
         .reset (reset),
         .state (state));
 
@@ -53,7 +54,6 @@ module front_panel_tb;
         .io_bus (io_bus),
         .sw_active (sw_active),
         .dout (dout),
-        .dsel_led (dsel_led),
         .run_led (run_led));
 
 

@@ -12,7 +12,9 @@ module front_panel (input clk,
     input dsel_sw,
     output reg sw_active,
     output triggerd,cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld,
+    output reg [4:0] dsel_led,
     output reg [5:0] dsel
+
 );
 
 `include "../parameters.v"
@@ -122,7 +124,16 @@ module front_panel (input clk,
             endcase
         end
     end
-
-
+    always @* begin
+        case (dsel)
+            6'b100000: dsel_led <= 5'b01100;
+            6'b010000: dsel_led <= 5'b01010;
+            6'b001000: dsel_led <= 5'b01001;
+            6'b000100: dsel_led <= 5'b10100;
+            6'b000010: dsel_led <= 5'b10010;
+            6'b000001: dsel_led <= 5'b10001;
+            default:   dsel_led <= 5'b01100;
+        endcase
+    end
 endmodule
 

@@ -41,7 +41,7 @@ module PDP8e (input clk,
 
     //input [0:5] dsel,
     input dsel_swn,
-    output [0:4] dsel_led, // two output drive low, 3 drive high combo lights one LED
+    output [4:0] dsel_led, // two outputs drive low, 3 drive high combo lights one LED
     
     input dep, input sw,
     input single_stepn, input haltn, input examn, input contn,
@@ -274,7 +274,6 @@ rk8e RK8E (
     D_mux DM(.clk (clk100),
         .reset (reset),
         .dsel (dsel),
-        .dsel_led (dsel_led),
         .state (state),
 `ifdef RK8E
         .state1 ( {instruction[0:2],2'b00,sw,disk_rdy,break_in_prog,EAE_mode} ),
@@ -309,6 +308,7 @@ rk8e RK8E (
         .contd (contd),
         .dsel_sw (dsel_sw),
         .dsel (dsel),
+        .dsel_led (dsel_led),
         .triggerd (trigger),
         .sw_active (sw_active));
 

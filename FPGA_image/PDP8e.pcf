@@ -69,11 +69,11 @@ set_io --warn-no-port single_stepn D7
 set_io --warn-no-port dep  C6 #   A6 global input - messes up PLL
 
 set_io --warn-no-port -pullup yes dsel_swn A7 # A7 global input 
-set_io --warn-no-port dsel_led[0] C7 #
-set_io --warn-no-port dsel_led[1] D6
-set_io --warn-no-port dsel_led[2] A10
-set_io --warn-no-port dsel_led[3] C10
-set_io --warn-no-port dsel_led[4] A11
+set_io --warn-no-port dsel_led[3] C7 #
+set_io --warn-no-port dsel_led[4] D6
+set_io --warn-no-port dsel_led[1] A10
+set_io --warn-no-port dsel_led[2] C10
+set_io --warn-no-port dsel_led[0] A11
 
 set_io --warn-no-port sdCS   E12
 set_io --warn-no-port sdSCLK D12
