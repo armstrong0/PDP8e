@@ -39,7 +39,6 @@ module PDP8e (input clk,
 `endif
     input [0:11] sr,
 
-    //input [0:5] dsel,
     input dsel_swn,
     output [4:0] dsel_led, // two outputs drive low, 3 drive high combo lights one LED
     
@@ -104,7 +103,7 @@ module PDP8e (input clk,
     wire sw_active;
     wire index;
 
-    wire [0:5] dsel;
+    wire [5:0] dsel;
     wire disk_rdy;
 `ifdef RK8E
     wire data_break,to_disk;

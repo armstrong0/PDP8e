@@ -3,7 +3,7 @@
 module D_mux (
     input clk,
     input reset,
-    input [0:5] dsel,
+    input [5:0] dsel,
     input [4:0] state,
     input [3:11] state1,
     input [0:11] status,
@@ -66,8 +66,8 @@ module D_mux (
     else if (dsel[2] == 1) dout <= mb;
     else if (dsel[1] == 1) dout <= mq;
     else if (dsel[0] == 1) dout <= io_bus;
-    else dout <= {state, FS, DS, ES, HS, 3'b000};
-  end
+    else  dout <= {FS, DS, ES, state1}; 
+    end
 endmodule
 
 
