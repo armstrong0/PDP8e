@@ -34,16 +34,23 @@ module imux(
             lin_bus <= in_bus;
         end
         else if (state == F3)
-            case (instruction[0:11])
-                12'o6004: bus_display <= lin_bus;
-                12'o6005: bus_display <= lac;
-                12'o6036: bus_display <= lin_bus;
+            casez (instruction[0:11])
+                12'o6004: bus_display <= lin_bus; //GTF
+                12'o6005: bus_display <= lac;     //RTF
+                12'o6036: bus_display <= lin_bus; 
                 12'o6044: bus_display <= lac;
                 12'o6046: bus_display <= lac;
-                12'o6743,
-                12'o6744,
-                12'o6746: bus_display <= lac;
-                12'o6745: bus_display <= lin_bus;
+                12'b110010???001, // o62?1 CDF
+                12'b110010???010, // o62?2 CIF
+                12'b110010???011: bus_display <= lac;  // o62?3 CDF,CIF
+                12'o6214, //RDF
+                12'o6224, //RIF
+                12'o6234: bus_display <= lin_bus; //RIB 
+                12'o6244:; //RMF nothing goes on the bus 
+                12'o6743,  // DLAG
+                12'o6744,  // DLCA
+                12'o6746: bus_display <= lac;     //LDDC
+                12'o6745: bus_display <= lin_bus; //DRST
 
                 default:
                 bus_display <= bus_display; // hold last value

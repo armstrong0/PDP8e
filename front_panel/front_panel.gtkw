@@ -1,40 +1,45 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Sat Sep 23 20:59:44 2023
+[*] Wed Aug 28 20:03:56 2024
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.vcd"
-[dumpfile_mtime] "Sat Sep 23 20:55:23 2023"
-[dumpfile_size] 9247
+[dumpfile_mtime] "Wed Aug 28 20:03:07 2024"
+[dumpfile_size] 22473
 [savefile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.gtkw"
 [timestart] 0
-[size] 1600 900
-[pos] -1 -28
-*-19.390337 1150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1868 937
+[pos] -1 -1
+*-20.439253 1150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] front_panel_tb.
 [sst_width] 263
 [signals_width] 158
 [sst_expanded] 1
-[sst_vpaned_height] 258
+[sst_vpaned_height] 288
 @28
-front_panel_tb.UUT.trigger1
-front_panel_tb.UUT.sing_step
-front_panel_tb.UUT.halt
-front_panel_tb.UUT.cont
-front_panel_tb.UUT.sw_active
-front_panel_tb.UUT.trigger1
+front_panel_tb.FP.addr_load
+front_panel_tb.FP.addr_loadd
+front_panel_tb.FP.clear
+front_panel_tb.FP.cleard
+front_panel_tb.FP.clk
+front_panel_tb.FP.cont
+front_panel_tb.FP.contd
+front_panel_tb.FP.dep
+front_panel_tb.FP.depd
+front_panel_tb.FP.dsel_sw
+front_panel_tb.FP.dseld
+front_panel_tb.FP.exam
+front_panel_tb.FP.examd
+front_panel_tb.FP.extd_addr
+front_panel_tb.FP.extd_addrd
+front_panel_tb.FP.reset
+front_panel_tb.FP.sing_step
+front_panel_tb.FP.sw_active
+front_panel_tb.DM.run_led
+@30
+front_panel_tb.DM.dout[0:11]
+@28
+front_panel_tb.FP.dsel[5:0]
 @29
-front_panel_tb.UUT.triggerd
-@28
-front_panel_tb.UUT.contd
-front_panel_tb.UUT.dep
-front_panel_tb.UUT.depd
-front_panel_tb.UUT.clear
-front_panel_tb.UUT.cleard
-front_panel_tb.UUT.exam
-front_panel_tb.UUT.examd
-front_panel_tb.UUT.extd_addr
-front_panel_tb.UUT.extd_addrd
-front_panel_tb.UUT.addr_load
-front_panel_tb.UUT.addr_loadd
+front_panel_tb.FP.dsel_led[4:0]
 [pattern_trace] 1
 [pattern_trace] 0
