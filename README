@@ -1,6 +1,4 @@
-All tests now pass.  The ma and pc units have been merged.  All source files have been linted and formated.  Lint does not like the bit ordering in the PDP8's registers but I kept it. 
-
-October 7 2023:  After a change in tool chain version serial output is not working. The problem turned out to be a misuse of the clog2 system task, some registers were being sized to 1 bit instead of the nessesary size
+All tests now pass.  The ma and pc units have been merged.  All source files have been linted and formatted.  Lint does not like the bit ordering in the PDP8's registers but I kept it. 
 
 The basis of an SD card disk emulating an RK8E with 4 RK05 packs is in the repository but does not work yet.
 
@@ -33,15 +31,16 @@ AWG wire is used to hook up 3.3 Volts.
 Yellow LED's required - address 15, data display 12, run 1 and display selected
 indicator 6.  Total 34.  Current limit resistor value is: 220 ohms.
 
-The display switch was problematic, it was not clear where the switch was
-positioned so LEDs were added.  The wiper of the switch is tied to 3.3 V, The
-six poles are connected to their respect ICEWERKS module pins, pull down
-resistors (18 k - not critical) go from each pole to ground.  Also from pole a
-wire goes to the anode of the associated display LED.  The cathodes of the
-LED's are all tied together and then routed through a 220 ohm resistor to
-ground.  Thus the only one LED lights and it indicates with switch positions
-is select.  
+// The display switch was problematic, it was not clear where the switch was
+// positioned so LEDs were added.  The wiper of the switch is tied to 3.3 V, The
+// six poles are connected to their respect ICEWERKS module pins, pull down
+// resistors (18 k - not critical) go from each pole to ground.  Also from pole a
+// wire goes to the anode of the associated display LED.  The cathodes of the
+// LED's are all tied together and then routed through a 220 ohm resistor to
+// ground.  Thus the only one LED lights and it indicates with switch positions
+// is select.  
 
+The rotary switch has been replaced with a push button switch.  When the rotary switch was used, all of the 6 lines assigned to this function were inputs to the FPGA and the LEDS were driven from the switch. Now one input is used by the push button switch.  The other 5 lines are now outputs driving the LEDS.  LED's are grouped into two groups three.  The cathodes of the three LEDS are tied together and through a 220 ohm resistor go to an FPGA pin.  Same for the other group of three.  Then corresponding anodes of LED's are tied together and are driven by an FPGA pin.  To turn a LED on the cathode of the LED is driven low, either (01 or 10) and the anode is driven high (100, 010, or 001).   
 
 This repository contains the Verilog code for the FPGA and test code to verify
 code correctness.  
