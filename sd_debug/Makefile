@@ -14,7 +14,7 @@ dumprk05.bin: dumprk05.pal
 	./palbart dumprk05.pal
 
 dumprk05.hex: dumprk05.bin
-	mem_gen_bin dumprk05.bin dumprk05.hex
+	~/bin/mem_gen_bin dumprk05.bin dumprk05.hex
 	
 
 ../RK8E/sdsim.v: ../RK8E/sdsim.sv
