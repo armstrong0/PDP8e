@@ -45,26 +45,27 @@ main (int argc, char *argv[])
 	  switch (word_cnt)
 	    {
 	    case -1:
-	      printf ("Start ac = %3lo\n", ac);
+	      //printf ("Start ac = %3lo\n", ac);
 	      word_cnt++;
 	      break;
 	    case 0:
 	      if ((addr % 8) == 0)
-		printf ("\n%06o ", addr);
+		  printf ("%07o",2*addr);
 	      temp1 = ac & 0xff;
 	      word_cnt++;
 	      break;
 	    case 1:
 	      temp1 = temp1 | (ac & 0xf) << 8;
-	      printf ("%06lo ", temp1);
+	      printf (" %06lo", temp1);
 	      temp2 = (ac & 0xf0) >> 4;
 	      addr++;
 	      word_cnt++;
 	      break;
 	    case 2:
 	      temp2 = (temp2 | (ac << 4)) & 0xfff;
-	      printf ("%06lo ", temp2);
+	      printf (" %06lo", temp2);
 	      addr++;
+          if ((addr % 8 ) == 0) printf("\n");
 	      word_cnt = 0;
 	      break;
 
