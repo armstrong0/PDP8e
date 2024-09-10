@@ -184,6 +184,7 @@ module PDP8e_tb;
  final begin
 	 $writememh("dumpac.hex",LARAM.mem,0,1536); // 0, 16383);
 	 $writememh("mem.hex",UUT.MA.ram.mem,512,1024);
+	 $writememh("reg.hex",UUT.MA.ram.mem,0,45);
   end
 
 endmodule

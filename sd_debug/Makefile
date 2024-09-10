@@ -1,7 +1,7 @@
 all:  full_read palbart dumprk05.bin dumprk05 dumprk05.hex dump_vcd
 
-dump_pac: dump_pac.c
-	gcc dump_pac.c -o dump_pac	
+hex2oct: hex2oct.c
+	gcc hex2oct.c -o hex2oct	
 
 
 palbart: palbart.c
@@ -36,6 +36,6 @@ clean:
 	rm -rf  *.vcd
 	rm -rf a.out
 	rm -rf *.o *.lst SDcard.vcd
-	rm -rf dump_pac dump_rk05
+	rm -rf hex2oct dump_rk05
 	
 	
