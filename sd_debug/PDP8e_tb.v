@@ -177,7 +177,7 @@ module PDP8e_tb;
     sr <= 12'o0000; 
     #4000000;
     `PULSE(cont);
-    #12000000 $finish;
+    #16000000 $finish;
  
 
   end

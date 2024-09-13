@@ -32,7 +32,7 @@ main (int argc, char *argv[])
   char *line = NULL;
   char *linep = line;
   char key;
-  int addr, word_cnt;
+  int addr, word_cnt,state = 0;
   int c;
   int format = 3;
 
@@ -95,32 +95,46 @@ main (int argc, char *argv[])
 	      break;
 
 	    case 3:
-	      switch (word_cnt)
+	      switch (state)
 		{
-		case -1:
-		  //printf ("Start ac = %3lo\n", ac);
-		  word_cnt++;
-		  break;
 		case 0:
-		  if ((addr % 8) == 0)
-		    printf ("%07o", 2 * addr);
-		  temp1 = ac & 0xff;
-		  word_cnt++;
+		  if (ac != 0xff) 
+          {
+          fprintf(stderr,"start of sector incorrect\n");
+          exit (-1);
+          }
+		  state = 1;
 		  break;
 		case 1:
+		  if ((addr % 8) == 0)
+          {
+		    printf ("%07o", 2 * addr);
+          }
+		  temp1 = ac & 0xff;
+		  state = 2;
+		  break;
+		case 2:
 		  temp1 = temp1 | (ac & 0xf) << 8;
 		  printf (" %06lo", temp1);
 		  temp2 = (ac & 0xf0) >> 4;
 		  addr++;
-		  word_cnt++;
+		  state = 3;
 		  break;
-		case 2:
+		case 3:
 		  temp2 = (temp2 | (ac << 4)) & 0xfff;
 		  printf (" %06lo", temp2);
 		  addr++;
-		  if ((addr % 8) == 0)
+          if ((addr %256) == 0)
+          {printf("\n");
+          state = 0;
+          }
+		  else if ((addr % 8) == 0)
+          {
 		    printf ("\n");
-		  word_cnt = 0;
+            state = 1;
+          }
+          else state = 1;
+		  
 		  break;
 
 		default:
