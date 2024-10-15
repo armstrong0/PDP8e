@@ -90,7 +90,7 @@ t3: t3.o
 	
 t4: t4.o   
 	rm -f t4.o
-	gtkwave JMP_JMS_test.vcd PDP8e.gtkw &
+	gtkwave Basic_JMP_JMS_test.vcd PDP8e.gtkw &
 	
 t5: t5.o  
 	rm -f t5.o

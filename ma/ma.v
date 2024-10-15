@@ -277,9 +277,6 @@ module ma (
           saveAddr <= eaddr;
           eaddr <= dmaAddr;
           mdin <= disk2mem;
-         // if (to_disk == 1'b0) begin
-         //   write_en <= 1'b1;
-         // end
         end
         DB1: begin
         if (to_disk == 0) begin write_en <= 1'b1;end
@@ -291,6 +288,7 @@ module ma (
           end
           eaddr <= saveAddr;
         end
+        DB3:;
 `endif
 
         default: ;

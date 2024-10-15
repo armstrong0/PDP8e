@@ -31,8 +31,8 @@ F2A = 5'd27,  // 27
 F2B = 5'd28,  // 28
 DB0 = 5'd29,  // data break states 29
 DB1 = 5'd30,  // 30
-DB2 = 5'd31;  // 31
-//DW1 = 5'd9,  // 9
+DB2 = 5'd31,  // 31
+DB3 = 5'd9;  // 9
 //EAE2 = 5'd23, // 23
 //EAE3 = 5'd24, // 24 
 //EAE4 = 5'd25, // 25
@@ -111,7 +111,7 @@ parameter real fast_spi = 1000000;
 `ifdef SIM
 parameter sd_delay = 2;
 `else
-parameter sd_delay = 500;
+parameter sd_delay = 10'd500;
 `endif
 
 

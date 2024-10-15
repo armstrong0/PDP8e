@@ -40,7 +40,8 @@ set_io --warn-no-port dsn[1] L1
 set_io --warn-no-port dsn[0] N1
 
 set_io --warn-no-port sw J12
-set_io --warn-no-port tx G12
+#set_io --warn-no-port tx G12
+set_io --warn-no-port tx P1
 set_io --warn-no-port rx F12
 
 set_io --warn-no-port sr[0] H11

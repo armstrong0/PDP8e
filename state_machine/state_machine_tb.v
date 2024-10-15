@@ -162,6 +162,8 @@ module state_machine_tb;
     #100 `pulse(cont);
 	wait(stateo == 5'o20);
     #100 `pulse(cont);
+
+    data_break <= 1;
     #1000 $finish;
 
 

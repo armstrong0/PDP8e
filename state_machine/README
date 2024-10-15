@@ -1,0 +1,13 @@
+Sept 20 @024 --
+The PDP8e currently runs with a clock in excess of 70 MHz.  The spi clocks for the SDcard are set to 4 MHz.  It takes 16 clocks to either read or wrtie a word to the sd card.  (16 bits on the sd card, 12 bits on the PDP8e).  So it reads or writes at 1/4 MHz rate.  This means that we have 4 * 70 clocks per read or write.  (280)
+
+The longest instruction of this implementation of the PDP8e is EAE mode B multiply, divide, shift.  Roughly 5 for fetch 6(7) for defer, 1 to vectore to EAE part of the state machine and then 13 for actually executing th e instruction.  For a total of 26.
+
+So it is really not necessary to have data break operations at the end of every machine cycle.  Once per instruction should be fine. The maximum latency from the break request to execusion increases to 26 clocks from 17 (?). 
+
+There are 12 instances of data break handling in state_machine.v, we can shrink that to one, in F0.  There are also 4 interupt handling tests but we could leave those alone.  
+
+The penalty that we pay is one cycle in fetch when data_break is taken.  It simplies the data break code with less possiblity of interaction with other parts of the process.
+
+
+

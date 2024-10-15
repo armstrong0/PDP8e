@@ -1,39 +1,28 @@
 [*]
-[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Wed Apr  6 17:33:44 2022
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Sat Sep 21 00:52:13 2024
 [*]
-[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/ma/ma_results.vcd"
-[dumpfile_mtime] "Wed Apr  6 17:33:14 2022"
-[dumpfile_size] 6038
-[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/ma/ma.gtkw"
+[dumpfile] "/home/armstrong/Desktop/PDP8e/ma/ma_results.vcd"
+[dumpfile_mtime] "Sat Sep 21 00:50:34 2024"
+[dumpfile_size] 11290
+[savefile] "/home/armstrong/Desktop/PDP8e/ma/ma.gtkw"
 [timestart] 0
-[size] 1680 971
-[pos] -161 -140
-*-17.447968 20000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1680 937
+[pos] -1 -1
+*-17.485653 20000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] ma_tb.
 [sst_width] 207
 [signals_width] 166
 [sst_expanded] 1
 [sst_vpaned_height] 343
 @28
-ma_tb.clk
-ma_tb.reset
-@22
-ma_tb.state[3:0]
-@30
-ma_tb.instruction[0:11]
-ma_tb.sr[0:11]
-@31
-ma_tb.mdout[0:11]
-@30
-ma_tb.pc[0:11]
-ma_tb.ma[0:11]
-@28
 ma_tb.UUT.write_en
 @30
 ma_tb.UUT.mdin[0:11]
-@28
-ma_tb.depd
-ma_tb.examd
-ma_tb.loadd
+@22
+ma_tb.UUT.eaddr[0:14]
+ma_tb.UUT.state[4:0]
+@31
+ma_tb.UUT.instruction[0:11]
 [pattern_trace] 1
 [pattern_trace] 0

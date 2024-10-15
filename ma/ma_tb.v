@@ -32,7 +32,6 @@ integer k;
       .reset (reset),
 	  .state (state),
       .instruction (instruction),
-//	  .pc (pc),
 	  .eaddr (addr),
 	  .ac (ac),
 	  .sr (sr),
@@ -42,7 +41,8 @@ integer k;
 	  .depd (depd),
 	  .examd (examd),
 	  .mdout (mdout),
-	  .isz_skip (isz_skip));
+      .eskip (eskip),
+	  .skip (skip));
 
 initial begin
    $readmemh("ma_test.hex", UUT.ram.mem,0,4095);

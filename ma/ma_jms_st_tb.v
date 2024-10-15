@@ -9,7 +9,6 @@ module ma_tb;
 reg clk;
 reg reset;
 wire [4:0] state;
-//wire [0:11] pc;
 reg [0:11] ac;
 reg [0:11] sr;
 reg [0:2] IF,DF;
@@ -17,7 +16,8 @@ reg loadd,depd,examd;
 wire [0:11] instruction;
 wire [0:14] ma;
 wire [0:11] mdout;
-wire isz_skip;
+wire skip;
+wire eskip;
 wire int_in_prog;
 integer k;
 reg halt,single_step,cont,trigger;
@@ -30,7 +30,6 @@ reg int_ena,int_req,int_inh;
       .reset (reset),
       .state (state),
       .instruction (instruction),
-     // .pc (pc),
       .eaddr (ma),
       .ac (ac),
       .sr (sr),
@@ -40,7 +39,8 @@ reg int_ena,int_req,int_inh;
       .depd (depd),
       .examd (examd),
       .mdout (mdout),
-      .isz_skip (isz_skip),
+      .skip (skip),
+      .eskip (eskip),
       .int_in_prog (int_in_prog));
       
  /*   pc pc1(.clk (clk),

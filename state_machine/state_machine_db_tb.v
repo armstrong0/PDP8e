@@ -130,7 +130,7 @@ module state_machine_tb;
     address <= 0;
 
     #50 loaded <= 1;
-     #10 data_break <= 1;
+     #10 data_break <= 0;
     #1 halt = 0;
     #20 `pulse(cont);
     #1346 sing_step <= 1;
@@ -162,6 +162,7 @@ module state_machine_tb;
     #100 `pulse(cont);
 	wait(stateo == 5'o20);
     #100 `pulse(cont);
+    data_break <= 1;
     #1000 $finish;
 
 

@@ -11,7 +11,8 @@ module PDP8e_tb;
     reg reset;
     reg  rx;
     reg  [0:11] sr;
-    reg  [0:5] dsel;
+    reg  dsel_sw;
+    wire [4:0] dsel_led;
     reg  dep;
     reg  sw;
     reg  single_step;
@@ -69,7 +70,8 @@ module PDP8e_tb;
         .reset (reset),
         .rx (rx),
         .sr (sr),
-        .dsel (dsel),
+        .dsel_led (dsel_led),
+        .dsel_swn (~dsel_sw),
         .dep (dep),
         .sw (sw),
         .single_stepn (single_stepn),
@@ -155,10 +157,10 @@ assign single_stepn = ~single_step;
                 #99 $finish;
             end
 
-            4: if (address == 15'o03551 )
+            4:  if (address == 15'o03551 )
             begin
-                $display("completed one pass of JMS JMP");
-                #1000 $finish;
+                $display("completed one pass of Basic JMS JMP");
+               #1000 $finish;
             end
 
             5: if (address == 15'o07443 )
@@ -248,7 +250,7 @@ assign single_stepn = ~single_step;
                 sr <= 12'o2416;
             end
             4: begin
-                $dumpfile("JMP_JMS_test.vcd");
+                $dumpfile("Basic_JMP_JMS_test.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0IB.hex",UUT.MA.ram.mem,0,4095);
             end
@@ -332,8 +334,8 @@ assign single_stepn = ~single_step;
         #1 extd_addr <= 0;
         #1 addr_load <= 0;
         #1 dep <= 0;
-        #1 dsel <= 6'b001000;
         #1 sr <= 12'o0200;
+        #1 dsel_sw <= 0;
         #1 pll_locked <= 0;
         #1 rx <= 1; // marking state
         #100 pll_locked <= 1;
@@ -380,11 +382,11 @@ assign single_stepn = ~single_step;
             end
             4: begin
                 `pulse(addr_load);
-                sr <= 12'o2416;
+                sr <= 12'o0200;
                 #(clock_period * 50) `pulse(cont);
 
                 `pulse(cont);
-                #90000000 $finish;
+                #9000000 $finish;
             end
             5: begin
                 `pulse(addr_load);

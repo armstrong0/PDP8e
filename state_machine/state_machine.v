@@ -1,5 +1,3 @@
-
-/* verilator lint_off LITENDIAN */
 module state_machine (
     input clk,
     input reset,
@@ -52,10 +50,14 @@ module state_machine (
 
         // fetch cycle
         F0: begin
-          if (single_step & ~cont) state <= F0;
+
+          if (data_break == 1'b1) begin
+            state <= DB0;
+            break_in_prog <= 1'b1;
+          end else if (single_step & ~cont) state <= F0;
           else if (halt & ~cont) state <= H0;
           else state <= FW;
-          int_in_prog <= 0;
+          int_in_prog   <= 0;
           break_in_prog <= 0;
         end
         FW: state <= F1;
@@ -148,55 +150,24 @@ module state_machine (
               begin
               int_in_prog <= 1;
               state <= E0;
-              if (data_break == 1'b1) begin
-                next_state <= E0;  // interupt processing
-                state <= DB0;
-                break_in_prog <= 1'b1;
-              end
 
-            end else if (data_break == 1'b1) begin
-              next_state <= F0;  // new instruction 
-              state <= DB0;
-              break_in_prog <= 1'b1;
             end else state <= F0;
           end
           12'b0??1????????,  // AND TAD ISZ DCA defer cycle
           12'b10?1????????:  // JMS, JMP defer
-          if (data_break == 1'b1) begin
-            next_state <= D0;
-            state <= DB0;
-            break_in_prog <= 1'b1;
-          end else begin
+          begin
             state <= D0;
           end
           12'b1010????????:  // JMP Direct
           if (int_req & int_ena & ~int_inh) begin
             int_in_prog <= 1;
             state <= E0;
-            if (data_break == 1'b1) begin
-              next_state <= E0;  // interupt processing
-              state <= DB0;
-              break_in_prog <= 1'b1;
-            end
-          end else if (data_break == 1'b1) begin
-            next_state <= F0;  // new instruction
-            state <= DB0;
-            break_in_prog <= 1'b1;
           end else state <= F0;
 
           12'b1000????????:  // JMS direct 
-          if (data_break == 1'b1) begin
-            next_state <= E0;
-            state <= DB0;
-            break_in_prog <= 1'b1;
-          end else state <= E0;
+          state <= E0;
           default: begin
-            if (data_break == 1'b1) begin
-              next_state <= E0;
-              state <= DB0;
-              break_in_prog <= 1'b1;
-            end else  // non defered 
-              state <= E0;
+            state <= E0;
           end
         endcase
         D0:
@@ -213,16 +184,8 @@ module state_machine (
           if (int_req & int_ena & ~int_inh) begin
             int_in_prog <= 1;
             state <= E0;  // interupt processing
-            if (data_break == 1'b1) begin
-              next_state <= E0;  // interupt processing
-              state <= DB0;
-              break_in_prog <= 1'b1;
-            end
-          end else state <= F0;
-        end else if (data_break == 1'b1) begin
-          next_state <= E0;
-          state <= DB0;
-          break_in_prog <= 1'b1;
+          end
+          else state <= F0;
         end else state <= E0;
 
         // execute cycle
@@ -237,31 +200,18 @@ module state_machine (
         end
         E2: state <= E3;
         E3:
-        // data break has higher priority but we need to figure out what our
         // next state will be 
         if(int_req & int_ena & ~int_inh & ~int_in_prog ) // test for interrupt
                 begin
           int_in_prog <= 1;
           state <= E0;
-          if (data_break == 1'b1) begin
-            next_state <= E0;
-            state <= DB0;
-            break_in_prog <= 1'b1;
-          end
-        end else if (data_break == 1'b1) begin
-          next_state <= F0;
-          state <= DB0;
-          break_in_prog <= 1'b1;
         end else state <= F0;
 
         H0: state <= HW;
-        HW: begin 
-        if (data_break == 1'b1) begin
-          next_state <= H0;
-          state <= DB0;
-          break_in_prog <= 1'b1;
-        end 
-        else if (trigger & ~cont) state <= H1;
+        HW: begin
+          if (data_break == 1'b1) begin
+            state <= DB0;
+          end else if (trigger & ~cont) state <= H1;
           else if (~cont) state <= H0;
           else state <= F0;
         end
@@ -270,14 +220,16 @@ module state_machine (
         H3: state <= H0;
 
         EAE0: state <= EAE1;
-        EAE1: if (EAE_loop == 1) state <= EAE1;
- else state <= F3;
+        EAE1: if (EAE_loop == 1)
+              state <= EAE1;
+              else state <= F3;
 
         // data break
         DB0: state <= DB1;
         DB1: state <= DB2;
-        DB2: begin
-          state <= next_state;
+        DB2: state <= DB3;
+        DB3: begin
+          state <= FW;
           break_in_prog <= 1'b0;
         end
 
