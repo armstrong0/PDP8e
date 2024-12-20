@@ -5,9 +5,10 @@ DEVICE    = 8k
 # Files
 FILES = PDP8e.v
 
-.PHONY: PDP8e clean burn ../RK8E/rk8e.v sim
+.PHONY: PDP8e clean burn 
 
-PDP8e: ../RK8E/rk8e.v
+
+PDP8e: PDP8e.v
 	# synthesize using Yosys
 	yosys -p "synth_ice40 -top PDP8e -json $(PROJ).json" $(FILES) -l synth.log
 	# Place and route using nextpnr
@@ -16,14 +17,10 @@ PDP8e: ../RK8E/rk8e.v
 	# Convert to bitstream using IcePack
 	icepack $(PROJ).asc $(PROJ).bin
 
-../RK8E/rk8e.v: ../RK8E/rk8e.sv
-	$(MAKE) -C../RK8E/ -f Makefile verilog
-
-sim: PDP8e_tb.v PDP8e.v serial_tx.v serial_rx.v
-	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e.o
-	vvp PDP8e.o
-	gtkwave Hardware_serial_test.vcd serial_test.gtkw
-
+SIM: PDP8e.v PDP8e_tb.v
+	iverilog -DSIM PDP8e.v PDP8e_tb.v -o IO_sim.o
+	vvp IO_sim.o
+	gtkwave IO_sim.vcd IO_sim.gtkw
 
 burn:
 	iceFUNprog $(PROJ).bin
@@ -31,18 +28,17 @@ burn:
 clean:
 	rm -rf *.asc *.bin *blif
 	rm -rf *.log
-	rm -rf *.o
-	rm -rf top_design
 	rm -rf *.vcd
-	rm -rf *json
+	rm -rf *.json
+	rm -rf *.o
 	rm -rf obj_dir
+
 
 verilator: PDP8e.v
 	verilator -DSIM -cc PDP8e.v
 
-# was 62.25
 pll: 
-	icepll -i 12 -o 74.00  -f  pll.v -m
+	icepll -i 12 -o 73  -f  pll.v -m
 
 lint: 
 	verilator -cc -DSIM PDP8e.v

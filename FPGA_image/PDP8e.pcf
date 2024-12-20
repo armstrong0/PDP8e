@@ -39,35 +39,35 @@ set_io --warn-no-port dsn[2] J3
 set_io --warn-no-port dsn[1] L1
 set_io --warn-no-port dsn[0] N1
 
-set_io --warn-no-port sw J12
-#set_io --warn-no-port tx G12
-set_io --warn-no-port tx P1
-set_io --warn-no-port rx F12
+set_io --warn-no-port -pullup yes sw J12
+set_io --warn-no-port tx G12
+#set_io --warn-no-port tx P1
+set_io --warn-no-port -pullup yes rx F12
 
-set_io --warn-no-port sr[0] H11
-set_io --warn-no-port sr[1] K12 
-set_io --warn-no-port sr[2] N14
-set_io --warn-no-port sr[3] M12
-set_io --warn-no-port sr[4] P8
-set_io --warn-no-port sr[5] P14
-set_io --warn-no-port sr[6] L12
-set_io --warn-no-port sr[7] L14
-set_io --warn-no-port sr[8] K14  
-set_io --warn-no-port sr[9] H12 
-set_io --warn-no-port sr[10] G14
-set_io --warn-no-port sr[11] F14
+set_io --warn-no-port -pullup yes sr[0] H11
+set_io --warn-no-port -pullup yes sr[1] K12 
+set_io --warn-no-port -pullup yes sr[2] N14
+set_io --warn-no-port -pullup yes sr[3] M12
+set_io --warn-no-port -pullup yes sr[4] P8
+set_io --warn-no-port -pullup yes sr[5] P14
+set_io --warn-no-port -pullup yes sr[6] L12
+set_io --warn-no-port -pullup yes sr[7] L14
+set_io --warn-no-port -pullup yes sr[8] K14  
+set_io --warn-no-port -pullup yes sr[9] H12 
+set_io --warn-no-port -pullup yes sr[10] G14
+set_io --warn-no-port -pullup yes sr[11] F14
 
 
-set_io --warn-no-port addr_loadn E14
-set_io --warn-no-port extd_addrn D14
+set_io --warn-no-port -pullup yes addr_loadn E14
+set_io --warn-no-port -pullup yes extd_addrn D14
 
-set_io --warn-no-port clearn C14
-set_io --warn-no-port contn A12
-set_io --warn-no-port examn C11
-set_io --warn-no-port haltn D10
-set_io --warn-no-port single_stepn D7
+set_io --warn-no-port -pullup yes clearn C14
+set_io --warn-no-port -pullup yes contn A12
+set_io --warn-no-port -pullup yes examn C11
+set_io --warn-no-port -pullup yes haltn D10
+set_io --warn-no-port -pullup yes single_stepn D7
 
-set_io --warn-no-port dep  C6 #   A6 global input - messes up PLL
+set_io --warn-no-port -pullup yes dep  C6 #   A6 global input - messes up PLL
 
 set_io --warn-no-port -pullup yes dsel_swn A7 # A7 global input 
 set_io --warn-no-port dsel_led[3] C7 #

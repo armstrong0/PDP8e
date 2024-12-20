@@ -1,30 +1,28 @@
 # For iceFUN board
-# set_frequency clk100 62.250
-#set_frequency clk100 85.5
 set_frequency clk100 73.5
-set_frequency clk12 12
+set_frequency clk 12
 
 set_io --warn-no-port led1 A5	
 set_io --warn-no-port led2 M4	
-set_io --warn-no-port clk12 P7 # global input  - good for clocks
+set_io --warn-no-port clk P7 # global input  - good for clocks
 
 set_io --warn-no-port runn A4
 
-set_io --warn-no-port EMAn[0] M7
-set_io --warn-no-port EMAn[1] M6
-set_io --warn-no-port EMAn[2] P3
-set_io --warn-no-port An[0] P2
-set_io --warn-no-port An[1] M3
-set_io --warn-no-port An[2] M1 
-set_io --warn-no-port An[3] K3
-set_io --warn-no-port An[4] J1 
-set_io --warn-no-port An[5] H1
-set_io --warn-no-port An[6] G1
-set_io --warn-no-port An[7] E1
-set_io --warn-no-port An[8] C1
-set_io --warn-no-port An[9] C3
-set_io --warn-no-port An[10] A1
-set_io --warn-no-port An[11] A3
+set_io --warn-no-port An[0] M7
+set_io --warn-no-port An[1] M6
+set_io --warn-no-port An[2] P3
+set_io --warn-no-port An[3] P2
+set_io --warn-no-port An[4] M3
+set_io --warn-no-port An[5] M1 
+set_io --warn-no-port An[6] K3
+set_io --warn-no-port An[7] J1 
+set_io --warn-no-port An[8] H1
+set_io --warn-no-port An[9] G1
+set_io --warn-no-port An[10] E1
+set_io --warn-no-port An[11] C1
+set_io --warn-no-port An[12] C3
+set_io --warn-no-port An[13] A1
+set_io --warn-no-port An[14] A3
 
 
 
@@ -41,45 +39,46 @@ set_io --warn-no-port dsn[2] J3
 set_io --warn-no-port dsn[1] L1
 set_io --warn-no-port dsn[0] N1
 
-set_io --warn-no-port sw J12
+set_io --warn-no-port -pullup yes sw J12
 set_io --warn-no-port tx G12
-set_io --warn-no-port rx F12
+#set_io --warn-no-port tx P1
+set_io --warn-no-port -pullup yes rx F12
 
-set_io --warn-no-port sr[0] H11
-set_io --warn-no-port sr[1] K12 
-set_io --warn-no-port sr[2] N14
-set_io --warn-no-port sr[3] M12
-set_io --warn-no-port sr[4] P8
-set_io --warn-no-port sr[5] P14
-set_io --warn-no-port sr[6] L12
-set_io --warn-no-port sr[7] L14
-set_io --warn-no-port sr[8] K14  
-set_io --warn-no-port sr[9] H12 
-set_io --warn-no-port sr[10] G14
-set_io --warn-no-port sr[11] F14
+set_io --warn-no-port -pullup yes sr[0] H11
+set_io --warn-no-port -pullup yes sr[1] K12 
+set_io --warn-no-port -pullup yes sr[2] N14
+set_io --warn-no-port -pullup yes sr[3] M12
+set_io --warn-no-port -pullup yes sr[4] P8
+set_io --warn-no-port -pullup yes sr[5] P14
+set_io --warn-no-port -pullup yes sr[6] L12
+set_io --warn-no-port -pullup yes sr[7] L14
+set_io --warn-no-port -pullup yes sr[8] K14  
+set_io --warn-no-port -pullup yes sr[9] H12 
+set_io --warn-no-port -pullup yes sr[10] G14
+set_io --warn-no-port -pullup yes sr[11] F14
 
 
-set_io --warn-no-port addr_loadn E14
-set_io --warn-no-port extd_addrn D14
+set_io --warn-no-port -pullup yes addr_loadn E14
+set_io --warn-no-port -pullup yes extd_addrn D14
 
-set_io --warn-no-port clearn C14
-set_io --warn-no-port contn A12
-set_io --warn-no-port examn C11
-set_io --warn-no-port halt D10
-set_io --warn-no-port single_step D7
+set_io --warn-no-port -pullup yes clearn C14
+set_io --warn-no-port -pullup yes contn A12
+set_io --warn-no-port -pullup yes examn C11
+set_io --warn-no-port -pullup yes haltn D10
+set_io --warn-no-port -pullup yes single_stepn D7
 
-set_io --warn-no-port dep  C6 #   A6 global input - messes up PLL
+set_io --warn-no-port -pullup yes dep  C6 #   A6 global input - messes up PLL
 
-set_io --warn-no-port dsel[0] A7 #A7 global input 
-set_io --warn-no-port dsel[1] C7 #
-set_io --warn-no-port dsel[2] D6
-set_io --warn-no-port dsel[3] A10
-set_io --warn-no-port dsel[4] C10
-set_io --warn-no-port dsel[5] A11
+set_io --warn-no-port -pullup yes dsel_swn A7 # A7 global input 
+set_io --warn-no-port dsel_led[3] C7 #
+set_io --warn-no-port dsel_led[4] D6
+set_io --warn-no-port dsel_led[1] A10
+set_io --warn-no-port dsel_led[2] C10
+set_io --warn-no-port dsel_led[0] A11
 
 set_io --warn-no-port sdCS   E12
 set_io --warn-no-port sdSCLK D12
 set_io --warn-no-port sdMOSI C12
-set_io --warn-no-port sdMISO B14
+set_io --warn-no-port -pullup yes sdMISO B14
  
 

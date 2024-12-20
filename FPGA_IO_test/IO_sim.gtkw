@@ -1,0 +1,37 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Wed Dec 18 20:48:18 2024
+[*]
+[dumpfile] "/home/armstrong/Desktop/PDP8e/FPGA_IO_test/IO_sim.vcd"
+[dumpfile_mtime] "Wed Dec 18 20:47:22 2024"
+[dumpfile_size] 52534253
+[savefile] "/home/armstrong/Desktop/PDP8e/FPGA_IO_test/IO_sim.gtkw"
+[timestart] 39854950000
+[size] 1868 937
+[pos] -1 -1
+*-21.119270 39863460000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] PDP8e_tb.
+[treeopen] PDP8e_tb.UUT.
+[sst_width] 197
+[signals_width] 150
+[sst_expanded] 1
+[sst_vpaned_height] 381
+@22
+PDP8e_tb.UUT.addr[0:14]
+PDP8e_tb.UUT.ds[0:11]
+PDP8e_tb.UUT.dsel[5:0]
+@28
+PDP8e_tb.UUT.dsel_sw
+PDP8e_tb.UUT.dsel_true
+@22
+PDP8e_tb.UUT.dsel_cntr[15:0]
+@28
+PDP8e_tb.UUT.dsel_led[4:0]
+PDP8e_tb.UUT.pll_locked
+PDP8e_tb.UUT.pps
+@22
+PDP8e_tb.UUT.pps_cntr[23:0]
+@28
+PDP8e_tb.UUT.reset
+[pattern_trace] 1
+[pattern_trace] 0
