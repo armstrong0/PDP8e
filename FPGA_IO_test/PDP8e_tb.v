@@ -51,7 +51,7 @@ module PDP8e_tb;
     
    
 
-    PDP8e UUT (.clk12 (clk),
+    PDP8e UUT (.clk (clk),
         .runn (runn),
         .led1 (led1),
         .led2 (led2),

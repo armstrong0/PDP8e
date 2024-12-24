@@ -63,11 +63,10 @@ module PDP8e (
 
   wire dsel_sw;
   assign dsel_sw = ~dsel_swn;
-  reg dsel_true;
-  reg [15:0] dsel_cntr;
 
-  reg [0:11] rsr;
-  reg [5:0] dsel;
+  reg  [0:11] rsr;
+  reg  [ 5:0] dsel;
+  reg dsel_true;
 
   wire [11:0] tx_char;
   wire [11:0] rx_char;
@@ -95,14 +94,31 @@ module PDP8e (
     rsr <= sr;
   end
 `endif
-  reg [24:0] counter2;
+  reg [28:0] counter2;
 
   always @(posedge clk100) begin
     if (reset == 1) counter2 <= 'o0;
     else counter2 <= counter2 + 1;
   end
-
-  assign addr = counter2[24:10];
+  case (counter2[28:25]) 
+  0:  assign addr = counter2[24:10];
+  1:  assign addr = {counter2[23:10],counter2[24]};
+  2:  assign addr = {counter2[22:10],counter2[24:23]};
+  3:  assign addr = {counter2[21:10],counter2[24:22]};
+  4:  assign addr = {counter2[20:10],counter2[24:21]};
+  5:  assign addr = {counter2[19:10],counter2[24:20]};
+  6:  assign addr = {counter2[18:10],counter2[24:19]};
+  7:  assign addr = {counter2[17:10],counter2[24:18]};
+  8:  assign addr = {counter2[16:10],counter2[24:17]};
+  9:  assign addr = {counter2[15:10],counter2[24:16]};
+  10:  assign addr = {counter2[14:10],counter2[24:15]};
+  11:  assign addr = {counter2[13:10],counter2[24:14]};
+  12:  assign addr = {counter2[12:10],counter2[24:13]};
+  13:  assign addr = {counter2[11:10],counter2[24:12]};
+  14:  assign addr = {counter2[10],counter2[24:11]};
+  15:  assign addr = 15'b0;
+  default:;
+  endcase
   assign run  = ~rx;
 
   // this section established the baud rate and transmits charactors at that
@@ -131,13 +147,15 @@ module PDP8e (
 
 
 `ifdef SIM
-`define  PPS_CNT 24'd65
-`define  DSEL_CNT 16'd65 
+  `define PPS_CNT 24'd65
+  `define DSEL_CNT 16'd65 
 `else
-`define PPS_CNT 24'd65535
-`define DSEL_CNT  16'd65535
+  `define PPS_CNT 24'd6553500
+  `define DSEL_CNT 16'd655350
 `endif
 
+  reg [$clog2(`DSEL_CNT):0] dsel_cntr;
+  reg [$clog2(`PPS_CNT):0] pps_cntr;
   //
   reg [0:11] shft_reg;
 
@@ -149,7 +167,7 @@ module PDP8e (
     end else if (dsel[1] == 1) begin  // allows testing of each switch in the switch register
       ds <= sr;
     end else if (dsel[2] == 1) begin  // allows testing of every other switch
-      ds <= {sw, addr_load, extd_addr, clear, cont, exam, halt, single_step, dep, 2'b0, pll_locked};
+      ds <= {sw, addr_load, extd_addr, clear, cont, exam, halt, single_step, dep, 3'b0};
     end else if (dsel[3] == 1) begin  // this and the next shifts a single bit thru data display
       ds <= shft_reg;
     end else if (dsel[4] == 1) begin
@@ -161,7 +179,6 @@ module PDP8e (
 
   // this section implements left and right shift of a single lit LED	
   reg pps;
-  reg [23:0] pps_cntr;
   always @(posedge clk) begin
     if (reset == 1) shft_reg <= 'o0;
 
@@ -183,15 +200,12 @@ module PDP8e (
       dsel_cntr <= `DSEL_CNT;
       dsel <= {dsel[0], dsel[5:1]};
       dsel_true <= 0;
-    end else if (dsel_cntr != 0) begin
-      dsel_cntr <= dsel_cntr - 1;
-      dsel_true <= 0;
-    end
+    end else if ((dsel_cntr != 0)&& (dsel_sw == 1)) begin
+         dsel_cntr <= `DSEL_CNT;
+    end else dsel_cntr <= dsel_cntr - 1;
 
-    if ((dsel_sw == 1) && (dsel_cntr == 0)) begin
-      dsel_true <= 1;
-    end
-
+    if (dsel_sw == 1) dsel_true <= 1;
+    
     case (dsel)
       6'b100000: dsel_led <= 5'b01100;
       6'b010000: dsel_led <= 5'b01010;
