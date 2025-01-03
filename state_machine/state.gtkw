@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Tue Mar 26 19:27:20 2024
+[*] Fri Jan  3 21:10:21 2025
 [*]
-[dumpfile] "/home/armstrong/Desktop/PDP8e/state_machine/DB.vcd"
-[dumpfile_mtime] "Tue Mar 26 19:24:49 2024"
-[dumpfile_size] 25884
+[dumpfile] "/home/armstrong/Desktop/PDP8e/state_machine/state_test.vcd"
+[dumpfile_mtime] "Fri Jan  3 21:09:48 2025"
+[dumpfile_size] 28435
 [savefile] "/home/armstrong/Desktop/PDP8e/state_machine/state.gtkw"
-[timestart] 1375900
-[size] 1920 987
-[pos] -461 -192
-*-17.107971 1909950 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 0
+[size] 1868 937
+[pos] -1 -1
+*-20.305386 6586650 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] state_machine_tb.
 [sst_width] 214
 [signals_width] 166
@@ -20,9 +20,9 @@ state_machine_tb.SM1.ac[0:11]
 @28
 state_machine_tb.SM1.clk
 state_machine_tb.SM1.cont
+state_machine_tb.SM1.halt_ff
 state_machine_tb.SM1.single_step
 state_machine_tb.SM1.halt
-state_machine_tb.SM1.single_step
 state_machine_tb.SM1.EAE_loop
 state_machine_tb.SM1.EAE_mode
 state_machine_tb.SM1.UF
@@ -30,11 +30,21 @@ state_machine_tb.SM1.UF
 state_machine_tb.SM1.instruction[0:11]
 @28
 state_machine_tb.SM1.int_ena
+state_machine_tb.SM1.int_inh
+state_machine_tb.SM1.int_req
+state_machine_tb.SM1.int_in_prog
 @24
 state_machine_tb.SM1.state[4:0]
 @28
 state_machine_tb.SM1.index
-@29
 state_machine_tb.SM1.data_break
+@420
+state_machine_tb.address
+@28
+state_machine_tb.SM1.trigger
+state_machine_tb.SM1.index
+state_machine_tb.SM1.EAE_loop
+@29
+state_machine_tb.SM1.EAE_mode
 [pattern_trace] 1
 [pattern_trace] 0

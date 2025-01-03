@@ -9,7 +9,7 @@
 
 module state_machine_tb;
 
-  reg [0:11] din, op, pc;
+  reg [0:11] din, op, pc,instruction;
   wire [0:11] opt;
   reg clk;
   reg rst;
@@ -35,7 +35,7 @@ module state_machine_tb;
       .halt(halt),
       .cont(cont),
       .single_step(sing_step),
-      .instruction(op),
+      .instruction(instruction),
       .trigger(trigger),
       .state(stateo),
       .EAE_mode(EAE_mode),
@@ -62,13 +62,7 @@ module state_machine_tb;
   `include "../parameters.v"
    localparam clock_period = 1e9/clock_frequency;
 
-  integer data_file;  // file handler
-  integer scan_file;  // file handler
   integer address;
-  integer dummy;
-  integer temp;
-  integer loaded;
-  `define NULL 0    
 
 
   always begin
@@ -76,100 +70,106 @@ module state_machine_tb;
     #(clock_period / 2) clk <= 0;
   end
 
+  always @(posedge clk)
+  begin
+    if (stateo == FW)
+    begin 
+        instruction <= opt;
+    end    
+    if (stateo == F1)
+        address <= address + 1;
+    if (stateo == EW)
+        if (int_in_prog == 1) int_inh <= 1;
+    if (stateo == DB0) data_break <= 0;
 
-  // code to load instructions in to op (instruction register)
-  always @(posedge clk) begin
-    if ((stateo == F0) && (~sing_step | cont) && (loaded == 1)) begin
-      op <= opt;
-      // $display(op);
-      address <= address + 1;
-    end
-
-  end
-
+  end      
 
   initial begin
     $dumpfile("state_test.vcd");
-    $dumpvars(0, SM1);
+    $dumpvars(0,address,opt, SM1);
+    $readmemh("sm.hex",mem.mem,0,4095);
     rst <= 1;
     EAE_loop <= 0;
     EAE_mode <= 0;
 	index <= 1'b0;
     UF <= 0;
-    loaded <= 0;
     sing_step <= 0;
     cont <= 0;
     pc <= 12'd0;
+    write_en <= 0;
     int_req <= 0;
     int_ena <= 0;
     int_inh <= 1;
     trigger <= 0;
-    //db_read <= 0;
-    //db_write <= 0;
-
+    halt <= 1;
+    data_break <= 0;
     #500 rst <= 0;
-    address <= 1;  // first addess is the reset state
-    data_file = $fopen("ops.txt", "r");
-    if (data_file == `NULL) begin
-      $display("data_file handle was NULL");
-      $finish;
-    end
+    #10 address <= 'o21;
 
-    while (!$feof(
-        data_file
-    )) begin
-      dummy = $fscanf(data_file, "%o \n", temp);
-      $displayo(temp[11:0]);
-      din <= temp[11:0];
-      write_en <= 1;
-      #30;
-      write_en <= 0;
-      address  <= address + 1;
-    end
-    $fclose(data_file);
-    address <= 0;
-
-    #50 loaded <= 1;
-
-    #1 halt = 0;
-    #20 `pulse(cont);
-    #1346 sing_step <= 1;
-    // the following tests single machine cycles for 1,2 and 3 MC instructions
-    #60 `pulse(cont);
-    #60 `pulse(cont);
-    #60 `pulse(cont);
-    #60 `pulse(cont);
-    #60 `pulse(cont);
-    #60 `pulse(cont);
-    #100 sing_step <= 0;
-    #10 int_ena <= 1;
-    #1 int_inh <= 0;
-    #135 int_req <= 1;
-	wait(stateo == 5'o20);
+    #1 halt = 1;
+    #160 `pulse(cont);
+    // the following tests a variety of instructions
+    // and the halt / continue operation
+    // as well as deferred 
+    // deferred auto-increment is not tested here as index is not assert
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #100 halt <= 0;
+    #160 `pulse(cont);
+    //the following tests interrupt processing
+    #160 int_ena <= 1;
+    #10 int_inh <= 0;
+    #10 int_req <= 1;
     #100 `pulse(cont);
-	wait(stateo == 5'o20);
+    // test free run
+    
+    #200 `pulse(cont);
+    wait(SM1.halt_ff==1);
+    // verify halt states
+    #100 `pulse(trigger);
+    wait(SM1.halt_ff == 1);
+    // index is set from the address that defer is accessing, it is set here so
+    // any deferred will appear to be auto indexedto  
+    #100 index <= 1;
+    #10 `pulse(cont);
+    wait(SM1.halt_ff == 1);
+    index <= 0;
+    #10 `pulse(cont);
+    wait(SM1.halt_ff == 1);
+    #10 sing_step <= 1;
+    #160 `pulse(cont);
+    #160 `pulse(cont);
+    #360 `pulse(cont);
+    #10 sing_step <= 0;
+    wait(SM1.halt_ff == 1);
+    #20 data_break <= 1;
     #100 `pulse(cont);
-	wait(stateo == 5'o20);
+    wait(SM1.halt_ff == 1);
+    #1 EAE_mode <= 0;
+    #1 EAE_loop <= 1;
     #100 `pulse(cont);
-    #1 int_ena <= 0;
-    #1 int_req <= 0;
-    #50 halt <= 1;
-	#150 halt <= 0;
-	wait(stateo == 5'o20);
+    #20 EAE_loop <= 0;
+    wait(SM1.halt_ff == 1);
+    #1 EAE_mode <= 1;
+    #1 EAE_loop <= 1;
     #100 `pulse(cont);
-	wait(stateo == 5'o20);
-	index <= 1'b1;
+    #20 EAE_loop <= 0;
+    wait(SM1.halt_ff == 1);
     #100 `pulse(cont);
-	wait(stateo == 5'o20);
-    #100 `pulse(cont);
-
-    data_break <= 1;
-    #1000 $finish;
-
-
-    #1000 $finish;
-
-
+    wait(SM1.halt_ff == 1);
+    #330 $finish;
 
   end
 endmodule

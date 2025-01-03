@@ -1,0 +1,68 @@
+	*0010
+AUTO, 00  
+    *0020
+TEMP, 0    
+	DCA TEMP 
+    DCA I TEMP
+    DCA i AUTO
+    JMP TEMP  / Doesn't matter what the destination is as it won't happen
+    JMP I AUTO
+    JMS TEMP
+    JMS AUTO
+    ISZ TEMP
+    ISZ AUTO
+    TAD TEMP
+    TAD AUTO
+    AND TEMP
+    AND AUTO
+    
+    CLA
+    ION
+    IOF
+S1, HLT
+
+   JMP  S1    / since MA is not linked in to this si,ulation this is not taken
+   DCA TEMP 
+    DCA I TEMP
+    DCA i AUTO
+    JMP TEMP  / Doesn't matter what the destination is as it won't happen
+    JMP I AUTO
+    JMS TEMP
+    JMS AUTO
+    ISZ TEMP
+    ISZ AUTO
+    TAD TEMP
+    TAD AUTO
+    AND TEMP
+    AND AUTO
+    
+    CLA
+    ION
+    IOF
+    HLT
+    / test indirect with auto increment
+    / set index to 1 in the testbed
+    ISZ I TEMP
+    ISZ I AUTO
+    HLT
+    / test indirect with auto increment
+    / set index to 0 in the testbed
+    ISZ I TEMP
+    ISZ I AUTO
+    HLT
+    / set up to test single step
+    ISZ I TEMP
+    HLT
+    / now test data break
+    JMS TEMP
+    JMS AUTO
+    HLT
+    7413 / SHL
+    HLT
+    7413 / SHL
+    HLT
+    7405 / MUL
+    HLT
+	$
+
+

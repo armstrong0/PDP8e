@@ -181,7 +181,7 @@ module mem_ext (
 		E1:;
         E2:;
         E3:;
-        H0:;
+        //H0:;
         H1:
         if (extd_addrd == 1'b1) begin
           IF <= sr[6:8];

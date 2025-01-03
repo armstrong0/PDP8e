@@ -86,7 +86,6 @@ module PDP8e_tb;
         #1 sr <= 12'o0200;  // normal start address
          $dumpfile("IO_sim.vcd");
          $dumpvars(0,UUT);
-        //        $readmemh( "Diagnostics/dhkaf-a.hex", UUT.MA.ram.mem,0,4095);
         #1 halt <= 1;
 		#1 rx <= 1;
         #1 reset <= 1;

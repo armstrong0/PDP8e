@@ -26,6 +26,7 @@ module state_machine (
 );
 
   reg [4:0] next_state;
+  reg halt_ff;
 `ifndef RK8E
   reg data_break;
   reg break_in_prog;
@@ -36,7 +37,8 @@ module state_machine (
 
   always @(posedge clk) begin
     if (reset) begin
-      state <= H0;
+      state <= F0;
+      halt_ff <= 1;
       int_in_prog <= 0;
 `ifdef RK8E
       break_in_prog <= 1'b0;
@@ -50,21 +52,37 @@ module state_machine (
 
         // fetch cycle
         F0: begin
-
+          state <= FW;
+          if (halt == 1) halt_ff <= 1;
+          if (~single_step | cont) state <= FW;
+          else state <= F0;
+        end
+        FW: begin
           if (data_break == 1'b1) begin
             state <= DB0;
             break_in_prog <= 1'b1;
-          end else if (single_step & ~cont) state <= F0;
-          else if (halt & ~cont) state <= H0;
-          else state <= FW;
-          int_in_prog   <= 0;
-          break_in_prog <= 0;
+          end else if (halt_ff == 1) begin
+            if (cont == 1) state <= F1;
+            else if (trigger == 1) state <= H1;
+            else state <= F0;
+          end   
+          else if((int_req & int_ena & ~int_inh )  &&
+                            (instruction != 12'o6002))
+               //this solves the ion/iof/ion/iof problem
+              begin
+            int_in_prog <= 1;
+            state <= E0;
+          end else begin
+            state <= F1;
+            int_in_prog <= 0;
+            break_in_prog <= 0;
+          end
         end
-        FW: state <= F1;
-        F1:
-        casez (instruction & 12'b111100101111)
-          //12'b1111??0?0001,
-          12'b111100000011,
+        F1: begin
+          halt_ff <= 0;
+          casez (instruction & 12'b111100101111)
+            //12'b1111??0?0001,
+            12'b111100000011,
           12'b111100000101,
           12'b111100000111,
           12'b111100001001,
@@ -74,20 +92,21 @@ module state_machine (
           12'b111100100001,
           12'b111100100011,
           12'b111100100101, // SWAB missing see below
-          12'b111100101001,
+            12'b111100101001,
           12'b111100101011,
           12'b111100101101,
           12'b111100101111: // very crude way to specify
               // any extended EAE operation -- let the compiler figure it out
-          begin
-            if (EAE_mode == 1'b0) state <= F2A;
-            else state <= F2B;
-          end
-          12'b111100100111,  // SWBA just follow normal flow
-          12'b111100011001:  // SWAB action taken by ac in F3;
-          state <= F2;
-          default: state <= F2;
-        endcase
+            begin
+              if (EAE_mode == 1'b0) state <= F2A;
+              else state <= F2B;
+            end
+            12'b111100100111,  // SWBA just follow normal flow
+            12'b111100011001:  // SWAB action taken by ac in F3;
+            state <= F2;
+            default: state <= F2;
+          endcase
+        end
         F2: state <= F3;  // non-EAE case
         F2A:
         casez (instruction)  // Mode A
@@ -140,18 +159,18 @@ module state_machine (
         F3:
         casez (instruction)
           // OPR IOT JMP D (single cycle)
-          12'b11??????????: begin
-            if (({instruction[0:3], instruction[10:11]} == 6'b111110)  //halt
-                && (UF == 1'b0))
-              state <= H0;  // halt instruction, not in user mode
-            else if  ((int_req & int_ena & ~int_inh )  &&
-                            (instruction != 12'o6002))
-               //this solves the ion/iof/ion/iof problem
-              begin
-              int_in_prog <= 1;
-              state <= E0;
-
-            end else state <= F0;
+          12'b1111??????10: begin
+            if (UF == 1'b0) begin  // halt instruction
+              halt_ff <= 1;
+              state   <= F0;  // halt instruction, not in user mode
+            end
+          end
+          12'b1111??????00,  // remaining group 2  ops
+          12'b1111???????1,  // group 3 ops
+          12'b1110????????,  // group 1 op
+          12'b110?????????:  // IOT instructions
+          begin
+            state <= F0;
           end
           12'b0??1????????,  // AND TAD ISZ DCA defer cycle
           12'b10?1????????:  // JMS, JMP defer
@@ -159,11 +178,9 @@ module state_machine (
             state <= D0;
           end
           12'b1010????????:  // JMP Direct
-          if (int_req & int_ena & ~int_inh) begin
-            int_in_prog <= 1;
-            state <= E0;
-          end else state <= F0;
-
+          begin
+            state <= F0;
+          end
           12'b1000????????:  // JMS direct 
           state <= E0;
           default: begin
@@ -181,11 +198,7 @@ module state_machine (
         //  if it is a jmp I then F0 is the desired state
         D3:
         if (instruction[0:3] == JMPI) begin
-          if (int_req & int_ena & ~int_inh) begin
-            int_in_prog <= 1;
-            state <= E0;  // interupt processing
-          end
-          else state <= F0;
+          state <= F0;
         end else state <= E0;
 
         // execute cycle
@@ -199,30 +212,14 @@ module state_machine (
           else state <= E2;
         end
         E2: state <= E3;
-        E3:
-        // next state will be 
-        if(int_req & int_ena & ~int_inh & ~int_in_prog ) // test for interrupt
-                begin
-          int_in_prog <= 1;
-          state <= E0;
-        end else state <= F0;
-
-        H0: state <= HW;
-        HW: begin
-          if (data_break == 1'b1) begin
-            state <= DB0;
-          end else if (trigger & ~cont) state <= H1;
-          else if (~cont) state <= H0;
-          else state <= F0;
-        end
+        E3: state <= F0;
         H1: state <= H2;
         H2: state <= H3;
-        H3: state <= H0;
+        H3: state <= F0;
 
         EAE0: state <= EAE1;
-        EAE1: if (EAE_loop == 1)
-              state <= EAE1;
-              else state <= F3;
+        EAE1: if (EAE_loop == 1) state <= EAE1;
+ else state <= F3;
 
         // data break
         DB0: state <= DB1;
@@ -233,7 +230,7 @@ module state_machine (
           break_in_prog <= 1'b0;
         end
 
-        default: state <= H0;
+        default: state <= F0;
       endcase
   end
 endmodule

@@ -1,4 +1,14 @@
-Sept 20 @024 --
+Dec 31 2024
+
+Re-wrote the state_machine.  Almost all interaction with things that disturb the normal insturction flow are now in FW.  The exception being single step / continue which executes macnine cycles, these are in F0, D0 and E0 since there are no other conditions to check these will be easy to verify.  Date_break, interrupts, the halt switch (debounced continue ) and re handled in FW.
+
+I note that there are many places where I can reduce the state counts for instructions, but first I want it to work properly!
+
+The test bed (and makefile) has been re-writen to use an assembler program to generat instructions that drive the state machine.  The method that I had used was very fragile.  The assembler approach was used in other places.
+
+I removed the data_break test programs, it main test bed now tests that.
+
+Sept 20 2024 --
 The PDP8e currently runs with a clock in excess of 70 MHz.  The spi clocks for the SDcard are set to 4 MHz.  It takes 16 clocks to either read or wrtie a word to the sd card.  (16 bits on the sd card, 12 bits on the PDP8e).  So it reads or writes at 1/4 MHz rate.  This means that we have 4 * 70 clocks per read or write.  (280)
 
 The longest instruction of this implementation of the PDP8e is EAE mode B multiply, divide, shift.  Roughly 5 for fetch 6(7) for defer, 1 to vectore to EAE part of the state machine and then 13 for actually executing th e instruction.  For a total of 26.

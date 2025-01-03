@@ -1,3 +1,8 @@
+Jan 3, 2025
+
+This is probably out of date BUT it does outline what should be done in the (new) assembler program
+
+
 verify that op code for memory ops sequence through the proper states - choose
 one of DSA ISZ TAD AND     F,E   F,D,E
 
@@ -26,8 +31,7 @@ JMP I  o5400
 AND I  o0400
 
 
-verify that interupt response is correct  from F3, D3 and E3  vectoring to E0
-to F0
+verify that interupt response is correct.
 ADD HLTs to make it easier to control
 
 DCA I o3400
@@ -38,7 +42,7 @@ CLA   o7200
 HLT   o7402
 
 Halt - Cont executes one complete instruction
-verify halt works from F3, D3 and E3
+verify halt works from F0, D0 and E0
 
 DCA I o3400
 DCA D o3000

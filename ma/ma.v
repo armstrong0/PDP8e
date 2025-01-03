@@ -68,7 +68,9 @@ module ma (
       current_page <= 0;
       write_en <= 0;
       index <= 1'b0;
+`ifdef RK8E      
       mem2disk <= 12'o0;
+`endif     
       idx_tmp <= 12'o0;
       mdin <= 12'o0;
     end else begin
@@ -260,8 +262,8 @@ module ma (
           if (int_in_prog == 1) eaddr <= {3'b000, next_pc};
           else eaddr <= {IF, next_pc};
         end
-        H0: ;
-        HW: mdout <= mdtmp;
+        //H0: ;
+        //HW: mdout <= mdtmp;
         H1:
         if (addr_loadd == 1'b1)
           if (sw == 1'b1) eaddr[3:14] <= 12'o7777;

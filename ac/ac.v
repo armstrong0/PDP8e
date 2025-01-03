@@ -328,8 +328,8 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                 ac <= mdout;
 
 
-            H0:;
-            HW:;
+            //H0:;
+            //HW:;
             H1:;
             H2: if (clear == 1)
             begin
