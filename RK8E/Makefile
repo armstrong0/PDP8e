@@ -72,6 +72,10 @@ clean:
 	rm -rf *.o
 	rm -rf rw.hex
 	rm -rf rw.bin
+	rm -rf sd.v
+	rm -rf sdsim.v
+	rm -rf rke8.v
+
 	
 	
 	
