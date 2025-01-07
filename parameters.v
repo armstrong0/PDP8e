@@ -1,4 +1,5 @@
 //`define RK8E
+//`define EAE 
 //`define up5k
 
 // state machine encoding
@@ -22,18 +23,21 @@ E1 = 5'd14,  // 14
 E2 = 5'd15,  // 15
 E3 = 5'd16,  // 16
 
+`ifdef EAE
 EAE0 = 5'd17,  // 17
 EAE1 = 5'd18,  // 18
+`endif
 
-H1 = 5'd19,  // 19
-H2 = 5'd20,  // 20
-H3 = 5'd21,  // 21
-
+`ifdef RK8E
 DB0 = 5'd22,  // 22
 DB1 = 5'd23,  // 23
 DB2 = 5'd24,  // 24
-DB3 = 5'd25;  // 25
-
+DB3 = 5'd25,  // 25
+`endif
+HW = 5'd26,  // 26
+H1 = 5'd19,  // 19
+H2 = 5'd20,  // 20
+H3 = 5'd21;  // 21
 
 // instruction encodings
 localparam SAM=12'o7457,
