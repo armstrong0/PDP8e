@@ -84,7 +84,8 @@ module ma (
         FW: begin
           mdout <= mdtmp;
           instruction <= mdtmp;
-          eaddr[3:14] <= pc + 12'o0001;  // set up for fetch of immediate operand or address
+          eaddr[3:14] <= pc + 12'o0001;  // set up for fetch of immediate
+          // operand or address for EAE operations
         end
         F1: ;
         F2: begin
@@ -263,7 +264,7 @@ module ma (
           else eaddr <= {IF, next_pc};
         end
         //H0: ;
-        //HW: mdout <= mdtmp;
+        HW: mdout <= mdtmp;
         H1:
         if (addr_loadd == 1'b1)
           if (sw == 1'b1) eaddr[3:14] <= 12'o7777;
