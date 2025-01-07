@@ -327,9 +327,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             else if ((instruction == DLD) || (instruction ==CAMDAD)) //
                 ac <= mdout;
 
-
-            //H0:;
-            //HW:;
+            HW:;
             H1:;
             H2: if (clear == 1)
             begin
@@ -343,7 +341,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             end
             H3:;
             //   EAE stuff
-
+`ifdef EAE
             EAE0:
             begin   // set up state
                 case (instruction & 12'b111100001111)
@@ -584,6 +582,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     default:;
                 endcase
             end
+`endif            
             default:;
         endcase
 
