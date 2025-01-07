@@ -88,7 +88,7 @@ assign single_stepn = ~single_step;
     always @(posedge clk)
     begin
 
-        if ((UUT.mdout == 12'b1111??????10) && (UUT.state == H0))
+        if ((UUT.mdout == 12'b1111??????10) && (UUT.state == F0))
         begin
             case (test_sel)
                 1:;
