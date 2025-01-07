@@ -10,10 +10,10 @@ module imux(
     input [0:11] ac,
     input [0:11] mem_reg_bus,
     input [0:11] serial_data_bus,
-//`ifdef RK8E
+`ifdef RK8E
     input [0:11] disk_bus,
     input disk_skip,
-//`endif
+`endif
     input sskip,
     input mskip,
     output reg skip,
