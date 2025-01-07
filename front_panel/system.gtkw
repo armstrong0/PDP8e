@@ -1,0 +1,23 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Tue Jan  7 01:58:17 2025
+[*]
+[dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/system.vcd"
+[dumpfile_mtime] "Tue Jan  7 01:56:58 2025"
+[dumpfile_size] 43611
+[savefile] "/home/armstrong/Desktop/PDP8e/front_panel/system.gtkw"
+[timestart] 836700
+[size] 1000 600
+[pos] -59 -9
+*-16.749447 1089000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] PDP8e_tb.
+[sst_width] 197
+[signals_width] 88
+[sst_expanded] 1
+[sst_vpaned_height] 206
+@29
+PDP8e_tb.UUT.clk100
+@28
+PDP8e_tb.UUT.contd
+[pattern_trace] 1
+[pattern_trace] 0

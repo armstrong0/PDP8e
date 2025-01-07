@@ -21,7 +21,11 @@ module D_mux (
 
   always @* begin
     case (state)
-      DB0, DB1, F0, FW, F1, F2, F3, F2A, F2B: begin
+`ifdef RK8E    
+      DB0, DB1,DB2,DB3, 
+`endif
+        FW, F1, F2, F3, F2A, F2B: begin //F0 not included as that is the 
+        // none runnig state
         run_led = 1;
         FS = 1;
         DS = 0;
@@ -35,7 +39,10 @@ module D_mux (
         ES = 0;
         HS = 0;
       end
-      E0, EW, E1, E2, E3, EAE0, EAE1: begin
+`ifdef EAE
+      EAE0, EAE1,
+`endif     
+      E0, EW, E1, E2, E3: begin
         run_led = 1;
         FS = 0;
         DS = 0;
