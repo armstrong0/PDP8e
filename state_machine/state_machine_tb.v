@@ -2,7 +2,7 @@
 `timescale 1 ns / 10 ps
 // assumes about a 58 MHz clock
 //`define clock_period = 18;
-`define pulse(arg) #1 ``arg <=1 ; #(4*clock_period) ``arg <= 0
+`define pulse(arg) #1 ``arg <=1 ; #(3*clock_period) ``arg <= 0
 
 
 
