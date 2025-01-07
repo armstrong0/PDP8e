@@ -9,6 +9,7 @@ module state_machine (
     input int_inh,
     input UF,
     input trigger,
+    /* verilator lint_off ASCRANGE */ 
     input [0:11] instruction,
     ac,
     mq,
@@ -27,10 +28,6 @@ module state_machine (
 
   reg [4:0] next_state;
   reg halt_ff;
-`ifndef RK8E
-  reg data_break;
-  reg break_in_prog;
-`endif
 
   `include "../parameters.v"
 
@@ -42,9 +39,6 @@ module state_machine (
       int_in_prog <= 0;
 `ifdef RK8E
       break_in_prog <= 1'b0;
-`else
-      data_break <= 1'b0;
-      break_in_prog <= 1'b0;
 `endif
       // EAE_skip <= 1'b0;
     end else
@@ -52,20 +46,23 @@ module state_machine (
 
         // fetch cycle
         F0: begin
-          state <= FW;
           if (halt == 1) halt_ff <= 1;
-          if (~single_step | cont) state <= FW;
-          else state <= F0;
-        end
-        FW: begin
-          if (data_break == 1'b1) begin
+`ifdef RK8E        
+          if (data_break == 1'b1) begin  // tried to ifdef this out,
+            //format doesn't allow it, it should be optimized out
             state <= DB0;
             break_in_prog <= 1'b1;
-          end else if (halt_ff == 1) begin
-            if (cont == 1) state <= F1;
-            else if (trigger == 1) state <= H1;
+          end else 
+`endif
+          if (single_step == 1) begin
+            if (cont == 0) state <= F0;
+            else state <= FW;
+          end
+          else if ((halt_ff == 1) | (halt ==1)) begin
+            if (cont == 1) state <= FW;
+            else if (trigger == 1) state <= HW;
             else state <= F0;
-          end   
+          end  
           else if((int_req & int_ena & ~int_inh )  &&
                             (instruction != 12'o6002))
                //this solves the ion/iof/ion/iof problem
@@ -73,11 +70,11 @@ module state_machine (
             int_in_prog <= 1;
             state <= E0;
           end else begin
-            state <= F1;
+            state <= FW;
             int_in_prog <= 0;
-            break_in_prog <= 0;
           end
         end
+        FW: state <= F1;
         F1: begin
           halt_ff <= 0;
           casez (instruction & 12'b111100101111)
@@ -108,6 +105,7 @@ module state_machine (
           endcase
         end
         F2: state <= F3;  // non-EAE case
+`ifdef EAE
         F2A:
         casez (instruction)  // Mode A
           12'b1111??0?0101,  // 7405 MUY
@@ -156,6 +154,17 @@ module state_machine (
           state <= F3;
           default: state <= F3;
         endcase
+        E1:
+        if ((instruction & 12'o7455) == 12'o7405) state <= EAE0;  // MUL or DIV
+        else state <= E2;
+        EAE0: state <= EAE1;
+        EAE1:
+        if (EAE_loop == 1) begin
+          state <= EAE1;
+        end else begin
+          state <= F3;
+        end
+`endif
         F3:
         casez (instruction)
           // OPR IOT JMP D (single cycle)
@@ -207,20 +216,17 @@ module state_machine (
           else state <= E0;
         end
         EW: state <= E1;
-        E1: begin
-          if ((instruction & 12'o7455) == 12'o7405) state <= EAE0;  // MUL or DIV
-          else state <= E2;
-        end
+`ifndef EAE
+        E1: state <= E2;
+`endif
         E2: state <= E3;
         E3: state <= F0;
+        HW: state <= H1;
         H1: state <= H2;
         H2: state <= H3;
         H3: state <= F0;
 
-        EAE0: state <= EAE1;
-        EAE1: if (EAE_loop == 1) state <= EAE1;
- else state <= F3;
-
+`ifdef RK8E
         // data break
         DB0: state <= DB1;
         DB1: state <= DB2;
@@ -229,7 +235,7 @@ module state_machine (
           state <= FW;
           break_in_prog <= 1'b0;
         end
-
+`endif
         default: state <= F0;
       endcase
   end
