@@ -241,7 +241,6 @@ rk8e RK8E (
         .link (link),
         .gtf (gtf),
         .UF (UF),
-        .UI (UI),
         .EAE_mode (EAE_mode),
         .EAE_loop (EAE_loop),
         .sr (rsr),
