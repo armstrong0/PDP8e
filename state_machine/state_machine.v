@@ -217,7 +217,7 @@ module state_machine (
         end
         EW: state <= E1;
 `ifndef EAE
-        E1: state <= E2;
+        E1: state <= E2; // replaced by E1 in EAE which has a conditional branch
 `endif
         E2: state <= E3;
         E3: state <= F0;
