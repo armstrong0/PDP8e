@@ -9,7 +9,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
     input [0:11] mdout,
     input [0:11] input_bus,
     input UF,
-    input UI,
     output reg link,
     output reg gtf,
     output reg EAE_mode,
