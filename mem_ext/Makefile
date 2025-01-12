@@ -16,6 +16,7 @@ clean:
 	rm -f *.rim
 	rm -f *.bin
 	rm -f *.lst
+	rm -f *.hex
 	
 vdent:
 	~/bin/vdent <mem_ext.v > t.v
