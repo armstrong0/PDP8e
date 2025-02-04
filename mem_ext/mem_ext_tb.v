@@ -5,6 +5,8 @@
 `include "../ma/ma.v"
 `include "../state_machine/state_machine.v"
 
+
+
 module mem_ext_tb;
 
   mem_ext ME (
@@ -68,7 +70,7 @@ module mem_ext_tb;
   reg cont;
   reg sing_step;
   reg int_ena;
-  reg irq;
+  //reg irq;
   reg loadd;
   reg trigger;
   reg examd;
@@ -87,11 +89,12 @@ module mem_ext_tb;
   wire [0:2] IF;
   wire UF;
   wire UI;
+  wire irq;
   wire [0:11] me_bus;
   wire int_inh;
   wire int_in_prog;
   wire skip, mskip;
-
+assign irq = UI;
 
 
   localparam clock_period = 1e9 / clock_frequency;
@@ -116,7 +119,7 @@ module mem_ext_tb;
     $dumpvars(0);
     #1 halt <= 0;
     #1 sing_step <= 0;
-    #1 irq <= 0;
+//    #1 irq <= 0;
     #1 int_ena <= 0;
     #1 depd <= 0;
     #1 examd <= 0;
@@ -140,8 +143,8 @@ module mem_ext_tb;
 
     #500 `pulse(cont);
     #3800 int_ena <= 1;
-    #236 irq <= 1;
-    #100 $finish;
+//    #236 irq <= 1;
+    #10000 $finish;
   end
 
 

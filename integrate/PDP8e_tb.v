@@ -34,9 +34,11 @@ module PDP8e_tb;
     wire tclk;
     reg serial_io;
 
+    integer test_nu;
+
 `include "../parameters.v"
     localparam clock_period = 1e9/clock_frequency;
-    
+
     always begin  // clock _period comes from parameters.v
         #(clock_period/2) clk100 <= 1;
         #(clock_period/2) clk100 <= 0;
@@ -52,8 +54,8 @@ module PDP8e_tb;
     always @(posedge clk100)
     begin
         rx <= tx;  // used in serial tests
-        serial_io <= ((UUT.instruction[0:8] == 9'o603) || 
-                     (UUT.instruction[0:8] == 9'o604)) ;
+        serial_io <= ((UUT.instruction[0:8] == 9'o603) ||
+            (UUT.instruction[0:8] == 9'o604)) ;
     end
     parameter test_sel=2;
 
@@ -82,8 +84,8 @@ module PDP8e_tb;
         .addr_loadn (~addr_load),
         .clearn (~clear)) ;
 
-assign haltn = ~halt;
-assign single_stepn = ~single_step;
+    assign haltn = ~halt;
+    assign single_stepn = ~single_step;
 
     always @(posedge clk)
     begin
@@ -160,7 +162,7 @@ assign single_stepn = ~single_step;
             4:  if (address == 15'o03551 )
             begin
                 $display("completed one pass of Basic JMS JMP");
-               #1000 $finish;
+                #1000 $finish;
             end
 
             5: if (address == 15'o07443 )
@@ -191,24 +193,95 @@ assign single_stepn = ~single_step;
             9:;
             10:;
             11:case (address)
-                15'o00200: $display("Starting Test 0");
-                15'o00337: $display("Starting Test 1");
-                15'o00600: $display("Starting Test 2");
-                15'o00656: $display("Starting Test 3");
-                15'o01050: $display("Finished Test 10");
-                15'o01400: $display("Starting Test 11");
-                15'o01432: $display("Starting Test 12");
-                15'o01600: $display("Starting Test 13");
-                15'o02047: $display("Starting Test 6");
-                15'o02200: $display("Starting Test 14");
-                15'o02271: $display("Starting Test 4");
-                15'o02331: $display("Starting Test 5");
-                15'o02400: $display("Starting Test 8");
-                15'o02452: $display("Starting Test 9");
-                15'o02452: $display("Starting Test 15");
-                15'o02600: $display("Starting Test 15");
-                15'o03502: $display("Starting Test 16");
-                15'o04000: $display("Starting Test 7");
+                15'o00200: if (test_nu != 0) begin
+                    $display("Starting Test 0");
+                    test_nu <= 0;
+                end
+                15'o00337:
+                if (test_nu != 1) begin
+                    $display("Starting Test 1");
+                    test_nu <= 1;
+                end
+                15'o00600:
+                if (test_nu != 2) begin
+                    test_nu <= 2;
+                    $display("Starting Test 2");
+                end
+                15'o00656:
+                if (test_nu != 3) begin
+                    $display("Starting Test 3");
+                    test_nu <= 3;
+                end
+                15'o01050:
+                if (test_nu != 10) begin
+                    $display("Finished Test 10");
+                    test_nu <= 10;
+                end
+                15'o01400:
+                if (test_nu != 11) begin
+                    $display("Starting Test 11");
+                    test_nu <= 11;
+                end
+                15'o01432:
+                if (test_nu != 12) begin
+                    $display("Starting Test 12");
+                    test_nu <= 12;
+                end
+                15'o01600:
+                if (test_nu != 13) begin
+                    $display("Starting Test 13");
+                    test_nu <= 13;
+                end
+                15'o02047:
+                if (test_nu != 6) begin
+                    $display("Starting Test 6");
+                    test_nu <= 6;
+                end
+                15'o02200:
+                if (test_nu != 14) begin
+                    $display("Starting Test 14");
+                    test_nu <= 14;
+                end
+                15'o02271:
+                if (test_nu != 4) begin
+                    $display("Starting Test 4");
+                    test_nu <= 4;
+                end
+                15'o02331:
+                if (test_nu != 5) begin
+                    $display("Starting Test 5");
+                    test_nu <= 5;
+                end
+                15'o02400:
+                if (test_nu != 8) begin
+                    $display("Starting Test 8");
+                    test_nu <= 8;
+                end
+                15'o02452:
+                if (test_nu != 9) begin
+                    $display("Starting Test 9");
+                    test_nu <= 9;
+                end
+                15'o02452:
+                if (test_nu != 9) begin
+                    $display("Starting Test 9");
+                    test_nu <= 9;
+                end
+                15'o02600:
+                if (test_nu != 15) begin
+                    $display("Starting Test 15");
+                    test_nu <= 15;
+                end
+                15'o03502:
+                if (test_nu != 16) begin
+                    $display("Starting Test 16");
+                    test_nu <= 16;
+                end
+                15'o04000:
+                if (test_nu != 15) begin
+                    $display("Starting Test 7");
+                    test_nu <= 15;
+                end
                 default:;
             endcase
             default:;
@@ -226,6 +299,8 @@ assign single_stepn = ~single_step;
 
 
         #1 sr <= 12'o0200;  // normal start address
+        test_nu <= -1;
+
         case(test_sel)
             1: begin
                 $dumpfile("instruction_test_pt1.vcd");
@@ -302,25 +377,25 @@ assign single_stepn = ~single_step;
                 $dumpfile("Serial_test.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/d2ab.hex",UUT.MA.ram.mem,0,8191);
-                end
-                
+            end
+
             13: begin
                 $write("EAE Test 1");
                 $dumpfile("EAE_test1.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0LB.hex",UUT.MA.ram.mem,0,8191);
-                end
+            end
             14: begin
                 $write("EAE Test 2");
                 $dumpfile("EAE_test2.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/D0MB.hex",UUT.MA.ram.mem,0,8191);
-                end
+            end
             15: begin
                 $dumpfile("EAE_EME_test.vcd");
                 $dumpvars(0,UUT);
                 $readmemh("Diagnostics/dhkea.hex",UUT.MA.ram.mem,0,8191);
-                end
+            end
 
         endcase
         #0 halt <= 1;
@@ -431,15 +506,15 @@ assign single_stepn = ~single_step;
                 #150000000  $finish;
             end
             11:begin
-                sr <= 12'o0200;  
-                //sr <= 12'o2600;  // test 15  
+                sr <= 12'o0200;
+                sr <= 12'o2600;  // test 15
                 #1000 ;
                 `pulse(addr_load);
                 sr <= 12'o0001; // simulation has 8k, reads 0000 for
                 // non-exsistant memory
                 #1000 `pulse(cont);
                 // #1000  `pulse(cont);
-                #184000000 $finish;
+                #1840000000 $finish;
                 //#5000000 $finish;
             end
             12: begin
@@ -493,8 +568,8 @@ assign single_stepn = ~single_step;
                 #500 `pulse(addr_load);
                 #500 `pulse(clear);
                 #500 `pulse(cont);  // have to fake out the uart
-                #10000000 $finish;
-                end
+                #100000 $finish;
+            end
 
 
 

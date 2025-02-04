@@ -21,7 +21,6 @@ module state_machine (
     input to_disk,
     output reg break_in_prog,
 `endif
-    //  output reg EAE_skip,
     output reg int_in_prog,
     output reg [4:0] state
 );
@@ -40,13 +39,11 @@ module state_machine (
 `ifdef RK8E
       break_in_prog <= 1'b0;
 `endif
-      // EAE_skip <= 1'b0;
     end else
       case (state)
 
         // fetch cycle
         F0: begin
-          if (halt == 1) halt_ff <= 1;
 `ifdef RK8E        
           if (data_break == 1'b1) begin  // tried to ifdef this out,
             //format doesn't allow it, it should be optimized out
@@ -54,11 +51,8 @@ module state_machine (
             break_in_prog <= 1'b1;
           end else 
 `endif
-          if (single_step == 1) begin
-            if (cont == 0) state <= F0;
-            else state <= FW;
-          end
-          else if ((halt_ff == 1) | (halt ==1)) begin
+          if (cont == 1) state <= FW;
+          else if (halt_ff == 1)  begin
             if (cont == 1) state <= FW;
             else if (trigger == 1) state <= HW;
             else state <= F0;
@@ -78,8 +72,7 @@ module state_machine (
         F1: begin
           halt_ff <= 0;
           casez (instruction & 12'b111100101111)
-            //12'b1111??0?0001,
-            12'b111100000011,
+          12'b111100000011,
           12'b111100000101,
           12'b111100000111,
           12'b111100001001,
@@ -89,7 +82,7 @@ module state_machine (
           12'b111100100001,
           12'b111100100011,
           12'b111100100101, // SWAB missing see below
-            12'b111100101001,
+          12'b111100101001,
           12'b111100101011,
           12'b111100101101,
           12'b111100101111: // very crude way to specify
@@ -172,23 +165,26 @@ module state_machine (
             if (UF == 1'b0) begin  // halt instruction
               halt_ff <= 1;
               state   <= F0;  // halt instruction, not in user mode
+              end
+            else
+            begin
+              halt_ff <= 0;
+              state <= F0;  //UI should be set 
             end
           end
           12'b1111??????00,  // remaining group 2  ops
           12'b1111???????1,  // group 3 ops
           12'b1110????????,  // group 1 op
+          12'b1010????????,  // JMP Direct
           12'b110?????????:  // IOT instructions
           begin
             state <= F0;
+            if (halt == 1) halt_ff <=1;
           end
           12'b0??1????????,  // AND TAD ISZ DCA defer cycle
           12'b10?1????????:  // JMS, JMP defer
           begin
             state <= D0;
-          end
-          12'b1010????????:  // JMP Direct
-          begin
-            state <= F0;
           end
           12'b1000????????:  // JMS direct 
           state <= E0;
@@ -208,6 +204,7 @@ module state_machine (
         D3:
         if (instruction[0:3] == JMPI) begin
           state <= F0;
+          if (halt == 1) halt_ff <=1;
         end else state <= E0;
 
         // execute cycle
@@ -220,7 +217,10 @@ module state_machine (
         E1: state <= E2; // replaced by E1 in EAE which has a conditional branch
 `endif
         E2: state <= E3;
-        E3: state <= F0;
+        E3: begin
+            state <= F0;
+            if (halt == 1) halt_ff <=1;
+            end
         HW: state <= H1;
         H1: state <= H2;
         H2: state <= H3;

@@ -2,6 +2,12 @@
 
 diag_dir=$(pwd)/Diagnostics
 
+ function send()
+ { echo "Using diagnostic"
+   echo $1
+  sendtape $diag_dir/$1
+  }
+  
 function prompt ()
 {
 echo "If CPU is running: Switch Halt to ON and then OFF"
@@ -42,7 +48,8 @@ read selection
 case $selection in
 
 1) prompt
-sendtape $diag_dir/dhkaf-a-pb 
+send dhkaf-a-pb
+
 echo "Set SR=7777, press Addr Load, then press Clear, Cont"
 echo "Once loading is complete set SR=0200,"
 echo "press Addr Load"
@@ -57,7 +64,7 @@ sleep 1
 ;;
 
 2) prompt
- sendtape $diag_dir/maindec-08-dhkag-a-pb 
+ send maindec-08-dhkag-a-pb 
 echo "Set SR=7777, then press Clear, Cont"
 read -p "Press any key"
 echo "Set SR=0200 Press AL,CL,CO"
@@ -68,7 +75,7 @@ sleep 1
 ;;
 3) prompt
 echo "Starting Adder Tests requires about 4 minutes to run, examine terminal for errors"
- sendtape $diag_dir/MAINDEC-8E-D0CC-AddTest.pt  
+ send MAINDEC-8E-D0CC-AddTest.pt  
 sleep 1
 echo "Starting Minicom Terminal program"
 sleep 1
@@ -83,7 +90,7 @@ echo "Address Load, Clear, Cont"
 
 4) prompt
 echo "Starting Basic JMP - JMS tests"
- sendtape $diag_dir/MAINDEC-8E-D0IB-Basic-JMP-JMS.pt 
+ send MAINDEC-8E-D0IB-Basic-JMP-JMS.pt 
 echo "Set SR=0200 Press Addr Load"
 echo "Press Clear, then COnt"
 term_hex
@@ -93,7 +100,8 @@ echo "Press Clear and then continue, if it stops at 736 the bootloader is restor
  ;;
 5) prompt
 echo "Starting Random TAD Tests"
- sendtape $diag_dir/MAINDEC-8E-D0EB-Random-TAD.pt sleep 1
+ send  MAINDEC-8E-D0EB-Random-TAD.pt 
+ sleep 1
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
@@ -106,7 +114,7 @@ echo "Stop the test once satisfied, close minicom"
 6) prompt
 echo "Starting Random AND Tests"
 echo "alternates between two memory regions"
- sendtape $diag_dir/MAINDEC-8E-D0DB-Random-AND.pt
+ send MAINDEC-8E-D0DB-Random-AND.pt
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
@@ -117,7 +125,7 @@ echo "Stop the test once satisfied, at least two, close minicom"
  ;;
 7) prompt
 echo "Starting Random ISZ Tests"
- sendtape $diag_dir/MAINDEC-8E-D0FC-Random-ISZ.pt
+ send MAINDEC-8E-D0FC-Random-ISZ.pt
  echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
@@ -129,7 +137,7 @@ echo "Stop the test once satisfied, at least two, close minicom"
  ;;
 8) prompt
 echo "Starting Random DCA Tests"
- sendtape $diag_dir/MAINDEC-8E-D0GC-Random-DCA.pt 
+ send MAINDEC-8E-D0GC-Random-DCA.pt 
 echo "Starting Minicom Terminal program, in HEX mode, it will start centered on the screen"
 sleep 1
 mate-terminal -e "minicom --displayhex" &
@@ -142,7 +150,7 @@ echo "Minicom will show 87 - each is a bell which signifies ~27000 tests, close 
  ;;
 9)  prompt
 echo "Starting Random JMP tests"
-sendtape $diag_dir/MAINDEC-8E-D0HC-Random-JMP.pt 
+send MAINDEC-8E-D0HC-Random-JMP.pt 
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
@@ -153,7 +161,7 @@ echo "Set SR to 0000, press Clear, then Cont"
 ;;
 10)  prompt
 echo "Starting Random JMP JMS tests"
-sendtape $diag_dir/MAINDEC-8E-D0JB-Random-JMP-JMS.pt
+send MAINDEC-8E-D0JB-Random-JMP-JMS.pt
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
@@ -165,7 +173,7 @@ echo "Set SR to 0000, press Clear, then Cont"
 ;;
 11) prompt
 echo "Starting Memory Extension / Time Share Control"
-sendtape $diag_dir/maindec-08-dhmca-b-pb 
+send maindec-08-dhmca-b-pb 
 echo "Starting Minicom Terminal program, in HEX mode, it will start centered on the screen"
 sleep 1
 mate-terminal -e "minicom --displayhex" &
@@ -176,8 +184,8 @@ echo "Minicom will show 87 (or 07) - each is a bell which signifies one complete
 
 12) prompt
 echo "Testing EAE mode A and B except multiply and divide"
-sendtape $diag_dir/MAINDEC-8E-D0LB-PB
-#sendtape $diag_dir/MAINDEC-8E-D0LA-EAE-Test1.pt
+send  MAINDEC-8E-D0LB-PB
+#send MAINDEC-8E-D0LA-EAE-Test1.pt
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
@@ -194,7 +202,7 @@ echo "Stop the test once satisfied, close minicom"
 ;;
 13) prompt
 echo "Testing EAE mode A and B multiply and divide"
-sendtape $diag_dir/MAINDEC-8E-D0MB-PB
+send MAINDEC-8E-D0MB-PB
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &
@@ -217,7 +225,7 @@ echo "Stop the test once satisfied, close minicom"
 14) prompt
 echo "Testing EAE Extended Memory"
 echo "Exercises B mode instructions that use extended memory"
-sendtape $diag_dir/maindec-08-dhkea-e-pb
+send maindec-08-dhkea-e-pb
 echo "Starting Minicom Terminal program, it will start centered on the screen"
 sleep 1
 mate-terminal -e minicom  &

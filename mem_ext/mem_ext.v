@@ -68,7 +68,7 @@ module mem_ext (
               12'o6204: UI <= 1'b0;  // CUI
               12'o6214: me_bus <= ac | {6'o00, DF, 3'o0};  // RDF
               12'o6224: me_bus <= ac | {6'o00, IF, 3'o0};  // RIF
-              12'o6234: me_bus <= ac | {5'o00, savereg};   // RIB
+              12'o6234: me_bus <= ac | {5'o00, savereg};  // RIB
               12'b1010????????: begin  // JMP DIRECT
                 if (int_inh == 1) begin
                   IF <= IB;
@@ -128,19 +128,26 @@ module mem_ext (
                 int_inh <= 1;
               end
               12'o6204: UI <= 0;
-              12'o6244: begin     //RMF
+              12'o6244: begin  //RMF
                 UB <= savereg[0];
                 IB <= savereg[1:3];
                 DF <= savereg[4:6];
                 int_inh <= 1;
               end
-              12'o6254: ;         // SINT
+              12'o6254: ;  // SINT
               12'o6264: UB <= 0;  // CUF
-              12'o6274: begin     // SUF
+              12'o6274: begin  // SUF
                 UB <= 1;
                 int_inh <= 1;
               end
-              default:  ;
+              12'b101_0??_???_???:
+              if (int_inh == 1'b1) begin  // JMPD
+                int_inh <= 0;
+                IF <= IB;
+                UF <= UB;
+              end
+
+              default: ;
             endcase
           end
           mskip <= 0;

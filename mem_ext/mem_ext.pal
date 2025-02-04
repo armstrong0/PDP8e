@@ -68,11 +68,17 @@ F0testInt,
 	RIB
 	RIF
 	7000
+    CIF 0
+	6274
+
+    7000
 	7000
-	7000
+    JMP usertrap
 	7000
 	hlt
-
+usertrap, 7000
+    hlt
+    
  FIELD 1
  *500
  F1org,

@@ -1,5 +1,5 @@
 //`define RK8E
-//`define EAE 
+`define EAE 
 //`define up5k
 
 // state machine encoding
