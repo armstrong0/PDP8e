@@ -3,9 +3,11 @@
 diag_dir=$(pwd)/Diagnostics
 
  function send()
- { echo "Using diagnostic"
+ { echo ""
+   echo "Using diagnostic"
    echo $1
-  sendtape $diag_dir/$1
+   sendtape $diag_dir/$1
+   echo ""
   }
   
 function prompt ()
@@ -121,7 +123,8 @@ mate-terminal -e minicom  &
 echo "A will typed every 4096 ANDs"
 echo "Set SR=0200 Press Addr Load"
 echo "Set SR to 0000, press Clear, then Cont"
-echo "Stop the test once satisfied, at least two, close minicom"
+echo "Stop the test once satisfied close minicom"
+echo "The LOADERS maybe overwritten"
  ;;
 7) prompt
 echo "Starting Random ISZ Tests"
