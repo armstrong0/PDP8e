@@ -1,32 +1,38 @@
 [*]
-[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Sun Apr  4 00:01:56 2021
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Thu Feb 20 02:24:42 2025
 [*]
-[dumpfile] "/home/armstrong/Desktop/ICE40_PDP8e/serial/rx.vcd"
-[dumpfile_mtime] "Sun Apr  4 00:01:42 2021"
-[dumpfile_size] 2570
-[savefile] "/home/armstrong/Desktop/ICE40_PDP8e/serial/rx.gtkw"
+[dumpfile] "/home/armstrong/Desktop/PDP8e/serial/rx.vcd"
+[dumpfile_mtime] "Thu Feb 20 02:21:18 2025"
+[dumpfile_size] 2690
+[savefile] "/home/armstrong/Desktop/PDP8e/serial/rx_rx.gtkw"
 [timestart] 0
-[size] 1358 691
+[size] 1868 937
 [pos] -1 -1
-*-27.610258 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-25.783413 4000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] rx_tb.
-[sst_width] 207
-[signals_width] 134
+[sst_width] 197
+[signals_width] 150
 [sst_expanded] 1
-[sst_vpaned_height] 185
-@28
-rx_tb.baud_clk
-@30
-rx_tb.char[0:7]
-rx_tb.rx1.char1[0:8]
-@28
-rx_tb.flag
+[sst_vpaned_height] 381
 @22
-rx_tb.rx1.baud_cnt[3:0]
-rx_tb.rx1.state[3:0]
+rx_tb.RX.baud_rate
+@420
+rx_tb.RX.bit0
+rx_tb.RX.bit1
+@30
+rx_tb.RX.char0[0:7]
+@31
+rx_tb.RX.char1[0:7]
 @28
-rx_tb.reset
-rx_tb.rx
+rx_tb.RX.clear
+rx_tb.RX.clear_flag
+rx_tb.RX.clk
+rx_tb.RX.flag
+rx_tb.RX.reset
+rx_tb.RX.rx
+@420
+rx_tb.RX.rx_term_count
+rx_tb.RX.rx_term_nu_bits
 [pattern_trace] 1
 [pattern_trace] 0

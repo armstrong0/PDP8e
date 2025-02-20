@@ -182,14 +182,7 @@ module mem_ext (
         E2: ;
         E3: ;
         //H0:;
-        H1:
-        if (extd_addrd == 1'b1) begin
-          IF <= sr[6:8];
-          IB <= sr[6:8];
-          DF <= sr[9:11];
-          UF <= 0;
-          UB <= 0;
-        end
+        H1:;
         H2:
         if (clear == 1) begin
           IF <= 3'o0;
@@ -200,6 +193,14 @@ module mem_ext (
           int_delay <= 0;
           UB <= 0;
         end
+        else if (extd_addrd == 1'b1) begin
+          IF <= sr[6:8];
+          IB <= sr[6:8];
+          DF <= sr[9:11];
+          UF <= 0;
+          UB <= 0;
+        end
+
         H3: ;
         default: ;
       endcase

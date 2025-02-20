@@ -18,7 +18,7 @@ view_tx: tx
 	gtkwave tx.vcd tx.gtkw & 
 
 view_rx:rx 
-	gtkwave rx.vcd rx_rx.gtkw	&
+	gtkwave rx.vcd rx.gtkw	&
 
 view_top: top
 	gtkwave top.vcd top.gtkw &

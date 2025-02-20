@@ -191,6 +191,7 @@ rk8e RK8E (
         .addr_loadd (addr_loadd),
         .depd (depd),
         .examd (examd),
+        .extd_addrd (extd_addrd),
         .sw (sw),
 `ifdef RK8E
         .to_disk (to_disk),

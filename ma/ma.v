@@ -15,6 +15,7 @@ module ma (
     input addr_loadd,
     depd,
     examd,
+    extd_addrd,
     input int_in_prog,
     input [0:2] IF,
     DF,
@@ -80,6 +81,7 @@ module ma (
       case (state)
         F0: begin
           pc <= eaddr[3:14];
+          mdout <= mdtmp;  // catches the case where we are spinning in F0
         end
         FW: begin
           mdout <= mdtmp;
@@ -272,7 +274,10 @@ module ma (
         else if (depd == 1'b1) begin
           mdin <= sr;
           write_en <= 1;
-        end
+        end 
+        else if (extd_addrd == 1'b1) begin
+          eaddr[0:2] <= sr[6:8];
+        end  
         H2: if ((depd == 1'b1) | (examd == 1'b1)) eaddr[3:14] <= eaddr[3:14] + 12'o0001;
         H3: ;
 `ifdef RK8E

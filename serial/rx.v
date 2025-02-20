@@ -16,12 +16,10 @@ module rx (
   `include "../parameters.v"
   localparam rx_term_count = $rtoi(clock_frequency/(baud_rate*16));
   localparam rx_term_nu_bits = $clog2(rx_term_count);
-  localparam rx_term_cnt = rx_term_count[rx_term_nu_bits-1:0];
+ // localparam rx_term_cnt = rx_term_count[rx_term_nu_bits-1:0];
 
   localparam start_search = 0,
     check_start = 1,
-    check_start1 = 2,
-    check_start2 = 3,
     check_start3 = 8,
     bit0 = check_start3 + 16,
     bit1 = bit0 + 16,
@@ -42,18 +40,18 @@ module rx (
     if ((reset == 1'b1) | (clear == 1)) begin
       char1 <= 8'o377;
       char0 <= 8'o377;
-      counter <= rx_term_cnt;
+      counter <= rx_term_count;
       flag <= 0;
       state <= start_search;
     end else if (clear_flag == 1) flag <= 0;
     else if (counter > 0) counter <= counter - 1;
     else  // counter reached zero
     begin
-      counter <= rx_term_cnt;
+      counter <= rx_term_count;
       state   <= state + 1;
       case (state)
-        start_search, check_start, check_start1, check_start2, check_start3:
-        if (rx == 1) state <= 8'b11111111;
+        start_search, check_start, check_start3:
+        if (rx == 1) state <= start_search;
         else char1 <= 8'o377;
         bit0, bit1, bit2, bit3, bit4, bit5, bit6: char1 <= {rx, char1[0:6]};
         bit7: char0 <= {rx, char1[0:6]};
