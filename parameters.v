@@ -82,9 +82,10 @@ JM = 2'b10 ;
 
 `ifdef SIM
 // calculate in nanoseconds
-localparam real clock_frequency = 84000000;
+//localparam real clock_frequency = 84000000;
+localparam real clock_frequency = 73500000;
 localparam real clock_period = 1/clock_frequency*1e9;
-parameter real baud_rate = 100000; //11 clocks per output 
+parameter real baud_rate = 115200; //10 clocks per output 
 `elsif TSIM
 // calculate in nanoseconds
 parameter real clock_frequency = 5000000;
@@ -92,7 +93,8 @@ localparam real clock_period = 1/clock_frequency*1e9;
 parameter real baud_rate = 1200;
 `else
 //parameter real baud_rate = 9600;
-parameter real baud_rate = 38400;
+//parameter real baud_rate = 38400;
+parameter real baud_rate = 115200; //10 clocks per output 
 `endif
 
 // define the slow and fast clocks of the sd card
