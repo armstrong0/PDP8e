@@ -29,7 +29,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
 
     always @(posedge clk)
     begin
-        if (reset)
+        if (reset | clear)
         begin
             ac <= 12'o0;
             mq <= 12'o0;

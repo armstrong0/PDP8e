@@ -1,0 +1,56 @@
+whilst trying to get the receiver working to implement Doug Ingraham's console serial device (csd) I had trouble with the receiver.  There were charactors arrivinging at the USB to TTL convertor yet the PDP8 was not receiving charactors.  I halted the machine, the pressed clear, then deasserted halt and pressed cont inue and the program recovered.  So clear fixed the receiver!  I took out two false start bit detection steps set the baud rate the 115200 and rebuilt.  It works fine now, but I don't see how what I did fixed it!
+
+The PDP8 is operating at 73.5 MHz.  At 115200 that is 738 clocks per baud. 7/16 of a baud is 279 and 1/16 of a baud is 40.
+
+This is different than the existing one, which uses one counter to get to 16 * baud rate, and then works from that.  
+
+so the sketch of a new receiver would be
+states idle
+    start_check
+    start_bit
+    bit0
+    bit1
+    bit2
+    bit3 
+    bit4
+    bit5 
+    bit6
+    bit7
+    stop_bit
+
+
+cntr <= cntr- 1; / in verilog this may make cntr 0 but it won't be recognized 
+                 / until the next clock
+if (cntr == 0) begin
+  cntr <= full_baud;  // set for a full baud period UNLESS overridden below
+  case (state)
+  idle:
+    cntr <= one_16_baud
+    if (rx == 0)
+    begin
+      state <= check_start
+    end
+    else state <= idle;
+  check_start: 
+    if (rx == 1) begin  // false start bit.
+    state <=, idle;
+    cntr <= one_16_baud;
+    end else begin
+    state <= start_bit;
+    cntr <= seven_16_baud;
+    end
+  start_bit:
+    state <= bit0;
+  bit0: begin
+  state <= bit1;
+  char1 <= {rx,char1[0:6];
+  end
+  bit1
+  ....
+     
+  stop_bit: begin
+    flag <= 1;
+    state <= idle;
+    end
+  
+   
