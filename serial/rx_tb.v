@@ -33,7 +33,10 @@ initial begin
 
 localparam real baud_period = 1.0/baud_rate*1e9;
 localparam real slow_baud = 0.97 * baud_period;
-
+localparam full_baud = $rtoi(clock_frequency/(baud_rate));
+localparam rx_term_nu_bits = $clog2(full_baud);
+localparam seven_sixteenth = $rtoi(clock_frequency/(baud_rate)*7/16);
+localparam one_sixteenth = $rtoi(clock_frequency /(baud_rate)/16);
 
 
 initial begin 
@@ -51,6 +54,12 @@ initial begin
 #1 $display("clock period %f",(clock_period)) ;
 #1 $display("baud rate %f ",(baud_rate)) ;
 #1 $display("baud_period %f",(baud_period)) ;
+#1 $display("nu counter bits %f",rx_term_nu_bits);
+#1 $display(" 1    baud count %f",full_baud);
+#1 $display(" 7/16 baud count %f",seven_sixteenth);
+#1 $display(" 1/16 baud count %f",one_sixteenth);
+
+//#1 $display(" 1/16 rx count %f",$rtoi(clock_frequency/(baud_rate*16)));
 #1 $display("slow baud period %f",(slow_baud));
 
 #(baud_period) Rx <= 0; // start
