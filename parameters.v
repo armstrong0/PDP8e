@@ -1,4 +1,4 @@
-//`define RK8E
+`define RK8E
 `define EAE 
 //`define up5k
 
