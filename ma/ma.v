@@ -25,6 +25,7 @@ module ma (
     input [0:14] dmaAddr,
     input [0:11] disk2mem,
     input to_disk,
+    input data_break,
     output reg [0:11] mem2disk,
 `endif
     output reg index,
@@ -81,6 +82,13 @@ module ma (
       case (state)
         F0: begin
           pc <= eaddr[3:14];
+          saveAddr <= eaddr;
+`ifdef RK8E	  
+	  if (data_break == 1) begin
+		  mdin <= disk2mem;
+              eaddr <= dmaAddr;
+          end
+`endif
           mdout <= mdtmp;  // catches the case where we are spinning in F0
         end
         FW: begin
@@ -282,21 +290,17 @@ module ma (
         H3: ;
 `ifdef RK8E
         DB0: begin
-          saveAddr <= eaddr;
-          eaddr <= dmaAddr;
           mdin <= disk2mem;
+          if (to_disk == 0) begin 
+	     write_en <= 1'b1;
+          end
         end
         DB1: begin
-        if (to_disk == 0) begin write_en <= 1'b1;end
-          mdin <= disk2mem;
-        end
-        DB2: begin
+          eaddr <= saveAddr;
           if (to_disk == 1'b1) begin
             mem2disk <= mdtmp;
           end
-          eaddr <= saveAddr;
         end
-        DB3:;
 `endif
 
         default: ;

@@ -80,7 +80,6 @@ module PDP8e_tb;
   reg halt_addr;
 
   `include "../parameters.v"
-  localparam clock_period = 1e9 / clock_frequency;
   always begin  // clock _period comes from parameters.v
     #(clock_period / 2) clk100 <= 1;
     #(clock_period / 2) clk100 <= 0;
@@ -170,14 +169,11 @@ module PDP8e_tb;
     #1 rx <= 1;  // marking state
     #100 pll_locked <= 1;
     #100 halt <= 0;
-    #5000;
     sr <= 12'o0200;  
     `PULSE(addr_load);
-    #1000;
-    sr <= 12'o0000; 
-    #4000000;
-    `PULSE(cont);
-    #16000000 $finish;
+    wait(UUT.RK8E.disk_rdy == 1);
+    #1000 `PULSE(cont);
+    #1006000 $finish;
  
 
   end

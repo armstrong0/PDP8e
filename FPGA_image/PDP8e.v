@@ -198,6 +198,7 @@ rk8e RK8E (
         .disk2mem (disk2mem),
         .dmaAddr (dmaAddr),
         .mem2disk (mem2disk),
+	.data_break (data_break),
 `endif
         .mdout (mdout),
         .index (index));
