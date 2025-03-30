@@ -26,7 +26,7 @@ module state_machine (
 );
 
   reg [4:0] next_state;
-  reg halt_ff;
+  reg run_ff;
 
   `include "../parameters.v"
 
@@ -34,7 +34,7 @@ module state_machine (
   always @(posedge clk) begin
     if (reset) begin
       state <= F0;
-      halt_ff <= 1;
+      run_ff <= 0;
       int_in_prog <= 0;
 `ifdef RK8E
       break_in_prog <= 1'b0;
@@ -52,7 +52,7 @@ module state_machine (
           end else 
 `endif
           if (cont == 1) state <= FW;
-          else if (halt_ff == 1)  begin
+          else if (run_ff == 0)  begin
             if (cont == 1) state <= FW;
             else if (trigger == 1) state <= HW;
             else state <= F0;
@@ -70,7 +70,7 @@ module state_machine (
         end
         FW: state <= F1;
         F1: begin
-          halt_ff <= 0;
+          run_ff <= 1;
           casez (instruction & 12'b111100101111)
           12'b111100000011,
           12'b111100000101,
@@ -163,12 +163,12 @@ module state_machine (
           // OPR IOT JMP D (single cycle)
           12'b1111??????10: begin
             if (UF == 1'b0) begin  // halt instruction
-              halt_ff <= 1;
+              run_ff <= 0;
               state   <= F0;  // halt instruction, not in user mode
               end
             else
             begin
-              halt_ff <= 0;
+              run_ff <= 1;
               state <= F0;  //UI should be set 
             end
           end
@@ -179,7 +179,7 @@ module state_machine (
           12'b110?????????:  // IOT instructions
           begin
             state <= F0;
-            if (halt == 1) halt_ff <=1;
+            if (halt == 1) run_ff <=0;
           end
           12'b0??1????????,  // AND TAD ISZ DCA defer cycle
           12'b10?1????????:  // JMS, JMP defer
@@ -204,7 +204,7 @@ module state_machine (
         D3:
         if (instruction[0:3] == JMPI) begin
           state <= F0;
-          if (halt == 1) halt_ff <=1;
+          if (halt == 1) run_ff <=0;
         end else state <= E0;
 
         // execute cycle
@@ -219,7 +219,7 @@ module state_machine (
         E2: state <= E3;
         E3: begin
             state <= F0;
-            if (halt == 1) halt_ff <=1;
+            if (halt == 1) run_ff <=0;
             end
         HW: state <= H1;
         H1: state <= H2;
