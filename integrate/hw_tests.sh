@@ -24,7 +24,7 @@ function term_hex()
 {
 echo "Starting Minicom Terminal program, in HEX mode, it will start centered on the screen"
 sleep 1
-mate-terminal -e "minicom --displayhex" &
+mate-terminal -e "minicom --displayhex --wrap" &
 
 }
 
