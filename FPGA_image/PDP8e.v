@@ -77,6 +77,7 @@ module PDP8e (input clk,
 
     wire dsel_sw;
     assign dsel_sw = ~dsel_swn;
+    wire [2:0] dsel;
 
 
     wire mskip,skip,eskip;
@@ -101,9 +102,9 @@ module PDP8e (input clk,
     reg [0:11] rsr;
     wire EAE_mode,EAE_loop;
     wire sw_active;
+    wire run_ff;
     wire index;
 
-    wire [5:0] dsel;
     wire disk_rdy;
 `ifdef RK8E
     wire data_break,to_disk;
@@ -230,6 +231,7 @@ rk8e RK8E (
         .halt (halt),
         .single_step (single_step),
         .cont (contd),
+        .run_ff (run_ff),
         .trigger (trigger));
 
     Ac AC(.clk (clk100),
@@ -286,7 +288,9 @@ rk8e RK8E (
         .mq (mq),
         .io_bus (display_bus),
         .sw_active (sw_active),
+        .run_ff (run_ff),
         .dout (ds),
+        .dsel_led (dsel_led),
         .run_led (run));
 
     front_panel FP(.clk (clk100),
@@ -306,7 +310,6 @@ rk8e RK8E (
         .contd (contd),
         .dsel_sw (dsel_sw),
         .dsel (dsel),
-        .dsel_led (dsel_led),
         .triggerd (trigger),
         .sw_active (sw_active));
 

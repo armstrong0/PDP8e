@@ -528,8 +528,8 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                                 mq <= {mq[1:11], 1'b1};
                             end
                             else
-                            begin;
 
+                            begin
                                 ac <= {ac[1:11],mq[0]};
                                 mq <= {mq[1:11],1'b0};
                             end

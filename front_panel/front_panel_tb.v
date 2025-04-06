@@ -12,7 +12,9 @@ module front_panel_tb;
     reg [4:0] state;
     reg [3:11] state1;
     reg dsel_sw;
-    wire [5:0] dsel;
+    reg run_ff;
+    wire sw_active;
+    wire [2:0] dsel;
     wire [0:4] dsel_led;
     wire run_led;
 
@@ -26,8 +28,8 @@ module front_panel_tb;
         .addr_load (addr_load),
         .dep (dep),
         .exam (exam),
-        .sing_step (sing_step),
-        .halt (halt),
+       // .sing_step (sing_step),
+       // .halt (halt),
         .cleard (cleard),
         .extd_addrd (extd_addrd),
         .addr_loadd (addr_loadd) ,
@@ -38,7 +40,7 @@ module front_panel_tb;
 
         .dsel_sw (dsel_sw),
         .dsel (dsel),
-        .dsel_led (dsel_led),
+        .sw_active (sw_active),
         .reset (reset),
         .state (state));
 
@@ -54,6 +56,8 @@ module front_panel_tb;
         .io_bus (io_bus),
         .sw_active (sw_active),
         .dout (dout),
+        .dsel_led (dsel_led),
+        .run_ff (run_ff),
         .run_led (run_led));
 
 
@@ -68,12 +72,14 @@ module front_panel_tb;
 
     initial begin
         clear <= 0;
+        run_ff <= 0;
         halt <= 0;
+        dsel_sw <= 0;
         ac =12'o1111;
         mq <= 12'o2222;
         mb <= 12'o3333;
         io_bus <= 12'o5555;
-        state <= 5'b10101;
+        // state <= 5'b10101;
         status <= 12'o6666;
         state1 = 9'b111111111;
         extd_addr  <= 0;
@@ -83,7 +89,7 @@ module front_panel_tb;
         sing_step <= 0;
         cont <= 0;
         sing_step <= 0;
-        state <= H0;
+        state <= F0;
 
         dsel_sw <= 0;
 
@@ -98,7 +104,7 @@ module front_panel_tb;
         #500 addr_load <= 1;
         #50 addr_load <= 0;
 
-        #500 exam <= 1;
+        #1500 exam <= 1;
         #40 exam <= 0;
         #50 exam <= 1;
         #40 exam <= 0;
@@ -119,6 +125,7 @@ module front_panel_tb;
         #50 dsel_sw <=0;
         #500 dsel_sw <= 1;
         #50 dsel_sw <=0;
+        #10 run_ff <= 1;
         #500 dsel_sw <= 1;
         #50 dsel_sw <=0;
         #500 dsel_sw <= 1;

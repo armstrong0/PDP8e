@@ -22,11 +22,11 @@ module state_machine (
     output reg break_in_prog,
 `endif
     output reg int_in_prog,
-    output reg [4:0] state
+    output reg [4:0] state,
+    output reg run_ff
 );
 
   reg [4:0] next_state;
-  reg run_ff;
 
   `include "../parameters.v"
 
