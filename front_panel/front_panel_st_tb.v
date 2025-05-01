@@ -4,32 +4,34 @@
 module front_panel_st_tb;
 
     reg clk,reset;
-    reg clear, extd_addr,addr_load,dep,exam,sing_step,cont;
+    reg clear, extd_addr,addr_load,dep,exam,cont;
+    reg dsel_sw;
     reg halt;
+    reg sing_step;
     reg [0:11] instruction;
     wire contd;
     wire cleard , extd_addrd , addr_loadd , depd , examd;
     wire trigger;
 
-    wire [3:0] state;
+    wire [4:0] state;
     wire [0:2] trig_stateo;
     wire [0:4] count;
 `include "../parameters.v"
 
     front_panel UUT(.clk (clk),
         .clear (clear),
+        .cont (cont),
         .extd_addr (extd_addr),
         .addr_load (addr_load),
         .dep (dep),
         .exam (exam),
-        .sing_step (sing_step),
-		.halt (halt),
+        .dsel_sw (dsel_sw),
+
         .cleard (cleard),
         .extd_addrd (extd_addrd),
         .addr_loadd (addr_loadd) ,
         .depd (depd),
         .examd (examd),
-        .cont (cont),
         .contd (contd),
         .reset (reset),
         .state (state),
@@ -59,6 +61,7 @@ module front_panel_st_tb;
         clear <= 0;
         extd_addr  <= 0;
         addr_load  <= 0;
+        dsel_sw <= 0;
         dep  <= 0;
         exam <= 0;
         sing_step <= 0;

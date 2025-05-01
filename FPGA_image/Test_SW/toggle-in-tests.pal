@@ -1,0 +1,236 @@
+/ This is a set of tests accumulated from various places
+/ in handbooks and on the Internet, for simple testing
+/ or demonstration of a PDP-8/E.
+/ Collected or written by Pete Turnbull
+/
+/ Each main program lives at 0x00 (ie, an even "hundred")
+/ Each variant lives at 0x40
+
+/ except this one: the "Initial Operating Test"
+/ from the PDP-8/E Maintenance Manual, Chapter 2
+/ although here it's at 0040 instead of 0000
+
+field 2
+                       * 0040
+ZERO,   IAC	     / increment Accumulator
+	DELAY3,  ISZ 0051      / inc 0051 (was 0101), skip if zero
+	JMP DELAY3
+	JMP ZERO
+
+/ reads switch register and outputs to console
+/ from Robert Krten
+                       * 0100   
+BEG,    CLA           / setup a zero to get things rolling */
+        TLS           / write it to serial port */
+LOOP3,   TSF           / see if we can output a character
+	JMP LOOP3      / nope, loop
+	CLA           / wipe ACC ready to read char
+	OSR           / get switch register
+	TLS           / write it to serial port
+	JMP LOOP3      / loop
+
+/ reads switch register and outputs to 1st TTY
+		* 0140
+BEG1,    TFL /* CLA           / setup a zero to get things rolling */
+	         /* TLS           / write it to serial port */
+LOOP4,   TSF           / see if we can output a character
+	JMP LOOP4	     / nope, loop
+	CLA           / wipe ACC ready to read char
+	OSR        / get switch register
+	TLS           / write it to serial port
+	JMP LOOP4      / loop
+
+/ inchworm  view with panel switch set to ACC (8E/F/M)
+       * 200
+START,  CLA           / clear ACC
+	TAD   WORM    / put worm character in ACC
+MAIN,   RAL           / push the worm left (7010: right)
+DELAY4,  NOP
+	NOP
+	NOP
+	NOP
+	ISZ   DLCNT  / delay 4096 inner
+	JMP   DELAY4
+	JMP   MAIN
+	HLT
+
+WORM,   0007          / 3-bit long inchworm (original is 4-bit)
+DLCNT, 0000          / inside loop count
+
+/ growing column, a variation on inchworm
+/ written by Pete
+
+*0240                   / start address
+START1,  CLA             / clear ACC
+LOOP5,   STL             / set link
+	RAL             / move column left (right: 7010)
+DELAY5,  NOP
+	NOP
+	NOP
+	NOP
+	ISZ DLCNT1      / delay
+	JMP DELAY5
+	SNL             / skip if link set - overflow
+	JMP LOOP5
+	JMP START1
+DLCNT1, 0000
+
+/ echos characters typed on console
+/ from the PDP-8/E Maintenance Manual, Chapter 2
+/ (with two extra setup instructions)
+* 300
+	CLA           / make a null */
+	TLS           / send to tty out to set it up */
+	KCC           / clear keyboard flag
+	INLOOP, KSF           / continue if char there
+	JMP INLOOP    / nope, keep looking
+	KRB           / get char DBA instead of KRS
+OUTLP,  TSF           / continue if tty ready
+	JMP OUTLP     / nope, keep waiting
+	TLS           / echo it
+	JMP INLOOP    / repeat
+
+/ reads console characters, which remain visible in the ACC
+* 400
+	CLA           / make a null
+	KCC           / clear keyboard flag
+LOOP1,   KSF           / continue if char there
+	JMP .-1       / nope, keep looking
+	KRB           / get char - DBA used KRB so we don't and in charactors
+	JMP LOOP1      / repeat until bored
+
+
+/ another one from Robert Krten.
+/ This one flashes the accumulator as it counts
+        * 0500
+LOOP2,	ISZ DELAY    / create a delay
+	JMP LOOP2
+	CLA 	     / clear AC so we can load it
+	TAD VALUE    / get value
+	MQL 	     / stash AC into MQ
+	TAD VALUE    / fetch value again
+	CMA 	     / complement AC
+	ISZ VALUE    / get to next value
+	NOP 	     / ignore possible "skip" from ISZ
+	JMP LOOP2     / and do it all again
+DELAY,  0
+VALUE,  0
+
+/ cylon - rotates lights in AC back and forth
+* 540
+	CLA 	    	/ clear AC
+	TAD   LIGHT 	/ bit pattern
+LOOPL,  RAL 	    	/ push left
+	JMS   DELAY1
+	SNL 	    	/ skip to RAR if off end
+	JMP   LOOPL
+LOOPR,  RAR 	    	/ push right
+	JMS   DELAY1
+	SNL 	    	/ skip and restart if off end
+	JMP   LOOPR
+	JMP   LOOPL
+LIGHT,	0007	    	/ 3 bits long
+DELAY1,	0000	    	/ for return address
+	NOP
+	NOP
+	NOP
+	ISZ   DLCNT2	/ delay 4096 inner
+	JMP   DELAY1+1
+	JMP I DELAY1 	/ return to caller
+DLCNT2, 0000	    	/ inside loop count
+
+/ zoom - single bit at each end of AC move together then apart
+ * 600
+LOOP,	CLA 	    	/ set up AC
+	TAD   LEFT  	/ get bit that moves left
+	TAD   RIGHT 	/ include bit that moves right
+	JMS   DELAY2 	/ wait a while
+	AND   LEFT  	/ ignore right-moving bit
+	RAL 	    	/ move left-moving bit along
+	SZL 	    	/ if not lost it, nothing extra to do
+	RAL 	    	/ otherwise move it to other end of AC
+	DCA   LEFT  	/ save that bit
+	TAD   RIGHT 	/ get the right-moving bit
+	RAR 	    	/ like above, but moving right
+	SZL
+	RAR
+	DCA   RIGHT
+	JMP   LOOP  	/ and repeat
+LEFT,	0001
+RIGHT,	4000
+DELAY2,	0000	    	/ for return address
+	NOP 	    	/ slower is to AND left then ...
+	NOP 	    	/ ... TAD right
+	NOP
+	ISZ   DLCNT3	/ delay 4096 inner
+	JMP   DELAY2+1
+	JMP I DELAY2 	/ return to caller
+DLCNT3, 0000	    	/ inside loop count
+
+/ this is a test of the output of the serial port to the PC
+/ it cycles through all of the printable characters, starting at a space
+/ and ending at a tilde octal - o040 to o176
+/ every 80 characters it output a carrage return and a linefeed 
+/ this was written by David Armstrong
+
+    *  10 
+ColumnCnt, 7660   // -80
+CharCnt,    7641  // -95
+CurrentChar, 0
+
+    * 20 
+	KCCA, 7641
+	KCC,  7660 
+	Kspace, 040
+	Kcr,   015
+	Klf,   012
+
+    * 700 
+
+START2, 6040    // use SPF instead of print to the output uart
+	JMS  CRLF   // start off print CR/LF and initializing the column counter
+Start3, CLA
+	TAD Kspace
+	DCA CurrentChar
+LOOP6,	CLA
+	TAD CurrentChar
+	JMS PrintC
+	ISZ CurrentChar // should never skip 
+	ISZ ColumnCnt
+	JMP CC 
+	JMS CRLF  // send charrage return / line feed, reset ColumnCnt
+	CLA
+	TAD KCC
+	DCA ColumnCnt
+	JMP LOOP6 
+CC,	ISZ CharCnt  // if it overflowed reset it
+	JMP LOOP6
+	CLA
+	TAD KCCA
+	DCA CharCnt
+	JMP START3
+    
+
+/ routine to print a charactor
+PrintC, 0
+	LOOPC, TSF  / wait until the TTO is empty (flag set)
+	JMP LOOPC
+	TLS         / put char into TTO 
+	JMP I PrintC / return
+
+/ routine to print a carrage return / line feed
+CRLF, 0
+	CLA
+	TAD Kcr    / output a carrage return
+	JMS PrintC
+	CLA
+	TAD Klf
+	JMS PrintC / output a linefeed
+	CLA
+	TAD KCC     / reset the charactor count
+	DCA ColumnCnt
+	JMP I CRLF
+
+
+
+$

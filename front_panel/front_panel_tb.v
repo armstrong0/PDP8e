@@ -8,7 +8,7 @@ module front_panel_tb;
     wire cleard , extd_addrd , addr_loadd , depd , examd;
 
     wire [0:11] dout;
-    reg [0:11] status,ac, mq, mb,io_bus;
+    reg [0:11] status,ac, mq, mb,io_bus,sr;
     reg [4:0] state;
     reg [3:11] state1;
     reg dsel_sw;
@@ -28,17 +28,17 @@ module front_panel_tb;
         .addr_load (addr_load),
         .dep (dep),
         .exam (exam),
-       // .sing_step (sing_step),
-       // .halt (halt),
+        .dsel_sw (dsel_sw),
+        .cont (cont),
+        .sr (sr),
+        .rsr (rsr),
         .cleard (cleard),
         .extd_addrd (extd_addrd),
         .addr_loadd (addr_loadd) ,
         .depd (depd),
         .examd (examd),
-        .cont (cont),
         .contd (contd),
 
-        .dsel_sw (dsel_sw),
         .dsel (dsel),
         .sw_active (sw_active),
         .reset (reset),
@@ -91,7 +91,7 @@ module front_panel_tb;
         sing_step <= 0;
         state <= F0;
 
-        dsel_sw <= 0;
+        #10 dsel_sw <= 0;
 
         #15 reset <= 1;
         #40 reset <= 0;
@@ -105,6 +105,7 @@ module front_panel_tb;
         #50 addr_load <= 0;
 
         #1500 exam <= 1;
+        #1 sr <= 12'o2525;
         #40 exam <= 0;
         #50 exam <= 1;
         #40 exam <= 0;

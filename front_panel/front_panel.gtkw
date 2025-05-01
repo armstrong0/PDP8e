@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
-[*] Sat Apr  5 01:22:40 2025
+[*] Thu Apr 17 02:56:37 2025
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.vcd"
-[dumpfile_mtime] "Sat Apr  5 01:21:51 2025"
-[dumpfile_size] 23755
+[dumpfile_mtime] "Thu Apr 17 02:54:02 2025"
+[dumpfile_size] 23728
 [savefile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.gtkw"
 [timestart] 0
 [size] 1868 937
 [pos] -1 -1
-*-20.439253 1150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-20.439253 8153000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] front_panel_tb.
 [sst_width] 263
 [signals_width] 158
@@ -36,7 +36,18 @@ front_panel_tb.FP.sw_active
 front_panel_tb.DM.run_led
 @30
 front_panel_tb.DM.dout[0:11]
-@29
+@28
 front_panel_tb.DM.dsel_led[4:0]
+@30
+front_panel_tb.FP.sr[0:11]
+front_panel_tb.FP.rsr[0:11]
+@28
+front_panel_tb.DM.dsel[2:0]
+front_panel_tb.DM.FS
+front_panel_tb.DM.ES
+@29
+front_panel_tb.DM.DS
+@30
+front_panel_tb.DM.io_bus[0:11]
 [pattern_trace] 1
 [pattern_trace] 0
