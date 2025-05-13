@@ -51,9 +51,11 @@ module state_machine (
             break_in_prog <= 1'b1;
           end else 
 `endif
-          if (cont == 1) state <= FW;
-          else if (run_ff == 0)  begin
-            if (cont == 1) state <= FW;
+          if (run_ff == 0)  begin
+            if (cont == 1) begin
+                state <= FW;
+                run_ff <= 1;
+            end    
             else if (trigger == 1) state <= HW;
             else state <= F0;
           end  

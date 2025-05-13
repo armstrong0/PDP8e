@@ -1,3 +1,9 @@
+This PDP8e can now have 10 k words of memory.  The only caviot is that to pass dAdder and Extended Memory diagnostics you must recompile to 8 k.
+
+There has been a major state machine revision where most of the exceptional processing is handle in F0 istead of various states (F3, E3, D3, H0).  Easier to make sure I have all of the conditions covered.
+
+Occasionally pressing clear (of clear/continue) starts the CPU. I have yet to figure out why.
+
 All tests now pass.  The ma and pc units have been merged.  All source files have been linted and formatted.  Lint does not like the bit ordering in the PDP8's registers but I kept it. 
 
 The basis of an SD card disk emulating an RK8E with 4 RK05 packs is in the repository but does not work yet.

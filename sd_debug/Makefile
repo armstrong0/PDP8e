@@ -37,5 +37,8 @@ clean:
 	rm -rf a.out
 	rm -rf *.o *.lst SDcard.vcd
 	rm -rf hex2oct dump_rk05
+	rm -rf *.hex
+	rm -rf *.bin
+	
 	
 	

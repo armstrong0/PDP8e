@@ -13,10 +13,12 @@ diag_dir=$(pwd)/Diagnostics
 function prompt ()
 {
 echo "If CPU is running: Switch Halt to ON and then OFF"
-echo "Set Switch Register (SR) to 7777, press Addr Load, press Clear then Cont."
-echo "IF USING the SW to set the bootloader start address MAKE SURE sr bit 0 is up"
+echo "Switch Register (SR) to 7777, press Addr Load"
+echo "Clear"
+echo "Cont"
+echo "IF USING the SW to set the bootloader start address"
+echo "MAKE SURE sr bit 0 is up"
 read -p "Press any key"
-echo "Set SR to 0200, press Addr Load"
 
 }
 
@@ -52,9 +54,7 @@ case $selection in
 1) prompt
 send dhkaf-a-pb
 
-echo "Set SR=7777, press Addr Load, then press Clear, Cont"
-echo "Once loading is complete set SR=0200,"
-echo "press Addr Load"
+echo "SR to 0200, press Addr Load"
 echo "Set SR=7777, then press Clear and Cont"
 read -p "Press any key to continue"
 echo "CPU should stop at 0147.  AC should be 0000"
@@ -67,8 +67,6 @@ sleep 1
 
 2) prompt
  send maindec-08-dhkag-a-pb 
-echo "Set SR=7777, then press Clear, Cont"
-read -p "Press any key"
 echo "Set SR=0200 Press AL,CL,CO"
 term_hex
 echo "A bell charactor 87 (07) is typed every 1500 passes of the test"
@@ -83,8 +81,10 @@ echo "Starting Minicom Terminal program"
 sleep 1
 mate-terminal -e minicom  &
 echo "Set SR=0200 Press Addr Load"
-echo "Set SR to 0210,(one extended bank) press Clear, then Cont"
-echo "Once RANDOM is typed in the terminal, the Adder test is complete, close the terminal"
+echo "Set SR to 0210,(one extended bank)"
+echo "press Clear, then Cont"
+echo "Once RANDOM is typed four times, the Adder test is complete"
+echo "close the terminal"
 echo "The adder test clobbers the boot loader, to restore set address to 7600,"
 echo "Address Load, Clear, Cont"
 
@@ -94,11 +94,13 @@ echo "Address Load, Clear, Cont"
 echo "Starting Basic JMP - JMS tests"
  send MAINDEC-8E-D0IB-Basic-JMP-JMS.pt 
 echo "Set SR=0200 Press Addr Load"
-echo "Press Clear, then COnt"
+echo "Press Clear, Cont"
 term_hex
 echo "A bell charactor 07/87 will be typed ever few seconds."
-echo "To restore the bootloader, halt the CPU, set the SR to 704, press Addr Load"
-echo "Press Clear and then continue, if it stops at 736 the bootloader is restored"
+echo "To restore the bootloader, halt the CPUi"
+echo "SR to 704, press Addr Load"
+echo "Press Clear and then continuei"
+echo "if it stops at 736 the bootloader is restored"
  ;;
 5) prompt
 echo "Starting Random TAD Tests"

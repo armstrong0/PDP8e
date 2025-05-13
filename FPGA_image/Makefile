@@ -28,6 +28,8 @@ clean:
 	rm -rf *.vcd
 	rm -rf *.json
 	rm -rf obj_dir
+	$(MAKE) -C Test_SW -f Makefile clean
+	
 
 sim: PDP8e.v PDP8e_tb.v 
 	iverilog -DSIM PDP8e_tb.v PDP8e.v -o PDP8e_design
