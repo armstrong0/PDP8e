@@ -17,7 +17,7 @@ all: shl asr lsr mul div dpsz dpic dcm sam dad dst swap sca_asc dst scl \
 	-cp $*.hex t14.hex
 
 %: %.vcd 	
-	gtkwave $*.vcd $*.gtkw &
+	gtkwave $*.vcd eae.gtkw &
 
 clean:
 	-rm -f top.a
