@@ -52,15 +52,13 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <ctype.h>
-
 extern uint16_t core[];
-
 
 #define OK 0
 #define FMT (OK+1)
 #define CSUM (OK+2)             /* loader checksum */
 #define NXM (OK+3)
-#define IERR (OK+4)             /* internal error */ 
+#define IERR (OK+4)             /* internal error */
 #define ARG (OK+5)              /* argument error */
 
 #define MEMSIZE 32768
@@ -68,104 +66,127 @@ extern uint16_t core[];
 /* RIM loader format consists of alternating pairs of addresses and 12-bit
    words.  It can only operate in field 0 and is not checksummed.
 */
-
-int sim_load_rim (FILE *fi)
+int
+sim_load_rim (FILE *fi)
 {
-int32_t origin, hi, lo, wd;
+    int32_t origin, hi, lo, wd;
+    origin = 0200;
 
-origin = 0200;
-do {                                                    /* skip leader */
-    if ((hi = getc (fi)) == EOF)
-        return FMT;
-    } while ((hi == 0) || (hi >= 0200));
-do {                                                    /* data block */
-    if ((lo = getc (fi)) == EOF)
-        return FMT;
-    wd = (hi << 6) | lo;
-    if (wd > 07777)
-        origin = wd & 07777;
-    else core[origin++ & 07777] = wd;
-    if ((hi = getc (fi)) == EOF)
-        return FMT;
-    } while (hi < 0200);                                /* until trailer */
-return OK;
+    do
+    {                           /* skip leader */
+        if ((hi = getc (fi)) == EOF)
+            return FMT;
+    }
+    while ((hi == 0) || (hi >= 0200));
+
+    do
+    {                           /* data block */
+        if ((lo = getc (fi)) == EOF)
+            return FMT;
+        wd = (hi << 6) | lo;
+        if (wd > 07777)
+            origin = wd & 07777;
+
+        else
+            core[origin++ & 07777] = wd;
+        if ((hi = getc (fi)) == EOF)
+            return FMT;
+    }
+    while (hi < 0200);          /* until trailer */
+    return OK;
 }
+
 
 /* BIN loader format consists of a string of 12-bit words (made up from
    7-bit characters) between leader and trailer (200).  The last word on
    tape is the checksum.  A word with the "link" bit set is a new origin;
    a character > 0200 indicates a change of field.
 */
-
-int32_t sim_bin_getc (FILE *fi, uint32_t *newf)
+int32_t
+sim_bin_getc (FILE *fi, uint32_t *newf)
 {
-int32_t c, rubout;
+    int32_t c, rubout;
+    rubout = 0;                 /* clear toggle */
+    while ((c = getc (fi)) != EOF)
+    {                           /* read char */
+        if (rubout)             /* toggle set? */
+            rubout = 0;         /* clr, skip */
 
-rubout = 0;                                             /* clear toggle */
-while ((c = getc (fi)) != EOF) {                        /* read char */
-    if (rubout)                                         /* toggle set? */
-        rubout = 0;                                     /* clr, skip */
-    else if (c == 0377)                                 /* rubout? */
-        rubout = 1;                                     /* set, skip */
-    else if (c > 0200)                                  /* channel 8 set? */
-{
-*newf = (c & 070) << 9;                         /* change field */
-fprintf(stderr,"Newfield %o\n",*newf);
-}
-    else return c;                                      /* otherwise ok */
- 
-    }
-return EOF;
-}
+        else if (c == 0377)     /* rubout? */
+            rubout = 1;         /* set, skip */
 
-int sim_load_bin (FILE *fi)
-{
-int32_t hi, lo, wd, csum, t;
-uint32_t field, newf, origin;
+        else if (c > 0200)      /* channel 8 set? */
 
-do {                                                    /* skip leader */
-    if ((hi = sim_bin_getc (fi, &newf)) == EOF)
-        return FMT;
-    } while ((hi == 0) || (hi >= 0200));
-csum = origin = field = newf = 0;                       /* init */
-for (;;) {                                              /* data blocks */
-    if ((lo = sim_bin_getc (fi, &newf)) == EOF)         /* low char */
-        return FMT;
-    wd = (hi << 6) | lo;                                /* form word */
-    t = hi;                                             /* save for csum */
-    if ((hi = sim_bin_getc (fi, &newf)) == EOF)         /* next char */
-        return FMT;
-    if (hi == 0200) {                                   /* end of tape? */
-        if ((csum - wd) & 07777)                        /* valid csum? */
-            return CSUM;
-        return OK;
+        {
+            *newf = (c & 070) << 9;     /* change field */
+            fprintf (stderr, "Newfield %o\n", *newf);
         }
-    csum = csum + t + lo;                               /* add to csum */
-    if (wd > 07777)                                     /* chan 7 set? */
-        origin = wd & 07777;                            /* new origin */
-    else {                                              /* no, data */
-        if ((field | origin) >= MEMSIZE) 
-            return NXM;
-        core[field | origin] = wd;
-        origin = (origin + 1) & 07777;
-        }
-    field = newf;                                       /* update field */
+
+        else
+            return c;           /* otherwise ok */
     }
-return IERR;
+    return EOF;
 }
+
+int
+sim_load_bin (FILE *fi)
+{
+    int32_t hi, lo, wd, csum, t;
+    uint32_t field, newf, origin;
+
+    do
+    {                           /* skip leader */
+        if ((hi = sim_bin_getc (fi, &newf)) == EOF)
+            return FMT;
+    }
+    while ((hi == 0) || (hi >= 0200));
+    csum = origin = field = newf = 0;   /* init */
+    for (;;)
+    {                           /* data blocks */
+        if ((lo = sim_bin_getc (fi, &newf)) == EOF)     /* low char */
+            return FMT;
+        wd = (hi << 6) | lo;    /* form word */
+        t = hi;                 /* save for csum */
+        if ((hi = sim_bin_getc (fi, &newf)) == EOF)     /* next char */
+            return FMT;
+        if (hi == 0200)
+        {                       /* end of tape? */
+            if ((csum - wd) & 07777)    /* valid csum? */
+                return CSUM;
+            return OK;
+        }
+        csum = csum + t + lo;   /* add to csum */
+        if (wd > 07777)         /* chan 7 set? */
+            origin = wd & 07777;        /* new origin */
+
+        else
+        {                       /* no, data */
+            if ((field | origin) >= MEMSIZE)
+                return NXM;
+            core[field | origin] = wd;
+            origin = (origin + 1) & 07777;
+        }
+        field = newf;           /* update field */
+    }
+    return IERR;
+}
+
 
 /* Binary loader
    Two loader formats are supported: RIM loader (-r) and BIN (-b) loader. */
 #if 0
-int sim_load (FILE *fileref, char *cptr, char *fnam, int flag)
+int
+sim_load (FILE *fileref, char *cptr, char *fnam, int flag)
 {
-if ((*cptr != 0) || (flag != 0))
-    return ARG;
-if ((sim_switches & SWMASK ('R')) ||                    /* RIM format? */
-    (match_ext (fnam, "RIM") && !(sim_switches & SWMASK ('B'))))
-    return sim_load_rim (fileref);
-else return sim_load_bin (fileref);                     /* no, BIN */
+    if ((*cptr != 0) || (flag != 0))
+        return ARG;
+    if ((sim_switches & SWMASK ('R')) ||        /* RIM format? */
+        (match_ext (fnam, "RIM") && !(sim_switches & SWMASK ('B'))))
+        return sim_load_rim (fileref);
+
+    else
+        return sim_load_bin (fileref);  /* no, BIN */
 }
-#endif
 
 
+#endif /*  */

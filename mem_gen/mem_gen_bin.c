@@ -45,11 +45,13 @@ char *progname;
 void
 usage (void)
 {
-    fprintf (stderr, "Usage: %s infile outfile\n",    progname);
+    fprintf (stderr, "Usage: %s infile outfile\n", progname);
     fprintf (stderr, "    if no file is given then standard input is used\n");
-    fprintf (stderr, "    if no second file is given then standard output is used\n");
+    fprintf (stderr,
+             "    if no second file is given then standard output is used\n");
     fprintf (stderr, "    infile is expected to be a bin format tape file\n");
-    fprintf (stderr, "    outfile is a hex file that can be used by verilog\n");
+    fprintf (stderr,
+             "    outfile is a hex file that can be used by verilog\n");
     fprintf (stderr, "    to initialized a memory\n");
     fprintf (stderr, "    only supports fields 0 and 1");
 }
@@ -90,7 +92,8 @@ main (int argc, char **argv)
         case 'h':
             usage ();
             exit (0);
-	case 'o': oct = 1;    
+        case 'o':
+            oct = 1;
         }
     }
 
@@ -132,9 +135,9 @@ main (int argc, char **argv)
     for (int k = 0; k < 8192; k = k + 1)
     {
         if (oct == 1)
-	   fprintf(verilogfile,"%04o",core[k]); 
-	else
-           fprintf (verilogfile, "%03x", core[k]);
+            fprintf (verilogfile, "%04o", core[k]);
+        else
+            fprintf (verilogfile, "%03x", core[k]);
         if ((k % 8) != 7)
             fprintf (verilogfile, " ");
         else

@@ -91,14 +91,14 @@ main (int argc, char **argv)
     for (int k = 0; k < 4096; k = k + 1)
     {
         fscanf (in2_file, "%x", &tmp);
-	if (out[k] == 0 )
-	   out[k] = tmp;
-	else if (tmp != 0)
-	{
-	   fprintf(stderr,"Collision at address: %d \n",k);
-	   exit(-1);
-	}
-		
+        if (out[k] == 0)
+            out[k] = tmp;
+        else if (tmp != 0)
+        {
+            fprintf (stderr, "Collision at address: %d \n", k);
+            exit (-1);
+        }
+
     };
 
 

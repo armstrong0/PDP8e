@@ -44,9 +44,10 @@ char *progname;
 void
 usage (void)
 {
-    fprintf (stderr, "Usage: %s file file\n",    progname);
+    fprintf (stderr, "Usage: %s file file\n", progname);
     fprintf (stderr, "    if no file is given then standard input is used\n");
-    fprintf (stderr, "    if no second file is given then standard output is used\n");
+    fprintf (stderr,
+             "    if no second file is given then standard output is used\n");
 }
 
 extern int sim_load_rim (FILE *);
