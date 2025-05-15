@@ -119,8 +119,8 @@ parameter sd_delay = 10'd500;
 // two diagnostic tests will not pass with partial fields so change to 8k
 // 2 fields when running those tests
 
-// parameter MAX_ADDRESS = 15'o23777; // 10k 2.5 fields
-parameter MAX_ADDRESS = 15'o17777;  // 8k 2 fields
+parameter MAX_ADDRESS = 15'o23777; // 10k 2.5 fields
+//parameter MAX_ADDRESS = 15'o17777;  // 8k 2 fields
 
 `define ONESTOP // one stop bit for all baud rates greater than 110
 
