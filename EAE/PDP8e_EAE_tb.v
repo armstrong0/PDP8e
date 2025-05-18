@@ -87,8 +87,8 @@ module PDP8e_tb;
 
   always @(posedge clk) begin
 
-    if (((UUT.instruction & 12'o7402) == 12'o7402) && (UUT.state == F0)) begin
-        if ($time > 5000) begin
+    if (((UUT.instruction & 12'o7403) == 12'o7402) && (UUT.state == F0)) begin
+        if ($time > 6000) begin
           $display("Stopped %d because of a Halt", $time);
           $display("Address:%o", address);
           #1000 $finish;
@@ -130,7 +130,7 @@ module PDP8e_tb;
     #1000 sr <= 12'o0200;
     #1000 `pulse(addr_load);
     #1000 `pulse(cont);
-    #28000 $finish;
+    #58000 $finish;
 
 
   end

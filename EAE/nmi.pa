@@ -1,5 +1,6 @@
     CAM=7621
     SWAB=7431
+    SWBA=7447
     DPSZ=7451 
     DPIC=7573 
     DAD=7443
@@ -10,8 +11,8 @@
     NMI=7411
     
     *4000
-operand,    3000
-    3001
+operand,    0001
+    0000
     300
     5555
   
@@ -24,6 +25,16 @@ operand,    3000
     dld
     operand+2
     nmi
+    swba
+    swab 
+    dld
+    operand
+    nmi
+    dld
+    operand+2
+    nmi
+
+
 
 
 
