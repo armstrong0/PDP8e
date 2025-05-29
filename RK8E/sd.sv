@@ -101,7 +101,7 @@ module sd
     input               [0:14] sdMEMaddr,   //! Memory Address
     input  sdDISKaddr_t        sdDISKaddr,  //! Disk Address
     input                      sdLEN,       //! Sector Length
-    output sdSTAT_t            sdSTAT       //! Status
+    output sdSTAT_t            sdSTAT      //! Status
 );
 
 
@@ -196,10 +196,10 @@ module sd
 
   state_t state;  //! Current State
   spiOP_t spiOP;  //! SPI Op
-  wire sdBYTE_t spiRXD;  //! SPI Received Data
+  wire sdBYTE_t spiRXD;  //! SPI Received Dataa
   sdBYTE_t spiTXD;  //! SPI Transmit Data
   wire spiDONE;  //! Asserted  SPI is done
-  logic [0:15] bytecnt;  //! Byte Counter
+  logic [15:0] bytecnt;  //! Byte Counter
   sdCMD_t sdCMD17;  //! CMD17
   sdCMD_t sdCMD24;  //! CMD24
   addr_t memADDR;  //! Memory Address
@@ -212,10 +212,9 @@ module sd
   sdBYTE_t err;  //! Error State
   sdBYTE_t val;  //! Error Value
   sdSTATE_t sdSTATE;  //! State
-  localparam logic [0:15] nCR = 10;  //! NCR from SD Spec !Change from 8 to
-                                     // 10 so we have 80 clocks
-  localparam logic [0:15] nAC = 1023;  //! NAC from SD Spec
-  localparam logic [0:15] nWR = 20;  //! NWR from SD Spec
+  localparam logic [3:0] nCR = 8;  //! NCR from SD Spec 
+  localparam logic [11:0] nAC = 1023;  //! NAC from SD Spec
+  localparam logic [11:0] nWR = 20;  //! NWR from SD Spec
 
 
 
@@ -226,7 +225,7 @@ module sd
 
   always @(posedge clk) begin
 
-    if (reset == 1'b1) begin
+    if ((reset == 1'b1 | clear == 1)) begin
       err     <= 8'b0;
       val     <= 8'b0;
       rdCNT   <= 8'b0;
@@ -272,12 +271,14 @@ module sd
         //
         // stateINIT00
         //  Send 8x8 clocks cycles
+        //  Spec says 74 clocks, this should be 8 + 4 =12 bytes
+        //  8 clocks per byte - 96 clocks
         //
 
         stateINIT00: begin
           timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
-            if (bytecnt == nCR) begin
+            if (bytecnt == ( nCR + 4 )) begin
               bytecnt <= 0;
               spiOP   <= spiCSL;
               state   <= stateINIT01;
@@ -451,7 +452,7 @@ module sd
                 spiTXD  <= 8'hff;
                 bytecnt <= 3;
               end else begin
-                err   <= 8'h05;
+                err <= 8'h05;
                 state <= stateINFAIL;
               end
 
@@ -1495,11 +1496,11 @@ module sd
     // asynchronous assignements to output signals
     dmaADDR      = memADDR;
     dmaREQ       = memREQ;
-    sdSTAT.err   = err;
-    sdSTAT.val   = val;
-    sdSTAT.rdCNT = rdCNT;
-    sdSTAT.wrCNT = wrCNT;
-    sdSTAT.state = sdSTATE;
+    sdSTAT.err   <= err;
+    sdSTAT.val   <= val;
+    sdSTAT.rdCNT <= rdCNT;
+    sdSTAT.wrCNT <= wrCNT;
+    sdSTAT.state <= sdSTATE;
 
 
   end
