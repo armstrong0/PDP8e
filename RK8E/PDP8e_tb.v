@@ -11,7 +11,6 @@ module PDP8e_tb;
   reg reset;
   reg rx;
   reg [0:11] sr;
-  reg [0:5] dsel;
   reg dep;
   reg sw;
   reg single_step;
@@ -45,11 +44,12 @@ module PDP8e_tb;
   wire single_stepn;
   assign haltn = ~halt;
   assign single_stepn = ~single_step;
+  reg dsel_swn;
 
   reg halt_addr;
 
   `include "../parameters.v"
-  localparam clock_period = 1e9 / clock_frequency;
+//  localparam clock_period = 1e9 / clock_frequency;
   always begin  // clock _period comes from parameters.v
     #(clock_period / 2) clk100 <= 1;
     #(clock_period / 2) clk100 <= 0;
@@ -74,7 +74,7 @@ module PDP8e_tb;
       .reset(reset),
       .rx(rx),
       .sr(sr),
-      .dsel(dsel),
+      .dsel_sw (dsel_sw),
       .dep(dep),
       .sw(sw),
       .single_stepn(single_stepn),
@@ -109,7 +109,7 @@ module PDP8e_tb;
     #1 $display("baud rate %f Hz ", (baud_rate));
     #1 $display("clock period %f nanoseconds", (clock_period));
     #1 $display("cycle time %f nanoseconds", (6 * clock_period));
-
+    #1 dsel_swn <= 1;
     #1 halt <= 1;
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SDCard.vcd");
@@ -127,7 +127,7 @@ module PDP8e_tb;
     #1 addr_load <= 0;
     #1 dep <= 0;
 	#1 clear <= 0;
-    #1 dsel <= 6'b001000;
+    //#1 dsel <= 6'b001000;
     #1 sr <= 12'o0200;
     #1 pll_locked <= 0;
     #1 rx <= 1;  // marking state

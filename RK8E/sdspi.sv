@@ -95,9 +95,6 @@ module sdspi
   sdBYTE_t rxd;
 
   logic [nu_divcnt_bits-1:0] clkcnt, clkdiv;  // integer range 0 to 1024;
-  //  logic [9:0] clkdiv;  // integer range 0 to 1024;
-  //  localparam logic [9:0] SlowDiv = slow_div;
-  //  localparam logic [9:0] FastDiv = fast_div;
 
 
   typedef enum logic [1:0] {
