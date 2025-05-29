@@ -80,6 +80,7 @@ module rk8e
   sdSTAT_t         sdSTAT;  //! Status
   sdSTATE_t        sdstate;
   sdSTATE_t        last_sdstate;
+  wire [7:0] spiRXD;
 
   assign sdLEN = cmd_reg[5];
 
@@ -297,34 +298,40 @@ bit 11 msb of cylinder
           //    0031  7402  /HLT
           //    0032  5030  /JMP 0030
           //    start at 0030 then press continue, view the ac it will have an
-          //    index to the value in bits 0:3 and the value in 4:11
+          //    index to the value in bits 0:2 and the value in 4:11
           12'o6747:
           case (toggle)
             0: begin
               disk_bus <= {toggle, sdSTAT.debug};
-              toggle   <= 4'b0001;
-            end
-            1: begin
-              disk_bus <= {toggle, sdSTAT.err};
               toggle   <= 4'b0010;
             end
             2: begin
-              disk_bus <= {toggle, sdSTAT.val};
-              toggle   <= 4'b0011;
-            end
-            3: begin
-              disk_bus <= {toggle, sdSTAT.rdCNT};
+              disk_bus <= {toggle, sdSTAT.err};
               toggle   <= 4'b0100;
             end
             4: begin
-              disk_bus <= {toggle, sdSTAT.wrCNT};
-              toggle   <= 4'b0101;
+              disk_bus <= {toggle, sdSTAT.val};
+              toggle   <= 4'b0110;
             end
-            5: begin
+            6: begin
+              disk_bus <= {toggle, sdSTAT.rdCNT};
+              toggle   <= 4'b1000;
+            end
+            8: begin
+              disk_bus <= {toggle, sdSTAT.wrCNT};
+              toggle   <= 4'b1010;
+            end
+            10: begin
               // sdSTAT.state is only 3 bits, pack to make 8
               disk_bus <= {toggle,5'b0, sdSTAT.state};
-              toggle   <= 4'b0;
-            end
+              toggle   <= 4'b1100;
+              end
+            12: begin
+              // look at the spi received that caused the error 
+              disk_bus <= {toggle,spiRXD};
+              toggle <= 4'b0;
+              end
+           
 
             default: toggle <= 4'b0;
           endcase

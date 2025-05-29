@@ -25,7 +25,7 @@ dumprk05.hex: dumprk05.bin
 	
 	
 
-full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/rk8e.v ../RK8E/sdsim.v
+full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/rk8e.v ../RK8E/sdsim.v dumprk05.hex
 	iverilog -g2012 -DSIM -DRK8E ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/sdsim.v -o sdcard.o 
 	vvp sdcard.o -fst
 	gtkwave SDCard.vcd full_debug.gtkw &
