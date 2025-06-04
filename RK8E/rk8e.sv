@@ -267,8 +267,8 @@ bit 11 msb of cylinder
                 to_disk <= 1'b0;
                 sdOP <= sdopRD;
               end
-              3'b010: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1;  // seek 
-              // really a nop 
+              3'b010:  write_lock[cmd_reg[9:10]] <= 1'b1;
+              3'b011: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1;  // seek 
               3'b100, 3'b101: begin  // write
                 // need to check here for write protect
                 if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
@@ -286,10 +286,10 @@ bit 11 msb of cylinder
           12'o6746: // DLDC load command register
           begin
             cmd_reg <= ac;
-            if (ac[4] == 1'b1) status <= 12'o4000;  // set done on seek
-            else status <= 12'o0000;
-            // execute now, cmd does not yet hold the cmd from ac
-            if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
+          //  if (ac[4] == 1'b1) status <= 12'o4000;  // set done on seek
+          //  else status <= 12'o0000;
+          // execute now, cmd does not yet hold the cmd from ac
+          //if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
           end
           // maintenance mode debugging NOT what is describe in the RK8E
           // manual, this essentially reads out various status values from the

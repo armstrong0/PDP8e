@@ -232,7 +232,7 @@ module state_machine (
         // data break
         DB0: state <= DB1;
         DB1: begin
-          state <= FW;
+          state <= F0;
           break_in_prog <= 1'b0;
         end
 `endif

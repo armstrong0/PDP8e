@@ -78,6 +78,7 @@ module PDP8e (input clk,
     wire dsel_sw;
     assign dsel_sw = ~dsel_swn;
     wire [2:0] dsel;
+    wire dseld;
 
 
     wire mskip,skip,eskip;
@@ -311,6 +312,7 @@ rk8e RK8E (
         .dsel_sw (dsel_sw),
         .dsel (dsel),
         .triggerd (trigger),
+        .dseld (dseld),
         .sw_active (sw_active));
 
     imux IM(.clk (clk100),
