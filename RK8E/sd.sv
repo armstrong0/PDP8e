@@ -278,7 +278,7 @@ module sd
         stateINIT00: begin
           timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
-            if (bytecnt == ( nCR + 4 )) begin
+            if (bytecnt == 12) begin
               bytecnt <= 0;
               spiOP   <= spiCSL;
               state   <= stateINIT01;
@@ -412,7 +412,7 @@ module sd
                 state <= stateINFAIL;
               end else begin
                 spiOP <= spiCSH;
-                err   <= 8'h03;
+                err   <= 8'h03; // fail version 1
                 state <= stateINFAIL;
               end
             end
