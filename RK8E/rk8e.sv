@@ -174,7 +174,7 @@ bit 11 msb of cylinder
   always @(posedge clk) begin
 
 
-    if ((reset == 1'b1) || (clear == 1'b1)) begin
+    if ((sd_reset == 1'b1) || (clear == 1'b1)) begin
       skip          <= 1'b0;
       status        <= 12'o0000;
       car           <= 12'o0000;
