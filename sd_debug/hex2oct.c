@@ -14,12 +14,14 @@ usage (void)
   fprintf (stderr, "Usage:  [-1 | -2 | -3 ] file\n");
   fprintf (stderr, " converts hex files saved by the $writememh function\n");
   fprintf (stderr, "of iverilog into octal values \n");
-  fprintf (stderr, "    -3 converts 3 hex values into 2 octal values\n");
+  fprintf (stderr, "    -3 converts 3 hex values into 4 octal values\n");
+  fprintf (stderr,"        looks for the start of sector, reads 24 bits\n");
+  fprintf (stderr,"        and converts it to 2 12 bit octal values.\n");  
   fprintf (stderr, "       this is useful to decode dumprk05 data.\n");
   fprintf (stderr, "       output format is the same as od -o\n");
   fprintf (stderr, "    -1 outputs a single values per line, address data\n");
 
-  fprintf (stderr, "    -2 a hex values and outputs an octal value\n");
+  fprintf (stderr, "    -2 reads a hex value and outputs an octal value\n");
   fprintf (stderr, "        output is the same as od -o\n");
 }
 

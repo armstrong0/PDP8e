@@ -1,4 +1,9 @@
-all:  full_read palbart dumprk05.bin dumprk05 dumprk05.hex dump_vcd
+all:  full_read palbart dumprk05.bin dumprk05 dumprk05.hex dump_vcd dump_hex
+
+dump_hex: dump_hex.bin
+
+dump_hex.bin:  dump_hex.pal palbart
+	./palbart dump_hex.pal
 
 hex2oct: hex2oct.c
 	gcc hex2oct.c -o hex2oct	
@@ -10,7 +15,7 @@ palbart: palbart.c
 dumprk05: dumprk05.c 
 	gcc dumprk05.c -o dumprk05
 
-dumprk05.bin: dumprk05.pal
+dumprk05.bin: dumprk05.pal palbart
 	./palbart dumprk05.pal
 
 dumprk05.hex: dumprk05.bin
