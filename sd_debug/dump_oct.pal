@@ -20,20 +20,29 @@ Caddr, 0
     Ctmp, 0
     Wcnt, 0
     Wline, -0010
+    CURBUF, 1000
 
 
     * 200 
     6040    // use SPF instead of print to the output uart
     JMS  CRLF   // start off print CR/LF 
     / calculate how many words we will output
+    CLA CLL IAC     / Standard read from manual
+    DCLR
+    TAD CURBUF
+    DLCA
+    DLAG
+    DSKP 
+    JMP .-1
+    JMS dumpoct
+    hlt
+
+dumpoct,0    
     cla
     tad Eaddr
     cma iac / form 2's complemebnt
     tad Saddr
     dca Wcnt
-
-
-    CLA
     TAD Saddr
     TAD M1 / autoindex pre-increments so back off by one
     DCA Caddr
@@ -71,7 +80,7 @@ Cloop,    TAD I Caddr  / get next word to process
 Cloop2, jms PrintSp 
 Cloop1, isz Wcnt
     jmp Cloop
-    hlt
+    jmp i dumpoct
     
 eofline, jms CRLF
     cla
@@ -128,72 +137,6 @@ CRLF, 0
 / generated with od -o -A none -N 1024 -w2 -v systemdisk.rk05 > 2sectors
 / 
 Sdata,
- 001412
- 003413
- 001414
- 006211
- 003415
- 006201
- 001013
- 007640
- 005000
- 005437
- 000177
- 007577
- 000046
- 007646
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 006741
- 005030
- 000035
- 003436
- 005000
- 000006
- 000342
- 007605
- 007326
- 006751
- 006211
- 004053
- 003417
- 005044
- 000000
- 007607
- 007607
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 000000
- 006202
- 004207
- 001000
- 000000
- 000007
- 007746
- 006203
- 005677
- 000400
- 000000
- 003340
  006214
  001275
  003336
@@ -640,7 +583,6 @@ Sdata,
  005752
  003047
  005752
-Edata,0 
 /Sdata,  0022 /0000 0001 0010 012 
 /    1505     /0011 0100 0101 345    
 /    3170     /0110 0111 1000 678
@@ -664,7 +606,8 @@ Edata,0
 /    0016
 /    0017
 /    7777
-/EData, 0
+*1400
+EData, 0
 
 
 $
