@@ -1,5 +1,6 @@
 `define RK8E
-`define EAE 
+`define EAE
+`define FAST_SHIFTS
 //`define up5k
 
 // state machine encoding

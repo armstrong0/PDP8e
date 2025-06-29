@@ -243,7 +243,8 @@
 /*    v2.15 31Oct23  FPW  Fixed FLTG, patch from Folke Will.                  */
 /*                        FLTG is palbart extension from MACRO-8              */
 /*          02Jan24  DJG  Added -b to allow code PAL8 accepts but bad practice*/
-/*    v2.15 28May24  DBA  Added RK8E instructions                             */
+/*    v2.16 28May24  DBA  Added RK8E instructions                             */
+/*    v2.17 25Jum25  DBA  Corrected RK8E instructions                             */
 /* Change release variable below when you update. Send changes back to        */
 /*   David Gesswein, djg@pdp8online.com.                                      */
 /******************************************************************************/
@@ -254,7 +255,7 @@
 #include <string.h>
 #include <errno.h>
 
-char *release = "pal-2.16, 28 May 2024";
+char *release = "pal-2.17, 25 June 2025";
 
 /* Set to 1 and use -e flag to make ( and [ literals errors */
 #define LITERAL_ERROR        0
@@ -669,12 +670,12 @@ SYM_T permanent_symbols[] =
   { FIXED,  "DXAC",   06645   },
   { FIXED,  "DMMT",   06646   },
   /* Disk Type RK8E */
-  { FIXED,  "DSKP",   06741   },
-  { FIXED,  "DCLC",   06742   },
-  { FIXED,  "DLAG",   06743   },
-  { FIXED,  "DCLA",   06744   },
-  { FIXED,  "DRST",   06745   },
-  { FIXED,  "DLDC",   06746   },
+  { FIXED,  "DSKP",   06741   },    /* Disk Skip                              */
+  { FIXED,  "DCLR",   06742   },    /* Disk Clear                             */
+  { FIXED,  "DLAG",   06743   },    /* Disk Load and Go                       */
+  { FIXED,  "DLCA",   06744   },    /* Disk Load Current Address              */
+  { FIXED,  "DRST",   06745   },    /* Disk Read Status Register              */
+  { FIXED,  "DLDC",   06746   },    /* Disk Load Command Register             */
   /* Memory Extension Control, Type 183                                       */
   { FIXED,  "CDF",    06201   },    /* CHANGE DATA FIELD                      */
   { FIXED,  "CIF",    06202   },    /* CHANGE INSTRUCTION FIELD               */

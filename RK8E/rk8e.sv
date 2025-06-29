@@ -247,7 +247,7 @@ bit 11 msb of cylinder
         case (instruction)
           12'o6740: ;
           12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
-          12'o6742:  // DCLC has four options 
+          12'o6742:  // DCLR has four options 
           case (ac[10:11])
             2'b00, 2'b11: status <= 12'o4000;
             2'b01: begin
