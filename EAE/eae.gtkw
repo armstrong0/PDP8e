@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
-[*] Wed May 14 21:52:44 2025
+[*] Tue Jul 15 02:20:26 2025
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/EAE/nmi.vcd"
-[dumpfile_mtime] "Wed May 14 21:49:29 2025"
-[dumpfile_size] 9462
+[dumpfile_mtime] "Tue Jul 15 02:18:20 2025"
+[dumpfile_size] 8989
 [savefile] "/home/armstrong/Desktop/PDP8e/EAE/eae.gtkw"
-[timestart] 3116100
-[size] 1920 1006
+[timestart] 3357200
+[size] 1868 937
 [pos] -1 -1
-*-16.648378 3497000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.648378 3719600 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
 [sst_width] 263
@@ -26,12 +26,11 @@ PDP8e_tb.UUT.addr_loadd
 PDP8e_tb.UUT.AC.EAE_mode
 @30
 PDP8e_tb.UUT.addr[0:14]
-@31
 PDP8e_tb.UUT.instruction[0:11]
-@30
+PDP8e_tb.acmq[0:23]
 PDP8e_tb.UUT.AC.ac[0:11]
 PDP8e_tb.UUT.AC.mq[0:11]
-@24
+@25
 PDP8e_tb.UUT.AC.sc[0:4]
 [pattern_trace] 1
 [pattern_trace] 0

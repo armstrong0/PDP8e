@@ -149,6 +149,8 @@ module state_machine (
           state <= F3;
           default: state <= F3;
         endcase
+        // this is out of order so that the ifdef has most of the EAE stuff
+        // together
         E1:
         if ((instruction & 12'o7455) == 12'o7405) state <= EAE0;  // MUL or DIV
         else state <= E2;

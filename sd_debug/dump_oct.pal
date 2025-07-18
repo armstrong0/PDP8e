@@ -106,6 +106,7 @@ PrintSp, 0
     JMP I PrintSp
 
 / routine to print a charactor
+/ clear ac before exit
 PrintC, 0
     LOOPC, TSF  / wait until the TTO is empty (flag set)
     JMP LOOPC
@@ -118,10 +119,8 @@ CRLF, 0
     CLA
     TAD Kcr    / output a carrage return
     JMS PrintC
-    CLA
     TAD Klf
     JMS PrintC / output a linefeed
-    CLA
     JMP I CRLF
 
   *1000

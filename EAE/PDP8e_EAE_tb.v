@@ -1,7 +1,6 @@
 `define SIM
 `timescale 1 ns / 10 ps
 `define pulse(arg) #1 ``arg <=1 ; #140 ``arg <= 0
-
 `define pulse1(arg) #1 ``arg <=1 ; #1400 ``arg <= 0
 
 
@@ -36,7 +35,6 @@ module PDP8e_tb;
   `include "../parameters.v"
   `include "../FPGA_image/HX_clock.v"
 
-//  localparam clock_period = 1e9 / clock_frequency;
 
   always begin  // clock _period comes from parameters.v
     #(clock_period / 2) clk100 <= 1;
@@ -107,7 +105,7 @@ module PDP8e_tb;
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SHL_Test1.vcd");
     $readmemh("t14.hex", UUT.MA.ram.mem, 0, 8191);
-    $dumpvars(0, UUT);
+    $dumpvars(0,acmq, UUT);
     #0 halt <= 1;
     #1 reset <= 1;
     #1 clear <= 0;
@@ -130,7 +128,7 @@ module PDP8e_tb;
     #1000 sr <= 12'o0200;
     #1000 `pulse(addr_load);
     #1000 `pulse(cont);
-    #58000 $finish;
+    #580000 $finish;
 
 
   end

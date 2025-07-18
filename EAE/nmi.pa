@@ -9,44 +9,213 @@
     DST=7445
     swp=7521
     NMI=7411
+    SCA=7441
+   
+   //sca cla 7640  sc to ac
+     *  10 
+Caddr, 0
+
+    * 20 
+    Kspace, 240 /040   Adding 200 to the values turn 8N1 into 7N2
+    Kcr,   215 /015
+    Klf,   212 /012
+    Knuchr, 0
+    Kbit7, 0200
+    Kzero, 260 /0060
+    M1,    -0001
+    Km8,   -0005
+    M10,   -0012
+    zeroF, 0007
     
-    *4000
-operand,    0001
-    0000
-    300
-    5555
+    Saddr, Sdata
+    Eaddr, Edata
+    Ctmp, 0
+    Wcnt, 0
+    Wline, -0005
+    CURBUF, 1000
   
+
+    *4000
+Sdata,
+op1, 7777
+    7000
+rs1, 0
+     0
+sc1, 0     
+
+op2, 7777
+     7777
+rs2, 0
+     0
+sc2, 0
+
+op3, 7777
+     3000
+rs3, 0
+     0
+sc3, 0
+
+op4, 7770
+     0050
+rs4, 0
+     0
+sc4, 0
+
+op5, 0077
+     0003
+rs5, 0
+     0
+sc5, 0
+Edata, 0
      
     *200
     swab 
     dld
-    operand
+    op1
     nmi
+    dst
+    rs1
+    sca cla
+    dca sc1
+    cam  // when running in simh the dld does not function properly, ignoring
+    // the microprogrammed cam 
     dld
-    operand+2
+    op2
     nmi
-    swba
-    swab 
+    dst
+    rs2
+    sca cla
+    dca sc2
+    cam
     dld
-    operand
+    op3
     nmi
+    dst
+    rs3
+    sca cla
+    dca sc3
+    cam
     dld
-    operand+2
+    op4
     nmi
-
-
-
-
-
+    dst
+    rs4
+    sca cla
+    dca sc4
+    cam 
+    dld
+    op5
+    nmi
+    dst
+    rs5
+    sca cla
+    dca sc5
     hlt
-    
-
-
-
-    
-    
-    
+    6040 // start the transmiiter
+    jms dumpoct
     hlt
+
+
+dumpoct,0    
+    cla
+    tad Eaddr
+    cma iac / form 2's complemebnt
+    tad Saddr
+    dca Wcnt
+    TAD Saddr
+    TAD M1 / autoindex pre-increments so back off by one
+    DCA Caddr
+Cloop,    TAD I Caddr  / get next word to process
+    DCA  Ctmp        / save it away
+    tad Kzero
+    JMS PrintC
+    7000
+    tad Kzero
+    JMS PrintC
+    7000
+    tad  Ctmp
+    bsw 
+    rtr
+    rar
+    jms octaldigit
+    7000 /when debuging using simh it did not seem that the instruction
+         /following the jms was not being executed, add 7000 nop it 
+         / seemed to work leaving it
+    tad Ctmp
+    bsw
+    jms octaldigit
+    7000
+    tad Ctmp
+    rtr
+    rar
+    jms octaldigit
+    7000
+    tad Ctmp
+    jms octaldigit
+    7000
+    isz Wline
+    jmp Cloop2
+    jmp eofline
+Cloop2, jms PrintSp 
+Cloop1, isz Wcnt
+    jmp Cloop
+    jmp i dumpoct
+    
+eofline, jms CRLF
+    cla
+    tad Km8
+    dca Wline
+    jmp Cloop1
+
+octaldigit, 0
+    and zeroF
+    tad Kzero
+    JMS PrintC
+    cla
+    JMS I octaldigit
+
+PrintSp, 0
+    CLA
+    TAD Kspace
+    TSF
+    JMP .-1
+    TLS
+    CLA
+    JMP I PrintSp
+
+/ routine to print a charactor
+PrintC, 0
+    LOOPC, TSF  / wait until the TTO is empty (flag set)
+    JMP LOOPC
+    TLS         / put char into TTO 
+    CLA
+    JMP I PrintC / return
+
+/ routine to print a carrage return / line feed
+CRLF, 0
+    CLA
+    TAD Kcr    / output a carrage return
+    JMS PrintC
+    CLA
+    TAD Klf
+    JMS PrintC / output a linefeed
+    CLA
+    JMP I CRLF
+
+
+
+
+hlt
+
+
+
+    
+
+
+
+    
+    
+    
     $
 
 
