@@ -22,6 +22,12 @@ PDP8e: ../RK8E/rk8e.v
 burn:
 	iceFUNprog $(PROJ).bin
 
+place:
+	nextpnr-ice40 -r --hx8k --json $(PROJ).json --package cb132 --asc $(PROJ).asc --opt-timing --pcf PDP8e.pcf -l routing.log
+
+	
+
+
 clean:
 	rm -rf *.asc *.bin *blif
 	rm -rf *.log

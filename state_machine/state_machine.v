@@ -1,6 +1,7 @@
 module state_machine (
     input clk,
     input reset,
+    input clear,
     input halt,
     input single_step,
     input cont,
@@ -32,7 +33,7 @@ module state_machine (
 
 
   always @(posedge clk) begin
-    if (reset) begin
+    if (reset|clear) begin
       state <= F0;
       run_ff <= 0;
       int_in_prog <= 0;
@@ -45,12 +46,12 @@ module state_machine (
         // fetch cycle
         F0: begin
 `ifdef RK8E        
-          if (data_break == 1'b1) begin  // tried to ifdef this out,
-            //format doesn't allow it, it should be optimized out
+          if (data_break == 1'b1) begin 
             state <= DB0;
             break_in_prog <= 1'b1;
           end else 
 `endif
+// NOTE should chck for single step here as  well
           if (run_ff == 0)  begin
             if (cont == 1) begin
                 state <= FW;

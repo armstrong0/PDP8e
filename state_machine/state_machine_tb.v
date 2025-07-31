@@ -60,7 +60,6 @@ module state_machine_tb;
 
 
   `include "../parameters.v"
-   localparam clock_period = 1e9/clock_frequency;
 
   integer address;
 
@@ -136,39 +135,39 @@ module state_machine_tb;
     // test free run
     
     #200 `pulse(cont);
-    wait(SM1.halt_ff==1);
+    wait(SM1.run_ff==0);
     // verify halt states
     #100 `pulse(trigger);
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     // index is set from the address that defer is accessing, it is set here so
     // any deferred will appear to be auto indexedto  
     #100 index <= 1;
     #10 `pulse(cont);
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     index <= 0;
     #10 `pulse(cont);
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     #10 sing_step <= 1;
     #160 `pulse(cont);
     #160 `pulse(cont);
     #360 `pulse(cont);
     #10 sing_step <= 0;
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     #20 data_break <= 1;
     #100 `pulse(cont);
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     #1 EAE_mode <= 0;
     #1 EAE_loop <= 1;
     #100 `pulse(cont);
     #20 EAE_loop <= 0;
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     #1 EAE_mode <= 1;
     #1 EAE_loop <= 1;
     #100 `pulse(cont);
     #20 EAE_loop <= 0;
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     #100 `pulse(cont);
-    wait(SM1.halt_ff == 1);
+    wait(SM1.run_ff == 0);
     #330 $finish;
 
   end

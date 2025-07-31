@@ -100,6 +100,7 @@ module PDP8e (
     if (reset == 1) counter2 <= 'o0;
     else counter2 <= counter2 + 1;
   end
+`ifdef FRED  
   case (counter2[28:25]) 
   0:  assign addr = counter2[24:10];
   1:  assign addr = {counter2[23:10],counter2[24]};
@@ -119,6 +120,8 @@ module PDP8e (
   15:  assign addr = 15'b0;
   default:;
   endcase
+`endif
+assign addr = counter2[24:10];
   assign run  = ~rx;
 
   // this section established the baud rate and transmits charactors at that

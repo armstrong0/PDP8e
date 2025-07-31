@@ -37,7 +37,6 @@ module PDP8e_tb;
     integer test_nu;
 
 `include "../parameters.v"
-    localparam clock_period = 1e9/clock_frequency;
 
     always begin  // clock _period comes from parameters.v
         #(clock_period/2) clk100 <= 1;

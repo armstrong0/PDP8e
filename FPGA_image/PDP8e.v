@@ -154,7 +154,7 @@ module PDP8e (input clk,
 rk8e RK8E (
     .clk (clk100) ,
     .reset (reset),
-    .clear (clear),
+    .clear (cleard),
     .instruction (instruction) ,
     .state (state),
     .ac (ac),
@@ -208,6 +208,7 @@ rk8e RK8E (
 
     state_machine SM(.clk (clk100),
         .reset (reset),
+        .clear (cleard),
         .state (state),
         .instruction (instruction),
 
@@ -287,7 +288,8 @@ rk8e RK8E (
         .ac (ac),
         .mb (mdout),
         .mq (mq),
-        .io_bus (display_bus),
+   //     .io_bus (display_bus),
+        .io_bus ({state,sw_active,EAE_loop,5'd0}),
         .sw_active (sw_active),
         .run_ff (run_ff),
         .dout (ds),

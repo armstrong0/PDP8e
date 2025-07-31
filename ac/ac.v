@@ -19,10 +19,11 @@ module Ac (input clk,  // have to rename the mdulate for verilator
     reg [0:4] sc;
     reg tmp;
     reg [4:0] amount;
-
+`ifdef EAE
     wire [0:12] div_temp,div_ov;
     assign div_ov = {1'b0 ,ac}   - {1'b0, mdout};
     assign div_temp = {ac,mq[0]} - {1'b0, mdout};
+`endif
 
 `include "../parameters.v"
 
@@ -141,9 +142,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                 ac <= ac | {7'b0,sc };
 
             else if (instruction == 12'b111100001001)   //7411 NMI can't be combined
-                EAE_loop <= 1;
-
-            else begin
+            begin
                 ac <= ac;
                 link <= link;
                 mq <= mq;
@@ -367,7 +366,9 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                             link <= 1'b0;
                         end
                     end
-                    12'o7413, // SHL
+// LSR is copied here, as both LSR and SHL used the same first phase code, so
+// now when I am checking SHL code LSR fails
+//
                     12'o7417: // LSR
                     if (EAE_mode == 1'b0)
                     begin
@@ -378,16 +379,12 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                             mq <= 12'o0;
                             link  <= 1'b0;
                             EAE_loop <= 0;
-			    amount <= 0;
                         end
                         else
                         begin
                             link <= 1'b0;
                             sc <= mdout[7:11] + 5'd1;
-			    amount <= mdout[7:11] +5'd1;
-`ifndef FAST_SHIFTS
                             EAE_loop <= 1'b1;
-`endif			    
                         end
                     end
                     else if (mdout[7:11] >= 5'd25 )
@@ -407,12 +404,63 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     end
                     else
                     begin
-			amount <= mdout[7:11] ;
+                        sc <= mdout[7:11];
+                        link <= 1'b0;
+                        EAE_loop <= 1'b1;
+                    end
+
+
+
+                  //  12'o7413, // SHL
+                  //  12'o7417: // LSR
+                    12'o7413:
+                    if (EAE_mode == 1'b0)
+                    begin
+                        if (mdout[7:11] >= 5'd24 ) // then no need to shift
+                        begin
+                            sc <= 5'd0;
+                            ac <= 12'o0;
+                            mq <= 12'o0;
+                            link  <= 1'b0;
+                            EAE_loop <= 0;
+                        end
+                        else
+                        begin
+                            link <= 1'b0;
+`ifndef FAST_SHIFTS
+                            sc <= mdout[7:11] + 5'd1;
+                            EAE_loop <= 1'b1;
+`else
+                            sc <= 5'd0;
+                            amount <= mdout[7:11] + 5'd1;
+                            EAE_loop <= 0;
+`endif
+                        end
+                    end
+                    else if (mdout[7:11] >= 5'd25 )
+                    begin
+                        // B Mode  then no need to shift
+                        // but the link needs to be cleared
+                        link <= 1'b0;
+                        ac <= 12'o0;
+                        mq <= 12'o0;
+                        if (instruction == LSR ) gtf <= 1'b0;
+                    end
+                    else if  (mdout[7:11] == 5'd0  )
+                    begin
+                        sc <= 5'o37;
+                        EAE_loop <= 0;
+                        if (instruction == 12'o7417) link <= 1'b0;
+                    end
+                    else
+                    begin
                         sc <= mdout[7:11];
                         link <= 1'b0;
 `ifndef FAST_SHIFTS
-			
                         EAE_loop <= 1'b1;
+`else
+                        sc <= 5'd0;
+                        amount <= mdout[7:11] ;
 `endif
                     end
 
@@ -476,9 +524,9 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         EAE_loop <= 1'b1;
                     end
 
-                    12'o7411:   // NMI
 `ifndef FAST_SHIFTS
-		    if (((ac[0] != ac[1])||
+                    12'o7411:   // NMI
+                    if (((ac[0] != ac[1])||
                                 (ac[0:1] == 2'o0)) &&
                             (ac[2:11] == 10'o0) &&
                             (mq == 12'o0))
@@ -496,68 +544,75 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         EAE_loop <= 1'b1;
                     end
 `else
-		    begin
-		    casex (ac)
-	    12'b000000000000:; //  asigned by further case statemnet
-	    12'b000000000001: amount <= 10;
-	    12'b00000000001x: amount <= 9;
-	    12'b0000000001xx: amount <= 8;
-	    12'b000000001xxx: amount <= 7;
-	    12'b00000001xxxx: amount <= 6;
-	    12'b0000001xxxxx: amount <= 5;
-	    12'b000001xxxxxx: amount <= 4;
-	    12'b00001xxxxxxx: amount <= 3;
-	    12'b0001xxxxxxxx: amount <= 2;
-	    12'b001xxxxxxxxx: amount <= 1;
-            12'b01xxxxxxxxxx: amount <= 0;
-	    
-	    12'b111111111111:;  // assigned by further case statement
-	    12'b111111111110: amount <= 10;
-	    12'b11111111110x: amount <= 9;
-	    12'b1111111110xx: amount <= 8;
-	    12'b111111110xxx: amount <= 7;
-	    12'b11111110xxxx: amount <= 6;
-	    12'b1111110xxxxx: amount <= 5;
-	    12'b111110xxxxxx: amount <= 4;
-	    12'b11110xxxxxxx: amount <= 3;
-	    12'b1110xxxxxxxx: amount <= 2;
-	    12'b110xxxxxxxxx: amount <= 1;
-	    12'b10xxxxxxxxxx: amount <= 0;
+            12'o7411:  //NMI
+            begin
+            EAE_loop <= 0;
 
-	    endcase
-	    casex ({ac,mq})
-	    24'b000000000000000000000001: amount <= 22;
-	    24'b00000000000000000000001x: amount <= 21;
-	    24'b0000000000000000000001xx: amount <= 20;
-	    24'b000000000000000000001xxx: amount <= 19;
-	    24'b00000000000000000001xxxx: amount <= 18;
-	    24'b0000000000000000001xxxxx: amount <= 17;
-	    24'b000000000000000001xxxxxx: amount <= 16;
-	    24'b00000000000000001xxxxxxx: amount <= 15;
-	    24'b0000000000000001xxxxxxxx: amount <= 14;
-	    24'b000000000000001xxxxxxxxx: amount <= 13;
-	    24'b00000000000001xxxxxxxxxx: amount <= 12;
-	    24'b0000000000001xxxxxxxxxxx: amount <= 11;
-
-      endcase
-      casex ({ac,mq})
-
-	    24'b111111111111111111111110: amount <= 22;
-	    24'b11111111111111111111110x: amount <= 21;
-	    24'b1111111111111111111110xx: amount <= 20;
-	    24'b111111111111111111110xxx: amount <= 19;
-	    24'b11111111111111111110xxxx: amount <= 18;
-	    24'b1111111111111111110xxxxx: amount <= 17;
-	    24'b111111111111111110xxxxxx: amount <= 16;
-	    24'b11111111111111110xxxxxxx: amount <= 15;
-	    24'b1111111111111110xxxxxxxx: amount <= 14;
-	    24'b111111111111110xxxxxxxxx: amount <= 13;
-	    24'b11111111111110xxxxxxxxxx: amount <= 24;
-	    24'b1111111111110xxxxxxxxxxx: amount <= 11;
-
-      endcase
-end
-`endif		    
+            casex (ac)
+              12'b01xxxxxxxxxx: amount <= 0;
+              12'b001xxxxxxxxx: amount <= 1;
+              12'b0001xxxxxxxx: amount <= 2;
+              12'b00001xxxxxxx: amount <= 3;
+              12'b000001xxxxxx: amount <= 4;
+              12'b0000001xxxxx: amount <= 5;
+              12'b00000001xxxx: amount <= 6;
+              12'b000000001xxx: amount <= 7;
+              12'b0000000001xx: amount <= 8;
+              12'b00000000001x: amount <= 9;
+              12'b000000000001: amount <= 10;
+              12'b000000000000:
+              begin
+                casex (mq)
+                12'b1xxxxxxxxxxx: amount <= 11;
+                12'b01xxxxxxxxxx: amount <= 12;
+                12'b001xxxxxxxxx: amount <= 13;
+                12'b0001xxxxxxxx: amount <= 14;
+                12'b00001xxxxxxx: amount <= 15;
+                12'b000001xxxxxx: amount <= 16;
+                12'b0000001xxxxx: amount <= 17;
+                12'b00000001xxxx: amount <= 18;
+                12'b000000001xxx: amount <= 19;
+                12'b0000000001xx: amount <= 20;
+                12'b00000000001x: amount <= 21;
+                12'b000000000001: amount <= 22;
+                12'b000000000000: amount <= 0;
+                default: amount <= 0;
+                endcase
+           end
+           12'b10xxxxxxxxxx: amount <= 0;
+           12'b110xxxxxxxxx: amount <= 0;
+           12'b1110xxxxxxxx: amount <= 1;
+           12'b11110xxxxxxx: amount <= 2;
+           12'b111110xxxxxx: amount <= 3;
+           12'b1111110xxxxx: amount <= 4;
+           12'b11111110xxxx: amount <= 5;
+           12'b111111110xxx: amount <= 6;
+           12'b1111111110xx: amount <= 7;
+           12'b11111111110x: amount <= 8;
+           12'b111_111_111_110: amount <= 9;
+           12'b111111111111:
+           begin
+              casex (mq)
+              12'b0xxxxxxxxxxx: amount <= 10;
+              12'b10xxxxxxxxxx: amount <= 11;
+              12'b110xxxxxxxxx: amount <= 12;
+              12'b1110xxxxxxxx: amount <= 13;
+              12'b11110xxxxxxx: amount <= 14;
+              12'b111110xxxxxx: amount <= 15;
+              12'b1111110xxxxx: amount <= 16;
+              12'b11111110xxxx: amount <= 17;
+              12'b111111110xxx: amount <= 18;
+              12'b1111111110xx: amount <= 19;
+              12'b11111111110x: amount <= 20;
+              12'b111111111110: amount <= 21;
+              12'b111111111111: amount <= 22;
+              default: amount <= 0;
+              endcase
+           end
+           default: amount <= 0;
+        endcase
+      end
+`endif
                     default:;
 
                 endcase
@@ -591,7 +646,6 @@ end
                     // here I am using restoring devision BUT since the old
                     // values are still around I use those, shifted without
                     // the subtraction
-                        
                         if (link == 1'b0)   // no overflow
                         begin
                             if (div_temp[0] == 1'b0)
@@ -609,9 +663,16 @@ end
                             if (sc == 5'd10)  EAE_loop <= 1'b0;
                         end
                     end
+`ifdef FAST_SHIFTS
+                    12'o7411:
+                    begin
+                       {link,ac,mq} <= {link,ac,mq} << amount;
+                        sc <= amount;
+                    end
+`else                    
 
                     12'o7411:  // must be exact
-`ifndef FAST_SHIFTS		    
+                    begin
                     if ((instruction == 12'o7411) && (EAE_loop == 1'b1)) //NMI
                     begin
                         {link,ac,mq} <= {ac,mq,1'b0};
@@ -622,15 +683,17 @@ end
                                     && (mq == 12'o0)))
                             EAE_loop <= 0;  // we are finished
                     end
-`else
-
-		    {link,ac,mq} <= {ac,mq,1'b0} << amount;
-`endif      
-		    
-                    12'o7413:  // SHL
+                   end
+`endif
+ 
 `ifdef FAST_SHIFTS
-		    {link,ac,mq} <= {ac,mq,1'b0} << amount;
-`else		    
+                    12'o7413:  // SHL
+                    begin
+                       {link,ac,mq} <= {link,ac,mq} << amount;
+                        sc <= 5'd0;
+                    end    
+`else
+                    12'o7413: 
                     if (EAE_loop == 1'b1)
                     begin
                         {link,ac,mq} <= {ac,mq,1'b0};
@@ -643,7 +706,7 @@ end
                             sc <= sc - 5'd1;
 
                     end
-`endif		    
+`endif               
                     12'o7415,   // ASR
                     12'o7417:   // LSR
                     if (EAE_loop == 1'b1)
@@ -663,7 +726,7 @@ end
                     default:;
                 endcase
             end
-`endif            
+`endif
             default:;
         endcase
 

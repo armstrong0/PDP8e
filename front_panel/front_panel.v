@@ -41,7 +41,7 @@ module front_panel (
 
   assign {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} = switchd;
 
-  parameter
+  parameter integer
       LATCH = 3'b000,
       WAIT  = 3'b001,
       TRIG1 = 3'b010,
@@ -67,8 +67,8 @@ module front_panel (
   always @(posedge clk) begin
     if (reset) begin
       trig_state <= LATCH;
-      switchd <= 8'b0000000;
-      switchl <= 7'b000000;
+      switchd <= 8'b00000000;
+      switchl <=  7'b0000000;
       trig_cnt <= 0;
       sw_active <= 1'b0;
       dsel <= 3'b000;
@@ -77,7 +77,7 @@ module front_panel (
         LATCH: begin
           switchl <= switchl |
                     {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw };// latch inputs
-          if (switchl == 6'b000000) trig_state <= LATCH;
+          if (switchl == 7'b0000000) trig_state <= LATCH;
           else begin
             trig_state <= WAIT;
           end
@@ -85,7 +85,7 @@ module front_panel (
         WAIT: begin
           trig_state <= TRIG1;
           switchd <= {1'b1, switchl};
-          switchl <= 6'b000000;
+          switchl <= 7'b0000000;
         end
         TRIG1: begin
           trig_state <= TRIG2;
@@ -98,7 +98,6 @@ module front_panel (
           if (dseld == 1) begin
             if (dsel == 5) dsel <= 0;
             else dsel <= dsel + 1;
-            ;
           end
         end
         TRIG3: begin
@@ -113,7 +112,7 @@ module front_panel (
           trig_cnt <= trig_cnt + 1;
           trig_state <= DELAY;
           sw_active <= 1'b1;
-          switchd <= 7'b0000000;
+          switchd <= 8'b00000000;
         end
 
         REENABLE: trig_state <= LATCH;

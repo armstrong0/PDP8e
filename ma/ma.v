@@ -36,7 +36,6 @@ module ma (
 
   reg [0:4] current_page;
   reg [0:11] mdin, idx_tmp, pc, next_pc, skip_pc;
-  reg [0:14] saveAddr;
   reg write_en;
   wire [0:11] mdtmp;
   `include "../parameters.v"
@@ -82,7 +81,6 @@ module ma (
       case (state)
         F0: begin
           pc <= eaddr[3:14];
-          saveAddr <= eaddr;
 `ifdef RK8E	  
 	  if (data_break == 1) begin
 		  mdin <= disk2mem;
@@ -224,7 +222,7 @@ module ma (
                    end
               DCA: mdin <= ac;
               OPR: begin
-                eaddr[3:14] <= eaddr[3:14] + 1;
+                eaddr[3:14] <= eaddr[3:14] + 12'd1;
                 mdin <= ac;
                 mdout <= mdtmp;
               end
@@ -263,7 +261,7 @@ module ma (
             if (int_in_prog) begin
               eaddr   <= 15'o0001;
               next_pc <= 12'o0001;
-            end else next_pc <= eaddr[3:14] + 1;
+            end else next_pc <= eaddr[3:14] + 12'd1;
             OPR: ;
           endcase
           mdout <= mdtmp;
