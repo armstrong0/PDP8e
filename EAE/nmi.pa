@@ -22,6 +22,7 @@ Caddr, 0
     Knuchr, 0
     Kbit7, 0200
     Kzero, 260 /0060
+    K5,     5
     M1,    -0001
     Km8,   -0005
     M10,   -0012
@@ -33,89 +34,66 @@ Caddr, 0
     Wcnt, 0
     Wline, -0005
     CURBUF, 1000
-  
+    sc1p,  sc1
+    nucase, -5
+    taddr, 3000
+    saddr, 4000
+
+    *3000  // test cases low word first, in pairs
+tstdata, 0000
+     7776
+     0000
+     7774
+     0000
+     7770
+     0000
+     7760
+     0000
+     7740
+     0000
+     7700
+
+     
 
     *4000
-Sdata,
+Sdata, // note the format, only the first is shown here, the rest are copied in
 op1, 0000
      7776
 rs1, 0
      0
 sc1, 0     
 
-op2,0000
-    7774 
-rs2, 0
-     0
-sc2, 0
-
-op3, 0000
-     7770
-rs3, 0
-     0
-sc3, 0
-
-op4, 0000
-     7760
-rs4, 0
-     0
-sc4, 0
-
-op5, 0000
-     7740
-rs5, 0
-     0
-sc5, 0
-Edata, 0
      
     *200
+    / copy test data into structures
+
     swab 
-    dld
-    op1
+sts,    cam
+        dld
+src,    op1
     nmi
     dst
-    rs1
+dst1,  rs1
     sca cla
-    dca sc1
-    cam  // when running in simh the dld does not function properly, ignoring
-    // the microprogrammed cam 
-    dld
-    op2
-    nmi
-    dst
-    rs2
-    sca cla
-    dca sc2
-    cam
-    dld
-    op3
-    nmi
-    dst
-    rs3
-    sca cla
-    dca sc3
-    cam
-    dld
-    op4
-    nmi
-    dst
-    rs4
-    sca cla
-    dca sc4
-    cam 
-    dld
-    op5
-    nmi
-    dst
-    rs5
-    sca cla
-    dca sc5
+    dca I sc1p
+// now adjust the pointers
+   tad k5
+   tad src
+   dca src
+   tad k5
+   tad dst1
+   dca dst1
+   tad k5
+   tad sc1p
+   dca sc1p
+   isz nucase
+   jmp sts
+   hlt
+   6040 / start the uart
+   jms dumpoct
+   7000
     hlt
-    6040 // start the transmiiter
-    jms dumpoct
-    hlt
-
-
+ 
 dumpoct,0    
     cla
     tad Eaddr
