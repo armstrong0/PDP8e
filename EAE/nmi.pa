@@ -1,4 +1,5 @@
-    CAM=7621
+ / test program primarily for fast nmi
+   CAM=7621
     SWAB=7431
     SWBA=7447
     DPSZ=7451 
@@ -15,6 +16,9 @@
      *  10 
 Caddr, 0
 
+taddr, 3000-1 /uses preincrement
+staddr, 4000-1 /uses preincrement
+
     * 20 
     Kspace, 240 /040   Adding 200 to the values turn 8N1 into 7N2
     Kcr,   215 /015
@@ -23,36 +27,44 @@ Caddr, 0
     Kbit7, 0200
     Kzero, 260 /0060
     K5,     5
+    k3,     3
     M1,    -0001
     Km8,   -0005
     M10,   -0012
     zeroF, 0007
     
     Saddr, Sdata
-    Eaddr, Edata
+  /  Eaddr, Edata
     Ctmp, 0
     Wcnt, 0
     Wline, -0005
     CURBUF, 1000
     sc1p,  sc1
     nucase, -5
-    taddr, 3000
-    saddr, 4000
-
+    nu1case, tstdata-etstdata%2  /no priority for operations, left to right
+    
     *3000  // test cases low word first, in pairs
-tstdata, 0000
+tstdata, 2525
      7776
-     0000
+     2525
      7774
-     0000
+     2525
      7770
-     0000
+     2525
      7760
-     0000
+     2525
      7740
-     0000
+     2525
      7700
-
+     2525
+     7600
+     2525
+     7400
+     2525
+     7000
+     2525
+     6000
+etstdata,0
      
 
     *4000
@@ -63,10 +75,28 @@ rs1, 0
      0
 sc1, 0     
 
+/*4036
+/Edata, 0
      
     *200
+    cla
+    tad nu1case
+    dca nucase
     / copy test data into structures
-
+    cla
+cp, tad I taddr
+    dca I staddr
+    tad I taddr
+    dca I staddr
+    / now increase the saddr by three
+    dca I staddr
+    dca I staddr
+    dca I staddr
+    isz nu1case
+    jmp cp
+   / tad staddr
+   / dca Eaddr
+   / hlt
     swab 
 sts,    cam
         dld
@@ -88,15 +118,17 @@ dst1,  rs1
    dca sc1p
    isz nucase
    jmp sts
-   hlt
+   / hlt
    6040 / start the uart
    jms dumpoct
    7000
-    hlt
+   hlt
  
 dumpoct,0    
     cla
-    tad Eaddr
+  /  tad Eaddr
+    tad staddr
+    iac
     cma iac / form 2's complemebnt
     tad Saddr
     dca Wcnt
