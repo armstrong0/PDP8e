@@ -44,7 +44,9 @@ staddr, 4000-1 /uses preincrement
     nu1case, tstdata-etstdata%2  /no priority for operations, left to right
     
     *3000  // test cases low word first, in pairs
-tstdata, 2525
+tstdata,    5252
+     7777
+     2525
      7776
      2525
      7774
