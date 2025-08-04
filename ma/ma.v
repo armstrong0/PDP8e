@@ -294,7 +294,6 @@ module ma (
           end
         end
         DB1: begin
-          eaddr <= saveAddr;
           if (to_disk == 1'b1) begin
             mem2disk <= mdtmp;
           end
