@@ -9,6 +9,7 @@ dump_hex.bin:  dump_hex.pal palbart
 
 dump_oct.bin:  dump_oct.pal palbart
 	./palbart dump_oct.pal
+	~/bin/mem_gen_bin dump_oct.bin dump_oct.hex 
 
 hex2oct: hex2oct.c
 	gcc hex2oct.c -o hex2oct	

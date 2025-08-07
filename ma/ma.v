@@ -297,6 +297,7 @@ module ma (
           if (to_disk == 1'b1) begin
             mem2disk <= mdtmp;
           end
+          eaddr[0:14] <= {IF,pc};
         end
 `endif
 

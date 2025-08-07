@@ -24,6 +24,8 @@ burn:
 
 place:
 	nextpnr-ice40 -r --hx8k --json $(PROJ).json --package cb132 --asc $(PROJ).asc --opt-timing --pcf PDP8e.pcf -l routing.log
+	# Convert to bitstream using IcePack
+	icepack $(PROJ).asc $(PROJ).bin
 
 	
 
