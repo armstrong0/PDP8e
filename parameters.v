@@ -112,9 +112,9 @@ parameter real fast_spi = 1000000;
 // units of milliseconds
 
 `ifdef SIM
-parameter sd_delay = 2;
+parameter sd_delay1 = 2;
 `else
-parameter sd_delay = 10'd500;
+parameter sd_delay1 = 10'd500;
 `endif
 
 // two diagnostic tests will not pass with partial fields so change to 8k
