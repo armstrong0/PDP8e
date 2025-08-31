@@ -164,7 +164,7 @@ rk8e RK8E (
     .interrupt (disk_interrupt),
     .data_break (data_break),
     .to_disk (to_disk ),
-    .sd_delay (sd_delay),
+    .sd_delay (sd_delay1),
     .disk_rdy (disk_rdy),
     .break_in_prog (break_in_prog ),
     .skip (disk_skip) ,

@@ -199,7 +199,7 @@ module sd
   wire sdBYTE_t spiRXD;  //! SPI Received Dataa
   sdBYTE_t spiTXD;  //! SPI Transmit Data
   wire spiDONE;  //! Asserted  SPI is done
-  logic [15:0] bytecnt;  //! Byte Counter
+  logic [11:0] bytecnt;  //! Byte Counter
   sdCMD_t sdCMD17;  //! CMD17
   sdCMD_t sdCMD24;  //! CMD24
   addr_t memADDR;  //! Memory Address
@@ -212,7 +212,7 @@ module sd
   sdBYTE_t err;  //! Error State
   sdBYTE_t val;  //! Error Value
   sdSTATE_t sdSTATE;  //! State
-  localparam logic [3:0] nCR = 8;  //! NCR from SD Spec 
+  localparam logic [11:0] nCR = 8;  //! NCR from SD Spec 
   localparam logic [11:0] nAC = 1023;  //! NAC from SD Spec
   localparam logic [11:0] nWR = 20;  //! NWR from SD Spec
 
@@ -1250,7 +1250,7 @@ module sd
         stateWRITE12: begin
           if (spiDONE == 1'b1)
             if (spiRXD == 8'h00) begin
-              if (bytecnt == 65535) begin
+              if (bytecnt == 4095) begin
                 spiOP   <= spiCSH;
                 bytecnt <= 0;
                 err     <= 8'h13;

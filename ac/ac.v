@@ -548,64 +548,65 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             begin
             EAE_loop <= 0;
 
-            casex (ac)
-              12'b01xxxxxxxxxx: amount <= 0;
-              12'b001xxxxxxxxx: amount <= 1;
-              12'b0001xxxxxxxx: amount <= 2;
-              12'b00001xxxxxxx: amount <= 3;
-              12'b000001xxxxxx: amount <= 4;
-              12'b0000001xxxxx: amount <= 5;
-              12'b00000001xxxx: amount <= 6;
-              12'b000000001xxx: amount <= 7;
-              12'b0000000001xx: amount <= 8;
-              12'b00000000001x: amount <= 9;
+            casez (ac)
+              12'b01??????????: amount <= 0;
+              12'b001?????????: amount <= 1;
+              12'b0001????????: amount <= 2;
+              12'b00001???????: amount <= 3;
+              12'b000001??????: amount <= 4;
+              12'b0000001?????: amount <= 5;
+              12'b00000001????: amount <= 6;
+              12'b000000001???: amount <= 7;
+              12'b0000000001??: amount <= 8;
+              12'b00000000001?: amount <= 9;
               12'b000000000001: amount <= 10;
               12'b000000000000:
               begin
-                casex (mq)
-                12'b1xxxxxxxxxxx: amount <= 11;
-                12'b01xxxxxxxxxx: amount <= 12;
-                12'b001xxxxxxxxx: amount <= 13;
-                12'b0001xxxxxxxx: amount <= 14;
-                12'b00001xxxxxxx: amount <= 15;
-                12'b000001xxxxxx: amount <= 16;
-                12'b0000001xxxxx: amount <= 17;
-                12'b00000001xxxx: amount <= 18;
-                12'b000000001xxx: amount <= 19;
-                12'b0000000001xx: amount <= 20;
-                12'b00000000001x: amount <= 21;
+                casez (mq)
+                12'b1???????????: amount <= 11;
+                12'b01??????????: amount <= 12;
+                12'b001?????????: amount <= 13;
+                12'b0001????????: amount <= 14;
+                12'b00001???????: amount <= 15;
+                12'b000001??????: amount <= 16;
+                12'b0000001?????: amount <= 17;
+                12'b00000001????: amount <= 18;
+                12'b000000001???: amount <= 19;
+                12'b0000000001??: amount <= 20;
+                12'b00000000001?: amount <= 21;
                 12'b000000000001: amount <= 22;
                 12'b000000000000: amount <= 0;
                 default: amount <= 0;
                 endcase
            end
-           12'b10xxxxxxxxxx: amount <= 0;
-           12'b110xxxxxxxxx: amount <= 0;
-           12'b1110xxxxxxxx: amount <= 1;
-           12'b11110xxxxxxx: amount <= 2;
-           12'b111110xxxxxx: amount <= 3;
-           12'b1111110xxxxx: amount <= 4;
-           12'b11111110xxxx: amount <= 5;
-           12'b111111110xxx: amount <= 6;
-           12'b1111111110xx: amount <= 7;
-           12'b11111111110x: amount <= 8;
-           12'b111_111_111_110: amount <= 9;
+           12'b10??????????: amount <= 0;
+           12'b110?????????: amount <= 1;
+           12'b1110????????: amount <= 2;
+           12'b11110???????: amount <= 3;
+           12'b111110??????: amount <= 4;
+           12'b1111110?????: amount <= 5;
+           12'b11111110????: amount <= 6;
+           12'b111111110???: amount <= 7;
+           12'b1111111110??: amount <= 8;
+           12'b11111111110?: amount <= 9;
+           12'b111_111_111_110: amount <= 19;
            12'b111111111111:
            begin
-              casex (mq)
-              12'b0xxxxxxxxxxx: amount <= 10;
-              12'b10xxxxxxxxxx: amount <= 11;
-              12'b110xxxxxxxxx: amount <= 12;
-              12'b1110xxxxxxxx: amount <= 13;
-              12'b11110xxxxxxx: amount <= 14;
-              12'b111110xxxxxx: amount <= 15;
-              12'b1111110xxxxx: amount <= 16;
-              12'b11111110xxxx: amount <= 17;
-              12'b111111110xxx: amount <= 18;
-              12'b1111111110xx: amount <= 19;
-              12'b11111111110x: amount <= 20;
-              12'b111111111110: amount <= 21;
-              12'b111111111111: amount <= 22;
+              casez (mq)
+	      
+              12'b0???????????: amount <= 11;
+              12'b10??????????: amount <= 12;
+              12'b110?????????: amount <= 13;
+              12'b1110????????: amount <= 14;
+              12'b11110???????: amount <= 15;
+              12'b111110??????: amount <= 16;
+              12'b1111110?????: amount <= 17;
+              12'b11111110????: amount <= 18;
+              12'b111111110???: amount <= 19;
+              12'b1111111110??: amount <= 20;
+              12'b11111111110?: amount <= 21;
+              12'b111111111110: amount <= 22;
+              12'b111111111111: amount <= 23;
               default: amount <= 0;
               endcase
            end
