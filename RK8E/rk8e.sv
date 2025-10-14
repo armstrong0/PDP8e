@@ -215,13 +215,13 @@ bit 11 msb of cylinder
         sdstateREADY: begin  // SD Ready for commands
           disk_rdy <= 1'b1;
           if (last_sdstate == sdstateDONE) begin
-            status[0] <= 1'b1;
+            status[0] <= 1'b1;  // set done
             car <= dmaADDR[3:14];
           end
         end
         sdstateREAD,  // SD Reading
         sdstateWRITE: begin  // SD Writing
-          status[0] <= 1'b0;
+          status[0] <= 1'b0; //set busy
           if (last_sdstate == sdstateREADY) sdOP <= sdopNOP;
         end
         sdstateDONE: begin
@@ -231,8 +231,8 @@ bit 11 msb of cylinder
         end
         sdstateINFAIL,  // SD Initialization Failed
         sdstateRWFAIL: begin  // SD Read or Write failed
-          status[0]  <= 1'b0;
-          status[10] <= 1'b1;
+          status[0]  <= 1'b0; // set busy
+          status[10] <= 1'b1; // set drive status error
         end
         default:     status[0] <= 1'b0;
       endcase
@@ -249,18 +249,18 @@ bit 11 msb of cylinder
           12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
           12'o6742:  // DCLR has four options 
           case (ac[10:11])
-            2'b00, 2'b11: status <= 12'o4000;
+            2'b00, 2'b11: status <= 12'o4000; // set done reset all other flags
             2'b01: begin
-              status <= 12'o4000;
+              status <= 12'o4000;   // set done reset all other flags 
               sdOP   <= sdopABORT;  // stop whatever is in process
             end
-            2'b10: status <= 12'o4000;
+            2'b10: status <= 12'o4000; // set done reset all other flags
             default: ;
           endcase
           12'o6743:    // DLAG load address and go
           begin
             dar <= ac;
-            if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
+            if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;  // set cyclinder address error
             else  // we have a valid cylinder
             case (cmd_reg[0:2])
               3'b000,3'b001: begin  // read
@@ -268,11 +268,11 @@ bit 11 msb of cylinder
                 sdOP <= sdopRD;
               end
               3'b010:  write_lock[cmd_reg[9:10]] <= 1'b1;
-              3'b011: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1;  // seek 
+              3'b011: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1;  // seek done
               3'b100, 3'b101: begin  // write
                 // need to check here for write protect
                 if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
-                  status[7] <= 1'b1;
+                  status[7] <= 1'b1; // write lock error
                 end else begin
                   sdOP <= sdopWR;
                   to_disk <= 1'b1;
@@ -299,7 +299,10 @@ bit 11 msb of cylinder
           //    0032  5030  /JMP 0030
           //    start at 0030 then press continue, view the ac it will have an
           //    index to the value in bits 0:2 and the value in 4:11
+          //    Following the debug info the car, status, command and dar are
+          //    dumped, they are full 12 bit values.
           12'o6747:
+         
           case (toggle)
             0: begin
               disk_bus <= {toggle, sdSTAT.debug};
@@ -329,8 +332,25 @@ bit 11 msb of cylinder
             12: begin
               // look at the spi received that caused the error 
               disk_bus <= {toggle,spiRXD};
-              toggle <= 4'b0;
+              toggle <= 4'b0001;
               end
+            1:begin
+               disk_bus <= car;
+               toggle <= 4'b0011;
+               end
+            3:begin
+               disk_bus <= status;
+               toggle <= 4'b0101;
+               end
+            5:begin
+               disk_bus <= cmd_reg;
+               toggle <= 4'b0111;
+               end
+            7:begin
+               disk_bus <= dar;
+               toggle <= 4'b0000;
+               end
+
            
 
             default: toggle <= 4'b0;

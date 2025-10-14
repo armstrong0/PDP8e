@@ -234,7 +234,8 @@ module state_machine (
 `ifdef RK8E
         // data break
         DB0: state <= DB1;
-        DB1: begin
+        DB1: state <= DB2;
+        DB2: begin
           state <= F0;
           break_in_prog <= 1'b0;
         end

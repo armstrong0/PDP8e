@@ -84,8 +84,11 @@ module ma (
 `ifdef RK8E	  
 	  if (data_break == 1) begin
 		  mdin <= disk2mem;
-              eaddr <= dmaAddr;
+          eaddr <= dmaAddr;
+          pc <= eaddr[3:14];
           end
+`else          
+          pc <= eaddr[3:14];
 `endif
           mdout <= mdtmp;  // catches the case where we are spinning in F0
         end
@@ -287,13 +290,14 @@ module ma (
         H2: if ((depd == 1'b1) | (examd == 1'b1)) eaddr[3:14] <= eaddr[3:14] + 12'o0001;
         H3: ;
 `ifdef RK8E
-        DB0: begin
+        DB0:;
+        DB1: begin
           mdin <= disk2mem;
           if (to_disk == 0) begin 
-	     write_en <= 1'b1;
+	       write_en <= 1'b1;
           end
         end
-        DB1: begin
+        DB2: begin
           if (to_disk == 1'b1) begin
             mem2disk <= mdtmp;
           end

@@ -76,9 +76,9 @@ set_io --warn-no-port dsel_led[1] A10
 set_io --warn-no-port dsel_led[2] C10
 set_io --warn-no-port dsel_led[0] A11
 
-set_io --warn-no-port sdCS   E12
-set_io --warn-no-port sdSCLK D12
-set_io --warn-no-port sdMOSI C12
+set_io --warn-no-port -pullup yes sdCS   E12
+set_io --warn-no-port -pullup yes sdSCLK D12
+set_io --warn-no-port -pullup yes sdMOSI C12
 set_io --warn-no-port -pullup yes sdMISO B14
  
 

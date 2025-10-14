@@ -150,6 +150,7 @@ module PDP8e_tb;
     #1 halt <= 1;
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SDCard.vcd");
+    //$readmemh("2sector.hex", UUT.MA.ram.mem, 0, 8191);
     $readmemh("dumprk05.hex", UUT.MA.ram.mem, 0, 8191);
     $dumpvars(0,tx_char,diskio,serialio,serial_tx,UUT);
 
@@ -164,7 +165,7 @@ module PDP8e_tb;
     #1 dep <= 0;
 	#1 clear <= 0;
     #1 dsel_sw <= 0;
-    #1 sr <= 12'o0200;
+    #1 sr <= 12'o1000;
     #1 pll_locked <= 0;
     #1 rx <= 1;  // marking state
     #100 pll_locked <= 1;
@@ -173,7 +174,7 @@ module PDP8e_tb;
     `PULSE(addr_load);
     wait(UUT.RK8E.disk_rdy == 1);
     #1000 `PULSE(cont);
-    #6006000 $finish;
+    #9006000 $finish;
  
 
   end
