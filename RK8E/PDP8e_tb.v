@@ -74,7 +74,7 @@ module PDP8e_tb;
       .reset(reset),
       .rx(rx),
       .sr(sr),
-      .dsel_sw (dsel_sw),
+      .dsel_swn (dsel_swn),
       .dep(dep),
       .sw(sw),
       .single_stepn(single_stepn),
@@ -159,6 +159,7 @@ module PDP8e_tb;
 
     #1000;
     `PULSE(cont);
+    #28000000 $finish;
      wait(serialio ==1);
     #50000 $finish;
 

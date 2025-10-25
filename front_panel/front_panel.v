@@ -41,7 +41,7 @@ module front_panel (
 
   assign {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} = switchd;
 
-  parameter integer
+  parameter reg [2:0]  //integer
       LATCH = 3'b000,
       WAIT  = 3'b001,
       TRIG1 = 3'b010,

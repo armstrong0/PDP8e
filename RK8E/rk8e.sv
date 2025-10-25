@@ -234,7 +234,7 @@ bit 11 msb of cylinder
           status[0]  <= 1'b0; // set busy
           status[10] <= 1'b1; // set drive status error
         end
-        default:     status[0] <= 1'b0;
+        default:; //   status[0] <= 1'b0;
       endcase
       last_sdstate <= sdstate;
 
@@ -286,10 +286,7 @@ bit 11 msb of cylinder
           12'o6746: // DLDC load command register
           begin
             cmd_reg <= ac;
-          //  if (ac[4] == 1'b1) status <= 12'o4000;  // set done on seek
-          //  else status <= 12'o0000;
-          // execute now, cmd does not yet hold the cmd from ac
-          //if (ac[0:2] == 3'b010) write_lock[ac[9:10]] <= 1'b1;
+            status <= 12'o0000;
           end
           // maintenance mode debugging NOT what is describe in the RK8E
           // manual, this essentially reads out various status values from the

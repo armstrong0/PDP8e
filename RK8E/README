@@ -1,6 +1,12 @@
  This module implements some of an RK8E disk controller.
  NOTE: There is an rk8 and an rk8e controller.  This is an RK8E!
 
+  October 16, 2025 it has been a long time!  Beware of SD_cards with less than
+  4 gigabyte capacity, they may be byte addressed rather than sector addressed.
+   
+  This code requires sector addresses.
+  
+
   January 10, 2024 - Part of the boot process is working, the first sector of the drive is read, the boot code in that sector copies the parts of the sector in field 0 and field 1.  The copy is correct.  The controller is set up to read the next sector but the rk8e module does not respond correctly...
   
 

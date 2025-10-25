@@ -206,7 +206,6 @@ module sd
   logic [0:3] memBUF;  //! Memory Buffer
   logic memREQ;  //! DMA Request
   logic abort;  //! Abort this command
-//  logic [0:19] timeout;  //! Timeout
   sdBYTE_t rdCNT;  //! Read Counter
   sdBYTE_t wrCNT;  //! Write Counter
   sdBYTE_t err;  //! Error State
@@ -242,10 +241,7 @@ module sd
       sdCMD24 <= '{8'h58, 8'h00, 8'h00, 8'h00, 8'h00, 8'hff};
       abort   <= 1'b0;
       bytecnt <= 0;
-      dmaRD   <= 1'b0;
-      dmaWR   <= 1'b0;
       spiOP   <= spiCSH;
-      //timeout <= 1000000;
       sdSTATE <= sdstateINIT;
       state   <= stateRESET;
     end else begin
@@ -264,7 +260,6 @@ module sd
         default: ;
 
         stateRESET: begin
-          //timeout <= timeout - 1;
           bytecnt <= 0;
           state   <= stateINIT00;
         end
@@ -276,7 +271,6 @@ module sd
         //
 
         stateINIT00: begin
-          //timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 12) begin
               bytecnt <= 0;
@@ -295,7 +289,6 @@ module sd
         //
 
         stateINIT01: begin
-          //timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
@@ -314,7 +307,6 @@ module sd
         //
 
         stateINIT02: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -347,7 +339,6 @@ module sd
         //
 
         stateINIT03: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -365,7 +356,6 @@ module sd
         //
 
         stateINIT04: begin
-          //timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
@@ -386,7 +376,6 @@ module sd
         //
 
         stateINIT05: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -427,7 +416,6 @@ module sd
         //
 
         stateINIT06: begin
-          //timeout <= timeout - 1;
           case (bytecnt)
             0: begin
               spiOP   <= spiTR;
@@ -487,7 +475,6 @@ module sd
         //
 
         stateINIT07: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -505,7 +492,6 @@ module sd
         //
 
         stateINIT08: begin
-          //timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
@@ -524,7 +510,6 @@ module sd
         //
 
         stateINIT09: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -555,7 +540,6 @@ module sd
         //
 
         stateINIT10: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -573,7 +557,6 @@ module sd
         //
 
         stateINIT11: begin
-          //timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
@@ -592,7 +575,6 @@ module sd
         //
 
         stateINIT12: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -625,7 +607,6 @@ module sd
         //
 
         stateINIT13: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -643,7 +624,6 @@ module sd
         //
 
         stateINIT14: begin
-          //timeout <= timeout - 1;
           if ((spiDONE == 1'b1) || (bytecnt == 0))
             if (bytecnt == 6) begin
               bytecnt <= 0;
@@ -661,7 +641,6 @@ module sd
         //
 
         stateINIT15: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -697,7 +676,6 @@ module sd
         //
 
         stateINIT16: begin
-          //timeout <= timeout - 1;
           case (bytecnt)
             0: begin
               spiOP   <= spiTR;
@@ -739,7 +717,6 @@ module sd
         //
 
         stateINIT17: begin
-          //timeout <= timeout - 1;
           if (bytecnt == 0) begin
             spiOP   <= spiTR;
             spiTXD  <= 8'hff;
@@ -1417,7 +1394,6 @@ module sd
       endcase
 
 
-      //if (timeout == 0) state <= stateINFAIL;
 
 
       /* //
