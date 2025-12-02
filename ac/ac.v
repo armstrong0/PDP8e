@@ -351,6 +351,8 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             EAE0:
             begin   // set up state
                 case (instruction & 12'b111100001111)
+                    // at this point in execution MUL DIV and NMI are the same
+                    // for both A and B modes
                     // MUL
                     12'o7405:
                     begin
@@ -374,63 +376,42 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                             link <= 1'b0;
                         end
                     end
-// LSR is copied here, as both LSR and SHL used the same first phase code, so
-// now when I am checking SHL code LSR fails
-//
-                    12'o7417: // LSR
-                    if (EAE_mode == 1'b0)
+
+                    12'o7411:   // NMI
+                    if (((ac[0] != ac[1])||
+                                (ac[0:1] == 2'o0)) &&
+                            (ac[2:11] == 10'o0) &&
+                            (mq == 12'o0))
+                         // already normalized
                     begin
-                        if (mdout[7:11] >= 5'd24 ) // then no need to shift
-                        begin
-                            sc <= 5'd0;
-                            ac <= 12'o0;
-                            mq <= 12'o0;
-                            link  <= 1'b0;
-                            EAE_loop <= 0;
-                        end
-                        else
-                        begin
-                            link <= 1'b0;
-                            sc <= mdout[7:11] + 5'd1;
-                            EAE_loop <= 1'b1;
-                        end
-                    end
-                    else if (mdout[7:11] >= 5'd25 )
-                    begin
-                        // B Mode  then no need to shift
-                        // but the link needs to be cleared
-                        link <= 1'b0;
-                        ac <= 12'o0;
-                        mq <= 12'o0;
-                        if (instruction == LSR ) gtf <= 1'b0;
-                    end
-                    else if  (mdout[7:11] == 5'd0  )
-                    begin
-                        sc <= 5'o37;
+                        sc <= 5'd0;
                         EAE_loop <= 0;
-                        if (instruction == 12'o7417) link <= 1'b0;
+                        if (EAE_mode == 1'b1)
+                            ac <= 12'o0;
                     end
                     else
                     begin
-                        sc <= mdout[7:11];
-                        link <= 1'b0;
+                        sc <= 5'o0;
+                        link <= ac[0];
                         EAE_loop <= 1'b1;
                     end
+                    endcase
+                if ((EAE_mode == 1'b0) && (instruction[6] == 1'b1)) // SCA)
+                begin
+                    ac <= ac | {7'o00, sc };
+                    EAE_loop <= 1'b0;
+                end
 
-
-
-                  //  12'o7413, // SHL
-                  //  12'o7417: // LSR
-                    12'o7413:
+                case (instruction & 12'b111100001111)
+                    12'o7417, // LSR
+                    12'o7413: // SHL
                     if (EAE_mode == 1'b0)
                     begin
                         if (mdout[7:11] >= 5'd24 ) // then no need to shift
                         begin
                             sc <= 5'd0;
-                            ac <= 12'o0;
-                            mq <= 12'o0;
-                            link  <= 1'b0;
                             EAE_loop <= 0;
+                            {link,ac,mq} <= 25'b0;
                         end
                         else
                         begin
@@ -442,10 +423,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     else if (mdout[7:11] >= 5'd25 )
                     begin
                         // B Mode  then no need to shift
-                        // but the link needs to be cleared
-                        link <= 1'b0;
-                        ac <= 12'o0;
-                        mq <= 12'o0;
+                        {link,ac,mq} <= 25'b0;
                         if (instruction == LSR ) gtf <= 1'b0;
                     end
                     else if  (mdout[7:11] == 5'd0  )
@@ -470,15 +448,11 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                             EAE_loop <= 1'b0;
                             if ( ac[0] == 1'b0) // positive number
                             begin
-                                ac <= 12'o0;
-                                mq <= 12'o0;
-                                link <= 1'b0;
+                               {link,ac,mq} <= 25'b0;
                             end
                             else
                             begin  // negative number
-                                ac <= 12'o7777;
-                                mq <= 12'o7777;
-                                link  <= 1'b1;
+                               {link,ac,mq} <= ~25'b0;
                             end
                         end
                         else
@@ -521,32 +495,9 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         EAE_loop <= 1'b1;
                     end
 
-                    12'o7411:   // NMI
-                    if (((ac[0] != ac[1])||
-                                (ac[0:1] == 2'o0)) &&
-                            (ac[2:11] == 10'o0) &&
-                            (mq == 12'o0))
-                         // already normalized
-                    begin
-                        sc <= 5'd0;
-                        EAE_loop <= 0;
-                        if (EAE_mode == 1'b1)
-                            ac <= 12'o0;
-                    end
-                    else
-                    begin
-                        sc <= 5'o0;
-                        link <= ac[0];
-                        EAE_loop <= 1'b1;
-                    end
                     default:;
 
                 endcase
-                if ((EAE_mode == 1'b0) && (instruction[6] == 1'b1)) // SCA)
-                begin
-                    ac <= ac | {7'o00, sc };
-                    EAE_loop <= 1'b0;
-                end
             end
             EAE1:
             begin  // iteration state
