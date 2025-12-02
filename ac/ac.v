@@ -435,14 +435,8 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         else
                         begin
                             link <= 1'b0;
-`ifndef FAST_SHIFTS
                             sc <= mdout[7:11] + 5'd1;
                             EAE_loop <= 1'b1;
-`else
-                            sc <= 5'd0;
-                            amount <= mdout[7:11] + 5'd1;
-                            EAE_loop <= 0;
-`endif
                         end
                     end
                     else if (mdout[7:11] >= 5'd25 )
@@ -464,12 +458,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     begin
                         sc <= mdout[7:11];
                         link <= 1'b0;
-`ifndef FAST_SHIFTS
                         EAE_loop <= 1'b1;
-`else
-                        sc <= 5'd0;
-                        amount <= mdout[7:11] ;
-`endif
                     end
 
                     12'o7415:  //ASR
@@ -532,7 +521,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         EAE_loop <= 1'b1;
                     end
 
-`ifndef FAST_SHIFTS
                     12'o7411:   // NMI
                     if (((ac[0] != ac[1])||
                                 (ac[0:1] == 2'o0)) &&
@@ -551,77 +539,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         link <= ac[0];
                         EAE_loop <= 1'b1;
                     end
-`else
-            12'o7411:  //NMI
-            begin
-            EAE_loop <= 0;
-
-            casez (ac)
-              12'b01??????????: amount <= 0;
-              12'b001?????????: amount <= 1;
-              12'b0001????????: amount <= 2;
-              12'b00001???????: amount <= 3;
-              12'b000001??????: amount <= 4;
-              12'b0000001?????: amount <= 5;
-              12'b00000001????: amount <= 6;
-              12'b000000001???: amount <= 7;
-              12'b0000000001??: amount <= 8;
-              12'b00000000001?: amount <= 9;
-              12'b000000000001: amount <= 10;
-              12'b000000000000:
-              begin
-                casez (mq)
-                12'b1???????????: amount <= 11;
-                12'b01??????????: amount <= 12;
-                12'b001?????????: amount <= 13;
-                12'b0001????????: amount <= 14;
-                12'b00001???????: amount <= 15;
-                12'b000001??????: amount <= 16;
-                12'b0000001?????: amount <= 17;
-                12'b00000001????: amount <= 18;
-                12'b000000001???: amount <= 19;
-                12'b0000000001??: amount <= 20;
-                12'b00000000001?: amount <= 21;
-                12'b000000000001: amount <= 22;
-                12'b000000000000: amount <= 0;
-                default: amount <= 0;
-                endcase
-           end
-           12'b10??????????: amount <= 0;
-           12'b110?????????: amount <= 1;
-           12'b1110????????: amount <= 2;
-           12'b11110???????: amount <= 3;
-           12'b111110??????: amount <= 4;
-           12'b1111110?????: amount <= 5;
-           12'b11111110????: amount <= 6;
-           12'b111111110???: amount <= 7;
-           12'b1111111110??: amount <= 8;
-           12'b11111111110?: amount <= 9;
-           12'b111_111_111_110: amount <= 19;
-           12'b111111111111:
-           begin
-              casez (mq)
-	      
-              12'b0???????????: amount <= 11;
-              12'b10??????????: amount <= 12;
-              12'b110?????????: amount <= 13;
-              12'b1110????????: amount <= 14;
-              12'b11110???????: amount <= 15;
-              12'b111110??????: amount <= 16;
-              12'b1111110?????: amount <= 17;
-              12'b11111110????: amount <= 18;
-              12'b111111110???: amount <= 19;
-              12'b1111111110??: amount <= 20;
-              12'b11111111110?: amount <= 21;
-              12'b111111111110: amount <= 22;
-              12'b111111111111: amount <= 23;
-              default: amount <= 0;
-              endcase
-           end
-           default: amount <= 0;
-        endcase
-      end
-`endif
                     default:;
 
                 endcase
@@ -672,13 +589,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                             if (sc == 5'd10)  EAE_loop <= 1'b0;
                         end
                     end
-`ifdef FAST_SHIFTS
-                    12'o7411:
-                    begin
-                       {link,ac,mq} <= {link,ac,mq} << amount;
-                        sc <= amount;
-                    end
-`else                    
 
                     12'o7411:  // must be exact
                     begin
@@ -693,15 +603,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                             EAE_loop <= 0;  // we are finished
                     end
                    end
-`endif
  
-`ifdef FAST_SHIFTS
-                    12'o7413:  // SHL
-                    begin
-                       {link,ac,mq} <= {link,ac,mq} << amount;
-                        sc <= 5'd0;
-                    end    
-`else
                     12'o7413: 
                     if (EAE_loop == 1'b1)
                     begin
@@ -715,7 +617,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                             sc <= sc - 5'd1;
 
                     end
-`endif               
                     12'o7415,   // ASR
                     12'o7417:   // LSR
                     if (EAE_loop == 1'b1)
