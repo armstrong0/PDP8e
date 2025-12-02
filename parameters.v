@@ -1,6 +1,5 @@
-`define RK8E
+//`define RK8E
 //`define EAE
-//`define FAST_SHIFTS
 //`define up5k
 
 // state machine encoding
@@ -24,23 +23,27 @@ E1 = 5'd14,  // 14
 E2 = 5'd15,  // 15
 E3 = 5'd16,  // 16
 
+HW = 5'd17,  // 17
+H1 = 5'd18,  // 18
+H2 = 5'd19,  // 19
+H3 = 5'd20;  // 20
+
 `ifdef EAE
-EAE0 = 5'd17,  // 17
-EAE1 = 5'd18,  // 18
+localparam EAE0 = 5'd21,  // 21
+EAE1 = 5'd22,  // 22
+EAE2 = 5'd23,  // 23
+EAE3 = 5'd24;  // 24
 `endif
 
 `ifdef RK8E
-DB0 = 5'd22,  // 22
-DB1 = 5'd23,  // 23
-DB2 = 5'd24,  // 24
-DB3 = 5'd25,  // 25
+localparam DB0 = 5'd25,  // 25
+DB1 = 5'd26,  // 26
+DB2 = 5'd27,  // 27
+DB3 = 5'd28,  // 28
 `endif
-HW = 5'd26,  // 26
-H1 = 5'd19,  // 19
-H2 = 5'd20,  // 20
-H3 = 5'd21;  // 21
 
 // instruction encodings
+`ifdef EAE
 localparam SAM=12'o7457,
 DAD  = 12'o7443,
 DST  = 12'o7445, 
@@ -55,7 +58,7 @@ LSR = 12'o7417,
 MUL = 12'o7405,
 DIV = 12'o7407,
 NMI = 12'o7411;
-
+`endif
 
 `ifdef RK8E
 localparam CAF = 12'o6007,  // clear all flags
@@ -66,6 +69,7 @@ DCLA = 12'o6744,  // DLCA load current address
 DRST = 12'o6745,  // DRST read status
 DLDC = 12'o6746;  // DLDC load command register
 `endif
+
 localparam  AND = 3'b000, 
 TAD = 3'b001,
 ISZ = 3'b010,
@@ -77,13 +81,13 @@ IOT = 3'b110,
 JMPD =4'b1010,
 JMPI = 4'b1011,
 JM = 2'b10 ;
+
 // clock_frequency is defined in the top level verilog file 
 // or in an included file..
 
 
 `ifdef SIM
 // calculate in nanoseconds
-//localparam real clock_frequency = 84000000;
 localparam real clock_frequency = 73500000;
 localparam real clock_period = 1/clock_frequency*1e9;
 parameter real baud_rate = 115200; //10 clocks per output 
@@ -93,8 +97,6 @@ parameter real clock_frequency = 5000000;
 localparam real clock_period = 1/clock_frequency*1e9;
 parameter real baud_rate = 1200;
 `else
-//parameter real baud_rate = 9600;
-//parameter real baud_rate = 38400;
 parameter real baud_rate = 115200; //10 clocks per output 
 `endif
 
@@ -118,10 +120,10 @@ parameter sd_delay = 10'd500;
 `endif
 
 // two diagnostic tests will not pass with partial fields so change to 8k
-// 2 fields when running those tests
+// 2 fields when running those tests ADDER MEM_EXT
 
-parameter MAX_ADDRESS = 15'o23777; // 10k 2.5 fields
-//parameter MAX_ADDRESS = 15'o17777;  // 8k 2 fields
+//parameter MAX_ADDRESS = 15'o23777; // 10k 2.5 fields
+parameter MAX_ADDRESS = 15'o17777;  // 8k 2 fields
 
 `define ONESTOP // one stop bit for all baud rates greater than 110
 

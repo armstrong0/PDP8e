@@ -206,10 +206,12 @@ module ma (
           endcase
         end
         E0: begin
+`ifdef EAE        
           if ((instruction & 12'b111100101111) == DST) begin
             mdin <= mq;
             write_en <= 1'b1;
           end
+`endif          
         end
         EW: begin
           if (int_in_prog == 1) begin
@@ -249,10 +251,12 @@ module ma (
             write_en <= 1;
           end
           OPR: begin
+`ifdef EAE          
             if ((instruction & 12'b111100101111) == DST) begin
               mdin <= ac;
               write_en <= 1'b1;
             end
+`endif            
           end
           default: ;
         endcase
