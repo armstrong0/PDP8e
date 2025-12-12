@@ -115,11 +115,12 @@ module state_machine (
           12'b1111?1111101,  // SCA - ASR
           12'b1111??1?1111,  // SCA - LSR
           12'b1111??1?1001,  // SCA - NMI
-          12'b111100001001:  // 7411 NMI
-          state <= EAE0;
+          12'b111100001001,  // 7411 NMI
           12'b1111??0?0011,  // 7403 SCL 
           12'b1111??1?0011,  // SCA - SCL
-          12'b1111??1?0001,  // SCL both A and B
+          12'b1111??1?0001:  // SCL both A and B
+          state <= EAE2;
+          
           12'b1111??0?0001:
           state <= F3;  //NOP
           default: state <= F3;
@@ -131,8 +132,9 @@ module state_machine (
           12'b111100001001,  // 7411 NMI
           12'b1111??0?1011,  // 7413 SHL
           12'b1111??0?1101,  // 7415 ASR
-          12'b1111??0?1111:  // 7417 LSR
-          state <= EAE0;
+          12'b1111??0?1111,  // 7417 LSR
+          12'b1111??0?0011:  // SCL ACS
+          state <= EAE2;
           12'b1111??0?0101,  // 7405 MUY
           12'b1111??0?0111,  // 7407 DIV
           12'b1111??1?0011,  // DAD - DLD 7443 ,CAMDAD
@@ -145,20 +147,19 @@ module state_machine (
           12'b1111?1111011,  // DPIC 7573
           12'b1111?1111101,  // DCM  7575
           12'b1111??1?1111,  // SAM  7457
-          12'b1111??1?0001,  // SCA  7441
-          12'b1111??0?0011:  // SCL ACS
+          12'b1111??1?0001:  // SCA  7441
           state <= F3;
           default: state <= F3;
         endcase
         // this is out of order so that the ifdef has most of the EAE stuff
         // together
         E1:
-        if ((instruction & 12'o7455) == 12'o7405) state <= EAE0;  // MUL or DIV
+        if ((instruction & 12'o7455) == 12'o7405) state <= EAE2;  // MUL or DIV
         else state <= E2;
-        EAE0: state <= EAE1;
-        EAE1:
+        EAE2: state <= EAE3;
+        EAE3:
         if (EAE_loop == 1) begin
-          state <= EAE1;
+          state <= EAE3;
         end else begin
           state <= F3;
         end

@@ -1,0 +1,34 @@
+	CAM=7621
+	SWAB=7431
+	SWBA=7447
+    DPSZ=7451 
+	swp=7521
+	SCL=7403
+    ASC=7403
+	SCA=7441
+
+    *100
+K7740, 7740
+// from diagnostic dolb
+    *5156
+	swab
+    cla cma cll cml
+    asc
+    szl
+    sza
+    hlt
+    sca
+    tad K7740
+    cma
+    sza
+    hlt
+    hlt
+
+	
+
+	
+	
+
+	$
+
+

@@ -125,7 +125,8 @@ module PDP8e_tb;
     #100 reset <= 0;
 
 
-    #1000 sr <= 12'o0200;
+    //#1000 sr <= 12'o0200;
+    #1000 sr <= 12'o5156;
     #1000 `pulse(addr_load);
     #1000 `pulse(cont);
     #580000 $finish;

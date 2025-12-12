@@ -54,7 +54,7 @@ module D_mux (
         ES <= 0;
       end
 `ifdef EAE
-       EAE0, EAE1,
+       EAE0, EAE1, EAE2, EAE3,
 `endif     
       E0, EW, E1, E2, E3: begin
         FS <= 0;

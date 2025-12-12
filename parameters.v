@@ -1,5 +1,5 @@
 //`define RK8E
-//`define EAE
+`define EAE
 //`define up5k
 
 // state machine encoding
@@ -39,7 +39,7 @@ EAE3 = 5'd24;  // 24
 localparam DB0 = 5'd25,  // 25
 DB1 = 5'd26,  // 26
 DB2 = 5'd27,  // 27
-DB3 = 5'd28,  // 28
+DB3 = 5'd28;  // 28
 `endif
 
 // instruction encodings

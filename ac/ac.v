@@ -137,16 +137,16 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                 ac <= 12'o0;
                 default:;
             endcase
-            F2A: // EAE A mode
-            if (instruction[6] == 1'b1 ) //SCA in mode A
-                ac <= ac | {7'b0,sc };
-
-            else if (instruction == 12'b111100001001)   //7411 NMI can't be combined
-            begin
-                ac <= ac;
-                link <= link;
-                mq <= mq;
-            end
+            F2A:; // EAE A mode
+         //   if (instruction[6] == 1'b1 ) //SCA in mode A
+         //       ac <= ac | {7'b0,sc };
+//
+  //          else if (instruction == 12'b111100001001)   //7411 NMI can't be combined
+    //        begin
+      //          ac <= ac;
+        //        link <= link;/
+          //      mq <= mq;
+           // end
 
             F2B: //EAE Mode B
             if ((instruction & 12'b111100101111) == 12'b111100101111)
@@ -227,15 +227,11 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                 // ac may have already been cleared if it
                 // needs to be.  some of the other micro op combinations don't
                 // make sense
-                12'b1111??0?0011: if (EAE_mode == 1'b0)  // 7403 SCL
-                begin
-                    sc <= ~mdout[7:11];
-                end
-                else   //7403 ACS
-                begin
-                    sc <= ac[7:11];
-                    ac <= 12'o0;
-                end
+            //    12'b1111??0?0011: if (EAE_mode == 1'b1)  //  ASC
+            //    begin
+            //        sc <= ac[7:11];
+            //        ac <= 12'o0;
+            //    end
                 12'b1111??1?0001: if (EAE_mode == 1'b1)
                     ac <= ac | {7'b0,sc };           //SCA  B mode
                 12'b111101111011: if (EAE_mode == 1'b1)  //DPIC 7573 XXXXX,7773
@@ -348,7 +344,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             H3:;
             //   EAE stuff
 `ifdef EAE
-            EAE0:
+            EAE2:
             begin   // set up state
                 case (instruction & 12'b111100001111)
                     // at this point in execution MUL DIV and NMI are the same
@@ -395,34 +391,73 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         link <= ac[0];
                         EAE_loop <= 1'b1;
                     end
-                    endcase
-                if ((EAE_mode == 1'b0) && (instruction[6] == 1'b1)) // SCA)
-                begin
-                    ac <= ac | {7'o00, sc };
-                    EAE_loop <= 1'b0;
-                end
+                    default:;
+                endcase
 
-                case (instruction & 12'b111100001111)
+                if (EAE_mode == 1'b0) 
+                ////  MODE A
+                begin  
+                   if (instruction[6] == 1'b1) // SCA)
+                   begin
+                       ac <= ac | {7'o00, sc };
+                       EAE_loop <= 1'b0;
+                   end
+                   case (instruction & 12'b111100001111)
+                       12'o7403:  sc <= ~mdout[7:11]; //SCL
+                       12'o7417, // LSR
+                       12'o7413: // SHL
+                       //if (EAE_mode == 1'b0)
+                       begin
+                           if (mdout[7:11] >= 5'd24 ) // then no need to shift
+                           begin
+                               sc <= 5'd0;
+                               EAE_loop <= 0;
+                               {link,ac,mq} <= 25'b0;
+                           end
+                           else
+                           begin
+                               link <= 1'b0;
+                               sc <= mdout[7:11] + 5'd1;
+                               EAE_loop <= 1'b1;
+                           end
+                       end
+                  
+                        12'o7415:  //ASR
+                        begin
+                            if (mdout[7:11] >= 5'd24 ) // then no need to shift
+                            begin
+                                sc <= 5'b0;
+                                EAE_loop <= 1'b0;
+                                if ( ac[0] == 1'b0) // positive number
+                                begin
+                                   {link,ac,mq} <= 25'b0;
+                                end
+                                else
+                                begin  // negative number
+                                   {link,ac,mq} <= ~25'b0;
+                                end
+                            end
+                            else
+                            begin
+                                link <= ac[0];
+                                sc <= mdout[7:11] + 5'd1; //valid shift
+                                EAE_loop <= 1'b1;
+                            end
+                        end
+                                 endcase
+                end
+////  MODE B         
+                else
+                   case (instruction & 12'b111100001111)
+                    12'o7403: //  ACS
+                    begin
+                        sc <= ac[7:11];
+                        ac <= 12'o0;
+                    end
                     12'o7417, // LSR
                     12'o7413: // SHL
-                    if (EAE_mode == 1'b0)
+                    if (mdout[7:11] >= 5'd25 )
                     begin
-                        if (mdout[7:11] >= 5'd24 ) // then no need to shift
-                        begin
-                            sc <= 5'd0;
-                            EAE_loop <= 0;
-                            {link,ac,mq} <= 25'b0;
-                        end
-                        else
-                        begin
-                            link <= 1'b0;
-                            sc <= mdout[7:11] + 5'd1;
-                            EAE_loop <= 1'b1;
-                        end
-                    end
-                    else if (mdout[7:11] >= 5'd25 )
-                    begin
-                        // B Mode  then no need to shift
                         {link,ac,mq} <= 25'b0;
                         if (instruction == LSR ) gtf <= 1'b0;
                     end
@@ -440,29 +475,6 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     end
 
                     12'o7415:  //ASR
-                    if (EAE_mode == 1'b0)    // mode A
-                    begin
-                        if (mdout[7:11] >= 5'd24 ) // then no need to shift
-                        begin
-                            sc <= 5'b0;
-                            EAE_loop <= 1'b0;
-                            if ( ac[0] == 1'b0) // positive number
-                            begin
-                               {link,ac,mq} <= 25'b0;
-                            end
-                            else
-                            begin  // negative number
-                               {link,ac,mq} <= ~25'b0;
-                            end
-                        end
-                        else
-                        begin
-                            link <= ac[0];
-                            sc <= mdout[7:11] + 5'd1; //valid shift
-                            EAE_loop <= 1'b1;
-                        end
-                    end
-                    else  //mode B
                     if (mdout[7:11] >= 5'd25 )
                     begin
                         sc <= 5'o37;
@@ -494,12 +506,11 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                         link <= ac[0];
                         EAE_loop <= 1'b1;
                     end
-
-                    default:;
+                default:;
 
                 endcase
             end
-            EAE1:
+            EAE3:
             begin  // iteration state
                 case (instruction & 12'b111100001111)
                     12'o7405: //MUL
@@ -555,7 +566,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                     end
                    end
  
-                    12'o7413: 
+                    12'o7413:  // SHL
                     if (EAE_loop == 1'b1)
                     begin
                         {link,ac,mq} <= {ac,mq,1'b0};
