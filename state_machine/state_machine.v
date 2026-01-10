@@ -74,21 +74,21 @@ module state_machine (
         FW: state <= F1;
         F1: begin
           run_ff <= 1;
-          casez (instruction & 12'b111100101111)
-          12'b111100000011,
-          12'b111100000101,
-          12'b111100000111,
-          12'b111100001001,
-          12'b111100001011,
-          12'b111100001101,
-          12'b111100001111,
-          12'b111100100001,
-          12'b111100100011,
-          12'b111100100101, // SWAB missing see below
-          12'b111100101001,
-          12'b111100101011,
-          12'b111100101101,
-          12'b111100101111: // very crude way to specify
+          casez (instruction)
+          12'b1111??0?0011,  // SCL
+          12'b1111??0?0101,  // MUY
+          12'b1111??0?0111,  // DVI
+          12'b111100001001,  // NMI
+          12'b1111??0?1011,  // SHL
+          12'b1111??0?1101,  // ASR
+          12'b1111??0?1111,  // LSR
+          12'b1111??1?0001,  // for A the following have SCA or'd in
+          12'b1111??1?0011,  // for B extended ops
+          12'b1111??1?0101, 
+          12'b1111??1?1001,
+          12'b1111??1?1011,
+          12'b1111??1?1101,
+          12'b1111??1?1111: // very crude way to specify
               // any extended EAE operation -- let the compiler figure it out
             begin
               if (EAE_mode == 1'b0) state <= F2A;
