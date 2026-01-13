@@ -106,9 +106,10 @@ module ma (
           next_pc <= pc + 12'o0001;
 
         end
+`ifdef EAE        
         F2A: begin
           casez (instruction)
-            12'b1111??0?0011,  // SCL - ACS
+            12'b1111??0?0011,  // 7403 SCL
             12'b1111??0?0101,  // 7405 MUY
             12'b1111??0?0111,  // 7407 DIV
             12'b1111??0?1011,  // 7413 SHL
@@ -146,6 +147,7 @@ module ma (
           endcase
           mdout <= mdtmp;
         end
+`endif        
         F3: begin
           casez (instruction[0:4])
             5'b0???0: eaddr <= {IF, 5'b0, instruction[5:11]};

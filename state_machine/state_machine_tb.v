@@ -168,6 +168,12 @@ module state_machine_tb;
     wait(SM1.run_ff == 0);
     #100 `pulse(cont);
     wait(SM1.run_ff == 0);
+    EAE_mode <= 0;
+    #100 `pulse(cont);
+    wait(SM1.run_ff == 0);
+    EAE_mode <= 1;
+    #100 `pulse(cont);
+    wait(SM1.run_ff == 0);
     #330 $finish;
 
   end

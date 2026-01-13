@@ -29,9 +29,11 @@ module oper2(input clk100,
         ( instruction[8] && ((!instruction[5] || !ac[0]) &&
                 (!instruction[6] || !ac_zero) &&
                 (!instruction[7] || !l)))))
+`ifdef EAE                
 		|| ((instruction == 12'o7451) && 
 		        (((ac | mq) == 12'o0000) &&
 		        (EAE_mode == 1))) 
+`endif                
 		|| ((instruction == 12'o6006) && (gtf == 1'b1)) );
 
     end

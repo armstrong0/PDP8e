@@ -32,7 +32,11 @@ H3 = 5'd20;  // 20
 localparam EAE0 = 5'd21,  // 21
 EAE1 = 5'd22,  // 22
 EAE2 = 5'd23,  // 23
-EAE3 = 5'd24;  // 24
+EAE3 = 5'd24,  // 24
+EAE4 = 5'd29,  // 29
+EAE5 = 5'd29,  // 30
+EAE6 = 5'd29;  // 31
+
 `endif
 
 `ifdef RK8E
@@ -44,6 +48,8 @@ DB3 = 5'd28;  // 28
 
 // instruction encodings
 `ifdef EAE
+
+
 localparam SAM=12'o7457,
 DAD  = 12'o7443,
 DST  = 12'o7445, 

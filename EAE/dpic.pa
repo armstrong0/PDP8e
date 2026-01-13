@@ -13,8 +13,8 @@
     iac   // ac == 0001
     dpic  // ac == 0001 mq == 0002
     cla cma 
-    swp   // ac == 0    mq == 7777
-    dpic  // ac == 0001 mq = 0000
+    swp   // ac == 0002  mq == 7777
+    dpic  // ac == 0003  mq = 0000
 
     cam   // ac == 0000 mq == 0000
     cma   // ac == 7777 mq == 0000

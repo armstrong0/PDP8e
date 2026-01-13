@@ -7,23 +7,15 @@
     ASC=7403
 	SCA=7441
 	*100
-mqc, 11	
-acc, 55
 
     *200
-	cam
-	tad mqc
-	swp
-	tad acc
 	swab
-	ASC
-	7737
-	sca
-	cla sza
-	hlt
-	
-	hlt
-
+	swab
+	swab
+    swba
+    swba
+    swab
+    hlt
 	
 	
 

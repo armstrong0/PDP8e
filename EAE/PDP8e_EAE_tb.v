@@ -104,7 +104,8 @@ module PDP8e_tb;
     #1 $display("cycle time %f nanoseconds", (6 * clock_period));
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SHL_Test1.vcd");
-    $readmemh("t14.hex", UUT.MA.ram.mem, 0, 8191);
+   // $readmemh("t14.hex", UUT.MA.ram.mem, 0, 8191);
+    $readmemh("../integrate/Diagnostics/D0LB.hex", UUT.MA.ram.mem, 0, 8191);
     $dumpvars(0,acmq, UUT);
     #0 halt <= 1;
     #1 reset <= 1;
@@ -125,11 +126,15 @@ module PDP8e_tb;
     #100 reset <= 0;
 
 
-    //#1000 sr <= 12'o0200;
-    #1000 sr <= 12'o5156;
+    #1000 sr <= 12'o0200;
+    //#1000 sr <= 12'o1430;
+    //#1000 sr <= 12'o15024;
+    //#1000 sr <= 12'o5275;
+    #1000 sr<= 12'o5000;
     #1000 `pulse(addr_load);
+    #10 sr <= 12'o5000;
     #1000 `pulse(cont);
-    #580000 $finish;
+    #700000 $finish;
 
 
   end

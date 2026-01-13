@@ -138,17 +138,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                 default:;
             endcase
             F2A:; // EAE A mode
-         //   if (instruction[6] == 1'b1 ) //SCA in mode A
-         //       ac <= ac | {7'b0,sc };
-//
-  //          else if (instruction == 12'b111100001001)   //7411 NMI can't be combined
-    //        begin
-      //          ac <= ac;
-        //        link <= link;/
-          //      mq <= mq;
-           // end
-
-            F2B: //EAE Mode B
+            F2B:  //EAE Mode B
             if ((instruction & 12'b111100101111) == 12'b111100101111)
                  // 7457 SAM first phase
                 {link,ac_tmp} <= {1'b0,mq} + ~{1'b1,ac} +13'o00001;
