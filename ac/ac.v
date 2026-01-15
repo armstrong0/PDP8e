@@ -310,10 +310,15 @@ module Ac (input clk,  // have to rename the mdulate for verilator
             else {link,ac} <= {link,ac} ;
 
             E3:begin
-            if (instruction[0:2] == DCA) ac <= 12'o0;
+            if (instruction[0:2] == DCA) 
+            begin 
+                ac <= 12'o0;
+            end    
 `ifdef EAE
-            else if (instruction == DAD)  //DAD
+            else  if (instruction == DAD)  //DAD
+            begin
                 {link,ac } <= {1'b0,ac} + {1'b0,mdout} +{12'o0,link};
+            end    
             else if ((instruction == DLD) || (instruction ==CAMDAD)) //
                 ac <= mdout;
 `endif
@@ -434,6 +439,7 @@ module Ac (input clk,  // have to rename the mdulate for verilator
                                 EAE_loop <= 1'b1;
                             end
                         end
+                        default:;
                                  endcase
                 end
 ////  MODE B         
