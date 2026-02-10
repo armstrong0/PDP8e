@@ -151,7 +151,9 @@ module PDP8e_tb;
     #1 sr <= 12'o0200;  // normal start address
     $dumpfile("SDCard.vcd");
     //$readmemh("2sector.hex", UUT.MA.ram.mem, 0, 8191);
-    $readmemh("dumprk05.hex", UUT.MA.ram.mem, 0, 8191);
+    //$readmemh("dumprk05.hex", UUT.MA.ram.mem, 0, 8191);
+    $readmemh("write_sector.hex", UUT.MA.ram.mem, 0, 8191);
+    $display("Read write_sector.hex");
     $dumpvars(0,tx_char,diskio,serialio,serial_tx,UUT);
 
     #1 reset <= 1;
@@ -170,18 +172,20 @@ module PDP8e_tb;
     #1 rx <= 1;  // marking state
     #100 pll_locked <= 1;
     #100 halt <= 0;
+    #200 `PULSE(clear);
+
     sr <= 12'o0200;  
     `PULSE(addr_load);
     wait(UUT.RK8E.disk_rdy == 1);
     #1000 `PULSE(cont);
-    #9006000 $finish;
+    #900060 $finish;
  
 
   end
  final begin
-	 $writememh("dumpac.hex",LARAM.mem,0,1536); // 0, 16383);
-	 $writememh("mem.hex",UUT.MA.ram.mem,512,1024);
-	 $writememh("reg.hex",UUT.MA.ram.mem,0,45);
+	// $writememh("dumpac.hex",LARAM.mem,0,1536); // 0, 16383);
+	// $writememh("mem.hex",UUT.MA.ram.mem,512,1024);
+	// $writememh("reg.hex",UUT.MA.ram.mem,0,45);
   end
 
 endmodule

@@ -33,7 +33,6 @@ module rk8e
     output reg        data_break,
     output reg        to_disk,
     input             break_in_prog,
-    input [9:0]       sd_delay,
     output reg        disk_rdy,
     output reg        skip,
     output reg [0:14] dmaAddr,
@@ -110,7 +109,7 @@ module rk8e
   );  //! Status
 
 
-  `include "../parameters.v"
+`include "../parameters.v"
   /* Status Register bit assignment
 bit 0 0= busy 1 = done
 bit 1 0 stationary 1 head in motion  - always 0
@@ -144,17 +143,20 @@ bit 11 msb of cylinder
 
   assign sdDISKaddr = {17'd0, cmd_reg[9:11], dar};
   assign sdMEMaddr  = {cmd_reg[6:8], car};
-  assign disk_flag  = (status != 12'o0000);
 
   always @(posedge clk) begin
     if (reset == 1) begin
+    /* verilator lint_off WIDTHTRUNC */
       ms_clock <= clocks_per_msec / 2;
+    /* verilator lint_on WIDTHTRUNC */
       sd_reset <= 1'b1;
       oneKHz   <= 0;
       ms_cntr  <= sd_delay;
     end else begin
       if (ms_clock == 0) begin
+    /* verilator lint_off WIDTHTRUNC */
         ms_clock <= clocks_per_msec / 2;
+    /* verilator lint_on WIDTHTRUNC */
         if (oneKHz == 1'b0) oneKHz <= 1'b1;
         else begin
           oneKHz <= 1'b0;
@@ -189,6 +191,7 @@ bit 11 msb of cylinder
       write_lock[1] <= 1'b0;
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
+      sdstate <= sdstateINIT;
       last_sdstate  <= sdstateINIT;
 
       toggle        <= 4'b0;
@@ -205,6 +208,7 @@ bit 11 msb of cylinder
       begin
         data_break <= 1'b0;
       end
+      disk_flag  <= (status != 12'o0000);
       if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
       else interrupt <= 0;
       if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
@@ -248,19 +252,16 @@ bit 11 msb of cylinder
           12'o6740: ;
           12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
           12'o6742:  // DCLR has four options 
-          case (ac[10:11])
-            2'b00, 2'b11: status <= 12'o4000; // set done reset all other flags
-            2'b01: begin
-              status <= 12'o4000;   // set done reset all other flags 
-              sdOP   <= sdopABORT;  // stop whatever is in process
-            end
-            2'b10: status <= 12'o4000; // set done reset all other flags
-            default: ;
-          endcase
+          begin
+              status <= 12'o4000;
+              // set done, reset all other flags
+              if (ac[10:11] == 2'b01) sdOP <= sdopABORT;
+          end
           12'o6743:    // DLAG load address and go
           begin
             dar <= ac;
-            if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;  // set cyclinder address error
+            if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
+            // set cyclinder address error
             else  // we have a valid cylinder
             case (cmd_reg[0:2])
               3'b000,3'b001: begin  // read
@@ -268,10 +269,12 @@ bit 11 msb of cylinder
                 sdOP <= sdopRD;
               end
               3'b010:  write_lock[cmd_reg[9:10]] <= 1'b1;
-              3'b011: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1;  // seek done
+              3'b011: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1; 
+              // seek done
               3'b100, 3'b101: begin  // write
                 // need to check here for write protect
-                if (write_lock[cmd_reg[9:10]] == 1'b1) begin  // set error condition
+                if (write_lock[cmd_reg[9:10]] == 1'b1) begin  
+                // set error condition
                   status[7] <= 1'b1; // write lock error
                 end else begin
                   sdOP <= sdopWR;
@@ -286,6 +289,9 @@ bit 11 msb of cylinder
           12'o6746: // DLDC load command register
           begin
             cmd_reg <= ac;
+            if (ac[4] == 1)
+            status <= 12'o4000;
+            else
             status <= 12'o0000;
           end
           // maintenance mode debugging NOT what is describe in the RK8E

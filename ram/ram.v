@@ -15,7 +15,7 @@ module ram (din, addr, write_en, clk, dout);// 8196 x 12 + 2048 x 12
     // This was what I settled on after making several trys doing that.
 
 
-    // two test will not pass with partial fields so to make them pass change
+    // two tests will not pass with partial fields so to make them pass change
     // the parameter MAX_address in parameters.v
 
         reg [data_width-1:0] mem [MAX_ADDRESS:0];

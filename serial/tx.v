@@ -38,7 +38,7 @@ module tx (
       if (set_flag == 1) flag <= 1;
       // this needs to be async to the rest of the state machine
       // the transmitter can be loaded in any one of these states
-      // one loaded don't allow further loading
+      // once loaded don't allow further loading
       // STOP1 and STP2 need to complete then go to idle
       // if loaded is true IDLE immediately goes to START
       // flag goes low singifies the tx being busy

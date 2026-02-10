@@ -26,12 +26,17 @@ dumprk05.bin: dumprk05.pal palbart
 
 dumprk05.hex: dumprk05.bin
 	~/bin/mem_gen_bin dumprk05.bin dumprk05.hex
+
+write_sector.hex: write_sector.pal
+	~/bin/palbart write_sector.pal
+	~/bin/mem_gen_bin write_sector.bin write_sector.hex
+
 	
 
 ../RK8E/sdsim.v: ../RK8E/sdsim.sv
 	~/.local/bin/sv2v ../RK8E/sdsim.sv > ../RK8E/sdsim.v
 
-../RK8E/rk8e.v:
+../RK8E/rk8e.v: ../RK8E/rk8e.sv
 	~/.local/bin/sv2v -DSIM ../RK8E/rk8e.sv ../RK8E/sd_types.svh ../RK8E/sdspi_types.svh ../RK8E/sdspi.sv ../RK8E/sd.sv >../RK8E/rk8e.v 
 	
 	
@@ -41,7 +46,11 @@ full_read: ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/rk8e.v ../RK8E/sdsim.v dumpr
 	vvp sdcard.o -fst
 	gtkwave SDCard.vcd full_debug.gtkw &
 
-
+write :  ../FPGA_image/PDP8e.v PDP8e_tb.v ../RK8E/rk8e.v ../RK8E/sdsim.v write_sector.hex
+	iverilog -g2012 -DSIM -DRK8E ../FPGA_image/PDP8e.v  PDP8e_tb.v ../RK8E/sdsim.v -o sdcard.o
+	vvp sdcard.o -fst
+	gtkwave SDCard.vcd full_debug.gtkw &
+	
 
 clean:
 	rm -rf  *.vcd
