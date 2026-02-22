@@ -178,7 +178,7 @@ module PDP8e_tb;
     `PULSE(addr_load);
     wait(UUT.RK8E.disk_rdy == 1);
     #1000 `PULSE(cont);
-    #900060 $finish;
+    #5000000 $finish;
  
 
   end

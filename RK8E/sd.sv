@@ -1033,7 +1033,11 @@ module sd
               end
             else begin
               bytecnt <= 0;
-              if (spiRXD == 8'h00) state <= stateWRITE03;
+              if (spiRXD == 8'h00) 
+              begin
+                  state <= stateWRITE03;
+                  dmaRD <= 1'b1;  // assert this early so that the word is there when we need it
+              end
               else begin
                 spiOP <= spiCSH;
                 val   <= spiRXD;
@@ -1070,10 +1074,10 @@ module sd
             spiTXD  <= 8'hfe;
             bytecnt <= 1;
 
-            //memREQ  <= 1'b1;  // moved one state earlier
           end else if (spiDONE == 1'b1) begin
             bytecnt <= 0;
             state   <= stateWRITE05;
+            memADDR <= memADDR + 1; // moved here so word is ready next time around
           end
         end
 
@@ -1119,6 +1123,7 @@ module sd
             memBUF <= 4'b0000;
             spiTXD <= 8'b0000_0000;
           end
+          memADDR <= memADDR + 1; // moved here so word is ready next time around
           state <= stateWRITE08;
         end
 
@@ -1138,7 +1143,7 @@ module sd
 
         //
         // stateWRITE09:
-        //  This is the addr phase of the read cycle.
+        //  This is the addr phase of the write cycle.
         //
 
         stateWRITE09: begin
@@ -1148,14 +1153,18 @@ module sd
               spiOP   <= spiCSH;
               bytecnt <= 0;
               state   <= stateFINI;
-            end else if (bytecnt == 511) begin
+              // reeduce by 2 because we have one word at the beginning that
+              // is uncounted
+            end else if (bytecnt == 506) begin
               memREQ  <= 1'b0;
               spiOP   <= spiTR;
               spiTXD  <= 8'hff;
               bytecnt <= 0;
-              memADDR <= memADDR + 1;
+             // memADDR <= memADDR + 1;
               state   <= stateWRITE10;
-            end else if ((bytecnt == 255) && (sdLEN == 1'b1)) begin
+              // adjust because we have one uncouted word loaded at the
+              // begining
+            end else if ((bytecnt == 253) && (sdLEN == 1'b1)) begin
               memREQ  <= 1'b0;
               // the folowing line was commented out as we want CS low to
               // write the next 128 16 bit zero words and then teminate
@@ -1165,7 +1174,7 @@ module sd
               state   <= stateWRITE06;
             end else begin
               bytecnt <= bytecnt + 1;
-              memADDR <= memADDR + 1;
+             // memADDR <= memADDR + 1;
               state   <= stateWRITE06;
             end
         end

@@ -1,15 +1,15 @@
 [*]
-[*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
-[*] Mon Mar  3 20:23:04 2025
+[*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
+[*] Tue Feb 10 00:20:03 2026
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/sd_debug/SDCard.vcd"
-[dumpfile_mtime] "Mon Mar  3 20:22:29 2025"
-[dumpfile_size] 875866
+[dumpfile_mtime] "Tue Feb 10 00:07:26 2026"
+[dumpfile_size] 755723
 [savefile] "/home/armstrong/Desktop/PDP8e/sd_debug/full_debug.gtkw"
-[timestart] 3713770000
-[size] 1920 989
+[timestart] 3598600000
+[size] 1868 937
 [pos] -1 -1
-*-23.232996 3749934800 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-25.232996 3737803600 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] PDP8e_tb.
 [treeopen] PDP8e_tb.UUT.
 [treeopen] PDP8e_tb.UUT.RK8E.
@@ -37,7 +37,6 @@ PDP8e_tb.UUT.MA.eaddr[0:14]
 PDP8e_tb.UUT.MA.idx_tmp[0:11]
 @28
 PDP8e_tb.UUT.halt
-@29
 PDP8e_tb.UUT.RK8E.data_break
 @30
 PDP8e_tb.UUT.disk2mem[0:11]
@@ -66,12 +65,14 @@ PDP8e_tb.UUT.sdCS
 PDP8e_tb.UUT.sdMISO
 PDP8e_tb.UUT.sdMOSI
 PDP8e_tb.UUT.sdSCLK
-@22
+@24
 PDP8e_tb.UUT.RK8E.SD.state[5:0]
 @28
 PDP8e_tb.UUT.to_disk
-@22
+@23
 PDP8e_tb.UUT.mem2disk[0:11]
+@22
+PDP8e_tb.UUT.RK8E.SD.spiRXD[0:7]
 @28
 PDP8e_tb.serialio
 PDP8e_tb.UUT.tx
