@@ -57,6 +57,7 @@ module rk8e
   logic [ 9:0] ms_cntr;  // down counter for sd delay
   // verilog_format: off
   // verible-verilog format took the indentation of ms_clock and applied it !!!
+  localparam clock_frequency = 73500000;
   localparam clocks_per_msec = clock_frequency / 1000;
   logic        [$clog2(clocks_per_msec):0] ms_clock;
 

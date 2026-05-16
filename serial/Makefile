@@ -1,4 +1,8 @@
-all: view_tx view_rx view_top
+all: view_tx view_rx view_top view_pdp8
+
+pdp8: serial_top.v tx.v rx.v ../FPGA_image/PDP8e.v
+	iverilog -DSIM PDP8e_tb.v ../FPGA_image/PDP8e.v -o pdp8
+	vvp pdp8
 
 top: serial_top.v serial_tb.v
 	iverilog -DSIM serial_top.v serial_tb.v -o top
@@ -13,6 +17,9 @@ tx: tx.v tx_tb.v ../parameters.v
 rx: rx.v rx_tb.v ../parameters.v
 	iverilog -DSIM rx.v rx_tb.v -o rx 
 	vvp rx -fst
+	
+view_pdp9: pdp8
+	gtkwave serial_test.vcd pdp8.gtkw
 	
 view_tx: tx
 	gtkwave tx.vcd tx.gtkw & 

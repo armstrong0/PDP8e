@@ -1,0 +1,3 @@
+Info (10281): Verilog HDL Declaration information at serial_top.sv(17): object "tx" differs only in case from object "TX" in the same scope File: /home/armstrong/Desktop/PDP8e/serial/serial_top.sv Line: 17
+Info (10281): Verilog HDL Declaration information at rk8e.sv(38): object "dmaAddr" differs only in case from object "dmaADDR" in the same scope File: /home/armstrong/Desktop/PDP8e/RK8E/rk8e.sv Line: 38
+Info (10281): Verilog HDL Declaration information at PDP8e.v(89): object "ac" differs only in case from object "AC" in the same scope File: /home/armstrong/Desktop/PDP8e/Max10/PDP8e.v Line: 89
