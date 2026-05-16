@@ -2,8 +2,8 @@
 
 `ifndef SIM
 `include "pll.v"
-`include "HX_clock.v"
 `endif
+`include "../FPGA_image/HX_clock.v"
 `include "../imux/imux.v"
 `include "../front_panel/front_panel.v"
 `include "../front_panel/D_mux.v"
@@ -105,6 +105,8 @@ module PDP8e (input clk,
     wire sw_active;
     wire run_ff;
     wire index;
+    wire [15:0] baud_count;
+    wire oneKHz;
 
     wire disk_rdy;
 `ifdef RK8E
@@ -146,11 +148,15 @@ module PDP8e (input clk,
     assign irq = s_interrupt | UI;
 `endif
 
+HX_clock HX (.reset (reset),
+   .clk (clk100),
+   .oneKHz (oneKHz),
+   .baud_count (baud_count) );
 
 `ifdef RK8E
-`ifndef SIM
-`include "HX_clock.v"
-`endif
+//`ifndef SIM
+//`include "HX_clock.v"
+//`endif
 rk8e RK8E (
     .clk (clk100) ,
     .reset (reset),
@@ -268,6 +274,7 @@ rk8e RK8E (
         .instruction (instruction),
         .ac (ac),
         .serial_bus (serial_data_bus),
+        .baud_count (baud_count),
         .rx (rx),
         .tx (tx),
         .UF (UF),

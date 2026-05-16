@@ -10,7 +10,7 @@
 / from the PDP-8/E Maintenance Manual, Chapter 2
 / although here it's at 0040 instead of 0000
 
-field 2
+field 0
                        * 0040
 ZERO,   IAC	     / increment Accumulator
 	DELAY3,  ISZ 0051      / inc 0051 (was 0101), skip if zero
@@ -180,27 +180,30 @@ CurrentChar, 0
 
     * 20 
 	KCCA, 7641
-	KCC,  7660 
+	KCCB,  7660 
 	Kspace, 040
 	Kcr,   015
 	Klf,   012
+    CharMask, 177
 
     * 700 
 
-START2, 6040    // use SPF instead of print to the output uart
+START2, CLA
+    TLS //    6040    // use SPF instead of print to the output uart
 	JMS  CRLF   // start off print CR/LF and initializing the column counter
 Start3, CLA
 	TAD Kspace
 	DCA CurrentChar
 LOOP6,	CLA
 	TAD CurrentChar
+    AND CharMask
 	JMS PrintC
 	ISZ CurrentChar // should never skip 
 	ISZ ColumnCnt
 	JMP CC 
 	JMS CRLF  // send charrage return / line feed, reset ColumnCnt
 	CLA
-	TAD KCC
+	TAD KCCB
 	DCA ColumnCnt
 	JMP LOOP6 
 CC,	ISZ CharCnt  // if it overflowed reset it
@@ -227,7 +230,7 @@ CRLF, 0
 	TAD Klf
 	JMS PrintC / output a linefeed
 	CLA
-	TAD KCC     / reset the charactor count
+	TAD KCCB     / reset the charactor count
 	DCA ColumnCnt
 	JMP I CRLF
 

@@ -7,7 +7,7 @@ FILES = PDP8e.v
 
 .PHONY: PDP8e clean burn ../RK8E/rk8e.v
 
-PDP8e: ../RK8E/rk8e.v
+PDP8e: #../RK8E/rk8e.v
 	# synthesize using Yosys
 	yosys -p "synth_ice40 -top PDP8e -json $(PROJ).json" $(FILES) -l synth.log
 	# Place and route using nextpnr
@@ -27,6 +27,11 @@ place:
 	# Convert to bitstream using IcePack
 	icepack $(PROJ).asc $(PROJ).bin
 
+clocks: HX_clock.v HX_clock_tb.v clock_frequency.v ../rates.v
+	iverilog -g2012 HX_clock.v HX_clock_tb.v -o clocks.o
+	vvp clocks.o
+	sleep 1
+	gtkwave clocks.o clocks.gtkw
 	
 
 
@@ -36,6 +41,8 @@ clean:
 	rm -rf *.vcd
 	rm -rf *.json
 	rm -rf obj_dir
+	rm -rf *.o
+	rm -rf *.vcd
 	$(MAKE) -C Test_SW -f Makefile clean
 	
 
