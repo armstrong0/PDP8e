@@ -7,7 +7,8 @@ module serial_tb;
         .clk (clk),
         .reset (reset),
         .clear (clear),
-        .instruction (instruction),
+	.baud_count (baud_count),
+	.instruction (instruction),
         .state (state),
         .ac (ac),
         .rx (rx),
@@ -21,6 +22,7 @@ module serial_tb;
     reg reset;
     reg clear;
     reg [0:11] instruction;
+    reg [15:0] baud_count;
     reg [4:0] state;
     reg [0:11] ac;
     reg UF;
@@ -33,6 +35,7 @@ module serial_tb;
     assign rx = tx;
 
 `include "../parameters.v"
+    localparam baud_rate = 115200;
     initial begin
         clk <=0;
         forever
@@ -41,6 +44,7 @@ module serial_tb;
             #5 clk <= 0;
         end
     end
+    
 
     initial begin
         if (reset == 1)
@@ -62,7 +66,7 @@ module serial_tb;
         $dumpfile("top.vcd");
         $dumpvars(0,ST);
 
-
+        baud_count <= clock_frequency/baud_rate;
         reset <= 1;
         clear <= 0;
         UF <= 0;

@@ -1,5 +1,6 @@
 `timescale 1 ns / 10 ps
 
+
 module tx_tb;
 
     reg clk;
@@ -9,6 +10,7 @@ module tx_tb;
     reg load;
     wire flag;
     reg [0:11] char;
+    reg [15:0] baud_count;
     reg baud_clk;
     reg set_flag,clear_flag;
 
@@ -17,12 +19,16 @@ module tx_tb;
     tx tx1(.clk100 (clk),
         .reset (reset),
         .clear (clear),
+	.baud_count (baud_count),
         .tx (tx),
         .load (load),
         .char (char),
         .clear_flag (clear_flag),
         .set_flag (set_flag),
         .flag (flag));
+
+ localparam baud_rate = 115200;
+ localparam tx_term_count = $rtoi(clock_frequency/baud_rate);
 
     initial begin
 
@@ -38,6 +44,7 @@ module tx_tb;
     initial begin
         $dumpfile("tx.vcd");
         $dumpvars(0,tx1);
+	baud_count <= tx_term_count;
         clear_flag <= 0;
         set_flag <= 0;
         reset <= 1;

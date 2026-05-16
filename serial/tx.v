@@ -2,6 +2,7 @@ module tx (
     input clk100,
     input reset,
     input clear,
+    input [15:0] baud_count,
     input [0:11] char,
     input load,
     input clear_flag,
@@ -10,12 +11,9 @@ module tx (
     output reg tx
 );
   `include "../parameters.v"
-  localparam tx_term_count = $rtoi(clock_frequency/baud_rate);
-  localparam tx_term_nu_bits = $clog2(tx_term_count);
-  localparam tx_term_cnt = tx_term_count[tx_term_nu_bits-1:0]; 
-
+ 
   /* verilator lint_off LITENDIAN */
-  reg [tx_term_nu_bits-1:0] period_cntr;
+  reg [15:0] period_cntr;
   reg [3:0] state;
   reg [0:7] tto;
   reg loaded;
@@ -38,7 +36,7 @@ module tx (
       if (set_flag == 1) flag <= 1;
       // this needs to be async to the rest of the state machine
       // the transmitter can be loaded in any one of these states
-      // once loaded don't allow further loading
+      // one loaded don't allow further loading
       // STOP1 and STP2 need to complete then go to idle
       // if loaded is true IDLE immediately goes to START
       // flag goes low singifies the tx being busy
@@ -63,7 +61,7 @@ module tx (
             if (loaded == 1) //&& (flag == 1))
                         begin
               state <= START;
-              period_cntr <= tx_term_cnt;
+              period_cntr <= baud_count;
               flag <= 0;
             end else begin
               state <= IDLE;
@@ -72,14 +70,14 @@ module tx (
           end
           START: begin
             loaded <= 0;
-            period_cntr <= tx_term_cnt;
+            period_cntr <= baud_count;
             state <= BIT0;
           end
 
           // this depends on the states being in sequence
           // each state follows the previous at intervals of 1 baud
           BIT0, BIT1, BIT2, BIT3, BIT4, BIT5, BIT6, BIT7: begin
-            period_cntr <= tx_term_cnt;
+            period_cntr <= baud_count;
             state <= state + 4'b0001;
             if (state == BIT7) flag <= 1;
           end
@@ -89,7 +87,7 @@ module tx (
             period_cntr <= 1;
 `else
             state <= STOP2;
-            period_cntr <= tx_term_cnt;
+            period_cntr <= baud_count;
 `endif
 
           end
