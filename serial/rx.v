@@ -70,6 +70,8 @@ localparam idle = 0,
         stop_bit: begin  // rx should be one here
           flag  <= 1;
           state <= idle;
+          counter <= 16; // set the counter so we go to idle before a baud
+          // idle will spin with rx being high
 	      char1 <= 8'o377;
         end
         default: ;
