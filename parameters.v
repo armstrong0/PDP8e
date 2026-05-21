@@ -1,5 +1,5 @@
-//`define RK8E
-`define EAE
+`define RK8E
+//`define EAE
 //`define up5k
 
 // state machine encoding
@@ -88,33 +88,8 @@ JMPD =4'b1010,
 JMPI = 4'b1011,
 JM = 2'b10 ;
 
-// clock_frequency is defined in the top level verilog file 
-// or in an included file..
-
-
-`ifdef SIM
-// calculate in nanoseconds
-localparam real clock_frequency = 73500000;
-localparam real clock_period = 1/clock_frequency*1e9;
-parameter real baud_rate = 115200; //10 clocks per output 
-`elsif TSIM
-// calculate in nanoseconds
-parameter real clock_frequency = 5000000;
-localparam real clock_period = 1/clock_frequency*1e9;
-parameter real baud_rate = 1200;
-`else
-parameter real baud_rate = 115200; //10 clocks per output 
-`endif
-
-// define the slow and fast clocks of the sd card
-// Error on the low side, especially for 4 MHz
-// frequencies will not be exact.  Frequencies are in Hz
-//`ifdef RK8E
-// NOTE that these frequencies influence the initialization time
-// there is a timeout in sd.sv that may come into play
-parameter real slow_spi = 1000000;
-parameter real fast_spi = 1000000;
-// go too high and the state machines don't work!
+parameter real clock_frequency = 73500000;
+parameter real clock_period = 1/clock_frequency*1e9;
 
 // define the startup delay allowed for the sd card
 // units of milliseconds
@@ -130,8 +105,8 @@ parameter sd_delay = 10'd500;
 
 //parameter MAX_ADDRESS = 15'o23777; // 10k 2.5 fields
 parameter MAX_ADDRESS = 15'o17777;  // 8k 2 fields
+//parameter MAX_ADDRESS = 15'o77777; // 32k 8 fields
 
-`define ONESTOP // one stop bit for all baud rates greater than 110
 
 
 

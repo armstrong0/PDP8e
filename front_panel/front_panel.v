@@ -22,7 +22,8 @@ module front_panel (
 
 );
 
-  `include "../parameters.v"
+//  `include "../parameters.v"
+localparam clock_frequency = 73500000;
 `ifndef SIM
   parameter integer dbnce_nu_bits = $clog2(clock_frequency) - 1;
 `else
