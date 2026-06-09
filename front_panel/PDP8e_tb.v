@@ -101,11 +101,13 @@ module PDP8e_tb;
         #1 rx <= 1; // marking state
         #100 pll_locked <= 1;
         #100 halt <= 0;
+	#1 reset <= 1;
+	#299 reset <= 0;
         #300;
         #10 `pulse(addr_load);
         #300 `pulse(cont);
 
-        #400 $finish;
+        #4000000 $finish;
 
     end
 

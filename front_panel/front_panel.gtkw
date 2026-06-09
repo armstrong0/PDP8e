@@ -1,20 +1,20 @@
 [*]
-[*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
-[*] Thu Apr 17 02:56:37 2025
+[*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
+[*] Tue Jun  9 01:46:54 2026
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.vcd"
-[dumpfile_mtime] "Thu Apr 17 02:54:02 2025"
-[dumpfile_size] 23728
+[dumpfile_mtime] "Tue Jun  9 01:46:22 2026"
+[dumpfile_size] 27117
 [savefile] "/home/armstrong/Desktop/PDP8e/front_panel/front_panel.gtkw"
 [timestart] 0
-[size] 1868 937
-[pos] -1 -1
-*-20.439253 8153000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1920 1006
+[pos] -53 -70
+*-21.229166 8153000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] front_panel_tb.
 [sst_width] 263
 [signals_width] 158
 [sst_expanded] 1
-[sst_vpaned_height] 288
+[sst_vpaned_height] 313
 @28
 front_panel_tb.FP.addr_load
 front_panel_tb.FP.addr_loadd
@@ -38,15 +38,12 @@ front_panel_tb.DM.run_led
 front_panel_tb.DM.dout[0:11]
 @28
 front_panel_tb.DM.dsel_led[4:0]
-@30
-front_panel_tb.FP.sr[0:11]
-front_panel_tb.FP.rsr[0:11]
-@28
 front_panel_tb.DM.dsel[2:0]
 front_panel_tb.DM.FS
 front_panel_tb.DM.ES
-@29
 front_panel_tb.DM.DS
+@23
+front_panel_tb.FP.cntr[9:0]
 @30
 front_panel_tb.DM.io_bus[0:11]
 [pattern_trace] 1

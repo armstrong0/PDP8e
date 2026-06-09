@@ -2,6 +2,7 @@
 module front_panel_tb;
 
     reg clk,reset;
+    reg oneKHz;
     reg halt;
     reg clear, extd_addr,addr_load,dep,exam,sing_step,cont;
     wire contd;
@@ -23,6 +24,7 @@ module front_panel_tb;
 `include "../parameters.v"
 
     front_panel FP(.clk (clk),
+	.oneKHz (oneKHz),   
         .clear (clear),
         .extd_addr (extd_addr),
         .addr_load (addr_load),
@@ -30,8 +32,6 @@ module front_panel_tb;
         .exam (exam),
         .dsel_sw (dsel_sw),
         .cont (cont),
-        .sr (sr),
-        .rsr (rsr),
         .cleard (cleard),
         .extd_addrd (extd_addrd),
         .addr_loadd (addr_loadd) ,
@@ -59,19 +59,21 @@ module front_panel_tb;
         .dsel_led (dsel_led),
         .run_ff (run_ff),
         .run_led (run_led));
-
+    always begin  // assumes about a 50 MHz clock
+        #10 clk <= 1;
+        #10 clk <= 0;
+    end
+    always begin  // much faster than 1 KHz
+        #100 oneKHz <= 1;
+        #100 oneKHz <= 0;
+    end
 
     initial begin
 
         $dumpfile("front_panel.vcd");
         $dumpvars(0,FP,DM);
-        clk = 0;
-        forever
-            #10  clk = ~clk;
-    end
-
-    initial begin
-        clear <= 0;
+        
+	clear <= 0;
         run_ff <= 0;
         halt <= 0;
         dsel_sw <= 0;
@@ -79,9 +81,8 @@ module front_panel_tb;
         mq <= 12'o2222;
         mb <= 12'o3333;
         io_bus <= 12'o5555;
-        // state <= 5'b10101;
         status <= 12'o6666;
-        state1 = 9'b111111111;
+        state1 = 12'b000111111111;
         extd_addr  <= 0;
         addr_load  <= 0;
         dep  <= 0;
@@ -89,7 +90,7 @@ module front_panel_tb;
         sing_step <= 0;
         cont <= 0;
         sing_step <= 0;
-        state <= F0;
+	state <= F1; // F0 does not assert any of FS, DS, ES
 
         #10 dsel_sw <= 0;
 
@@ -119,21 +120,21 @@ module front_panel_tb;
 
         #500 cont <= 1;
         #50 cont <= 0;
-        #500 dsel_sw <= 1;
+        #1500 dsel_sw <= 1;
         #50 dsel_sw <=0;
 
-        #500 dsel_sw <= 1;
+        #1500 dsel_sw <= 1;
         #50 dsel_sw <=0;
-        #500 dsel_sw <= 1;
+        #1500 dsel_sw <= 1;
         #50 dsel_sw <=0;
         #10 run_ff <= 1;
-        #500 dsel_sw <= 1;
+        #1500 dsel_sw <= 1;
         #50 dsel_sw <=0;
-        #500 dsel_sw <= 1;
+        #1500 dsel_sw <= 1;
         #50 dsel_sw <=0;
-        #500 dsel_sw <= 1;
+        #1500 dsel_sw <= 1;
         #50 dsel_sw <=0;
-        #500 dsel_sw <= 1;
+        #1500 dsel_sw <= 1;
         #50 dsel_sw <=0;
 
         #2500 $finish;

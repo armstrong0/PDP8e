@@ -147,7 +147,8 @@ module PDP8e (input clk,
 `else
     assign irq = s_interrupt | UI;
 `endif
-
+`include "../rates.v"
+    
 HX_clock HX (.reset (reset),
    .clk (clk100),
    .oneKHz (oneKHz),
@@ -306,6 +307,7 @@ rk8e RK8E (
         .reset (reset),
         .state (state),
         .clear (clear),
+	.oneKHz (oneKHz),
         .extd_addr (extd_addr),
         .addr_load (addr_load),
         .dep (dep),

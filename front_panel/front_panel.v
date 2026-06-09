@@ -1,5 +1,6 @@
 module front_panel (
     input clk,
+    input oneKHz,
     input reset,
     input [4:0] state,
     input clear,
@@ -22,13 +23,8 @@ module front_panel (
 
 );
 
-//  `include "../parameters.v"
-localparam clock_frequency = 73500000;
-`ifndef SIM
-  parameter integer dbnce_nu_bits = $clog2(clock_frequency) - 1;
-`else
-  parameter integer dbnce_nu_bits = 4;
-`endif
+`include "../rates.v"
+
 
 
 
@@ -36,14 +32,14 @@ localparam clock_frequency = 73500000;
   reg [7:0] switchd;
   reg [6:0] switchl;
   reg [2:0] trig_state;
+  reg [9:0] cntr;
 
-  reg [dbnce_nu_bits:0] trig_cnt; // the highest order bit is always dbnce_nu_bits !
   reg trigger1;
 
   assign {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} = switchd;
 
   parameter reg [2:0]  //integer
-      LATCH = 3'b000,
+  LATCH = 3'b000,
       WAIT  = 3'b001,
       TRIG1 = 3'b010,
       TRIG2 = 3'b011,
@@ -69,15 +65,16 @@ localparam clock_frequency = 73500000;
     if (reset) begin
       trig_state <= LATCH;
       switchd <= 8'b00000000;
-      switchl <=  7'b0000000;
-      trig_cnt <= 0;
+      switchl <= 7'b0000000;
+      cntr <= 0;
       sw_active <= 1'b0;
       dsel <= 3'b000;
     end else begin
       case (trig_state)
         LATCH: begin
           switchl <= switchl |
-                    {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw };// latch inputs
+                    {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw };
+		    // latch inputs
           if (switchl == 7'b0000000) trig_state <= LATCH;
           else begin
             trig_state <= WAIT;
@@ -91,7 +88,6 @@ localparam clock_frequency = 73500000;
         TRIG1: begin
           trig_state <= TRIG2;
           switchd <= switchd;
-          trig_cnt <= 0;
         end
         TRIG2: begin
           trig_state <= TRIG3;
@@ -104,23 +100,44 @@ localparam clock_frequency = 73500000;
         TRIG3: begin
           trig_state <= DELAY;
           switchd <= switchd;
+	  sw_active <= 1'b1;
+          cntr <= sw_dbnc;
         end
         DELAY:
-        if (trig_cnt[dbnce_nu_bits] == 1) begin
-          trig_state <= REENABLE;
-          sw_active  <= 1'b0;
-        end else begin
-          trig_cnt <= trig_cnt + 1;
-          trig_state <= DELAY;
-          sw_active <= 1'b1;
-          switchd <= 8'b00000000;
-        end
+	if (cntr == 0)
+	begin
+		trig_state <= REENABLE;
+		sw_active <= 1'b0;
+	end		
+	else trig_state <= DELAY;
+
 
         REENABLE: trig_state <= LATCH;
         default:  trig_state <= LATCH;
 
       endcase
     end
+  end
+
+  always @(posedge oneKHz) begin
+    if (reset) begin
+      cntr <= 0;
+    end else
+      case (trig_state)
+        LATCH, WAIT, TRIG1, TRIG2: ;
+        TRIG3: cntr <= sw_dbnc;
+
+        DELAY: begin
+          cntr <= cntr - 1;
+          //if (cntr == 0) begin
+          //  trig_state <= REENABLE;
+         // end else begin
+          //  trig_state <= DELAY;
+        //  end
+        end
+        REENABLE: ;
+        default;
+      endcase
   end
 endmodule
 
