@@ -47,26 +47,15 @@ module front_panel (
       DELAY = 3'b101,
       REENABLE = 3'b110;
 
-  // This set of notes is to record in short form efforts to get this working
-  // again!  One of the last yosys ugrades seem to make the logic optimizer work
-  // better.  There was a noticable decrease in resoures and an increase in the
-  // allowable clock frequency.  However it also optimizes out logic, notably
-  // some of the counter in the tx module and here it appears that the state
-  // machine below completely dissappears, hence the switiches don't work.
-  // This can be seen in the synth log, as a counter going to [0:0] ie one bit
-  // instead of what it should be OR eliminating switches (6 in the case of this
-  // module)
-  //
-  // // I think the real problem was my improper usage of $clog2
 
-  // don't really care what state the main state machine is in, as every processed
+  // don't really care what state the main state machine is in,
+  // as every processed
   // switch press is validated for the proper state elsewhere
   always @(posedge clk) begin
     if (reset) begin
       trig_state <= LATCH;
       switchd <= 8'b00000000;
       switchl <= 7'b0000000;
-      cntr <= 0;
       sw_active <= 1'b0;
       dsel <= 3'b000;
     end else begin
@@ -101,7 +90,6 @@ module front_panel (
           trig_state <= DELAY;
           switchd <= switchd;
 	  sw_active <= 1'b1;
-          cntr <= sw_dbnc;
         end
         DELAY:
 	if (cntr == 0)
@@ -120,20 +108,13 @@ module front_panel (
   end
 
   always @(posedge oneKHz) begin
-    if (reset) begin
-      cntr <= 0;
-    end else
       case (trig_state)
-        LATCH, WAIT, TRIG1, TRIG2: ;
+        LATCH: cntr <= 0;
+	WAIT, TRIG1, TRIG2: ;
         TRIG3: cntr <= sw_dbnc;
 
         DELAY: begin
           cntr <= cntr - 1;
-          //if (cntr == 0) begin
-          //  trig_state <= REENABLE;
-         // end else begin
-          //  trig_state <= DELAY;
-        //  end
         end
         REENABLE: ;
         default;
