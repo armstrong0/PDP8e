@@ -11,8 +11,10 @@
 /* dba April 03, 2023 */
 /* dba April 07, 2023 */
 /* dba April 13, 2023 rename rk8e, changed to a sv file */
+
 `include "sd_types.svh"
 `include "sdspi_types.svh"
+
 
 
 
@@ -21,6 +23,7 @@ module rk8e
 (
     input             clk,
     input             reset,
+    input             sd_reset,
     input             clear,
     input      [0:11] instruction,
     input      [ 4:0] state,
@@ -54,19 +57,9 @@ module rk8e
   reg   [0:11] status;  // status register
 
   logic        sd_reset;  // delayed reset deassertion for the sd card
-  logic [ 9:0] ms_cntr;  // down counter for sd delay
-  // verilog_format: off
-  // verible-verilog format took the indentation of ms_clock and applied it !!!
-  localparam clock_frequency = 73500000;
-  localparam clocks_per_msec = clock_frequency / 1000;
-  logic        [$clog2(clocks_per_msec):0] ms_clock;
 
-  logic        oneKHz;
-
-  // verilog_format: on
 
   // need a write protect for each drive
-
   reg          [ 0:3] write_lock;
   reg                 disk_flag;
   reg                 sint_ena;
@@ -80,7 +73,7 @@ module rk8e
   sdSTAT_t         sdSTAT;  //! Status
   sdSTATE_t        sdstate;
   sdSTATE_t        last_sdstate;
-  wire [7:0] spiRXD;
+  wire      [ 7:0] spiRXD;
 
   assign sdLEN = cmd_reg[5];
 
@@ -110,9 +103,11 @@ module rk8e
   );  //! Status
 
 
-`include "../parameters.v"
+  `include "../parameters.v"
+//  `include "../rates.v"
+
   /* Status Register bit assignment
-bit 0 0= busy 1 = done
+bit 0 0 = busy 1 = done
 bit 1 0 stationary 1 head in motion  - always 0
 bit 2 unused                         - always 0
 bit 3 seek failed = 1                - always 0
@@ -145,34 +140,6 @@ bit 11 msb of cylinder
   assign sdDISKaddr = {17'd0, cmd_reg[9:11], dar};
   assign sdMEMaddr  = {cmd_reg[6:8], car};
 
-  always @(posedge clk) begin
-    if (reset == 1) begin
-    /* verilator lint_off WIDTHTRUNC */
-      ms_clock <= clocks_per_msec / 2;
-    /* verilator lint_on WIDTHTRUNC */
-      sd_reset <= 1'b1;
-      oneKHz   <= 0;
-      ms_cntr  <= sd_delay;
-    end else begin
-      if (ms_clock == 0) begin
-    /* verilator lint_off WIDTHTRUNC */
-        ms_clock <= clocks_per_msec / 2;
-    /* verilator lint_on WIDTHTRUNC */
-        if (oneKHz == 1'b0) oneKHz <= 1'b1;
-        else begin
-          oneKHz <= 1'b0;
-          if (sd_reset == 1'b1) begin
-            if (ms_cntr == 0) begin
-              sd_reset <= 1'b0;  // done, allow sd card to be used
-            end else begin
-              ms_cntr <= ms_cntr - 1;
-            end
-          end
-        end
-      end else ms_clock <= ms_clock - 1;
-
-    end
-  end
 
   always @(posedge clk) begin
 
@@ -192,7 +159,7 @@ bit 11 msb of cylinder
       write_lock[1] <= 1'b0;
       write_lock[2] <= 1'b0;
       write_lock[3] <= 1'b0;
-      sdstate <= sdstateINIT;
+      sdstate       <= sdstateINIT;
       last_sdstate  <= sdstateINIT;
 
       toggle        <= 4'b0;
@@ -209,7 +176,7 @@ bit 11 msb of cylinder
       begin
         data_break <= 1'b0;
       end
-      disk_flag  <= (status != 12'o0000);
+      disk_flag <= (status != 12'o0000);
       if ((disk_flag == 1'b1) && (cmd_reg[3] == 1'b1)) interrupt <= 1'b1;
       else interrupt <= 0;
       if (dmaREQ == 1'b1) dmaGNT <= 1'b1;
@@ -226,7 +193,7 @@ bit 11 msb of cylinder
         end
         sdstateREAD,  // SD Reading
         sdstateWRITE: begin  // SD Writing
-          status[0] <= 1'b0; //set busy
+          status[0] <= 1'b0;  //set busy
           if (last_sdstate == sdstateREADY) sdOP <= sdopNOP;
         end
         sdstateDONE: begin
@@ -236,10 +203,10 @@ bit 11 msb of cylinder
         end
         sdstateINFAIL,  // SD Initialization Failed
         sdstateRWFAIL: begin  // SD Read or Write failed
-          status[0]  <= 1'b0; // set busy
-          status[10] <= 1'b1; // set drive status error
+          status[0]  <= 1'b0;  // set busy
+          status[10] <= 1'b1;  // set drive status error
         end
-        default:; //   status[0] <= 1'b0;
+        default: ;  //   status[0] <= 1'b0;
       endcase
       last_sdstate <= sdstate;
 
@@ -254,9 +221,9 @@ bit 11 msb of cylinder
           12'o6741: if (disk_flag == 1'b1) skip <= 1;  //DSKP
           12'o6742:  // DCLR has four options 
           begin
-              status <= 12'o4000;
-              // set done, reset all other flags
-              if (ac[10:11] == 2'b01) sdOP <= sdopABORT;
+            status <= 12'o4000;
+            // set done, reset all other flags
+            if (ac[10:11] == 2'b01) sdOP <= sdopABORT;
           end
           12'o6743:    // DLAG load address and go
           begin
@@ -264,36 +231,34 @@ bit 11 msb of cylinder
             if ({cmd_reg[11], ac[0:6]} > 8'd202) status[11] <= 1'b1;
             // set cyclinder address error
             else  // we have a valid cylinder
-            case (cmd_reg[0:2])
-              3'b000,3'b001: begin  // read
-                to_disk <= 1'b0;
-                sdOP <= sdopRD;
-              end
-              3'b010:  write_lock[cmd_reg[9:10]] <= 1'b1;
-              3'b011: if (cmd_reg[4] == 1'b1)  status[0] <= 1'b1; 
-              // seek done
-              3'b100, 3'b101: begin  // write
-                // need to check here for write protect
-                if (write_lock[cmd_reg[9:10]] == 1'b1) begin  
-                // set error condition
-                  status[7] <= 1'b1; // write lock error
-                end else begin
-                  sdOP <= sdopWR;
-                  to_disk <= 1'b1;
+              case (cmd_reg[0:2])
+                3'b000, 3'b001: begin  // read
+                  to_disk <= 1'b0;
+                  sdOP <= sdopRD;
                 end
-              end
-              default: ;
-            endcase
+                3'b010:  write_lock[cmd_reg[9:10]] <= 1'b1;
+                3'b011:  if (cmd_reg[4] == 1'b1) status[0] <= 1'b1;
+                // seek done
+                3'b100, 3'b101: begin  // write
+                  // need to check here for write protect
+                  if (write_lock[cmd_reg[9:10]] == 1'b1) begin
+                    // set error condition
+                    status[7] <= 1'b1;  // write lock error
+                  end else begin
+                    sdOP <= sdopWR;
+                    to_disk <= 1'b1;
+                  end
+                end
+                default: ;
+              endcase
           end
           12'o6744: car <= ac;  // DLCA load current address
           12'o6745: disk_bus <= status;  // DRST
           12'o6746: // DLDC load command register
           begin
             cmd_reg <= ac;
-            if (ac[4] == 1)
-            status <= 12'o4000;
-            else
-            status <= 12'o0000;
+            if (ac[4] == 1) status <= 12'o4000;
+            else status <= 12'o0000;
           end
           // maintenance mode debugging NOT what is describe in the RK8E
           // manual, this essentially reads out various status values from the
@@ -306,7 +271,7 @@ bit 11 msb of cylinder
           //    Following the debug info the car, status, command and dar are
           //    dumped, they are full 12 bit values.
           12'o6747:
-         
+
           case (toggle)
             0: begin
               disk_bus <= {toggle, sdSTAT.debug};
@@ -330,32 +295,32 @@ bit 11 msb of cylinder
             end
             10: begin
               // sdSTAT.state is only 3 bits, pack to make 8
-              disk_bus <= {toggle,5'b0, sdSTAT.state};
+              disk_bus <= {toggle, 5'b0, sdSTAT.state};
               toggle   <= 4'b1100;
-              end
+            end
             12: begin
               // look at the spi received that caused the error 
-              disk_bus <= {toggle,spiRXD};
-              toggle <= 4'b0001;
-              end
-            1:begin
-               disk_bus <= car;
-               toggle <= 4'b0011;
-               end
-            3:begin
-               disk_bus <= status;
-               toggle <= 4'b0101;
-               end
-            5:begin
-               disk_bus <= cmd_reg;
-               toggle <= 4'b0111;
-               end
-            7:begin
-               disk_bus <= dar;
-               toggle <= 4'b0000;
-               end
+              disk_bus <= {toggle, spiRXD};
+              toggle   <= 4'b0001;
+            end
+            1: begin
+              disk_bus <= car;
+              toggle   <= 4'b0011;
+            end
+            3: begin
+              disk_bus <= status;
+              toggle   <= 4'b0101;
+            end
+            5: begin
+              disk_bus <= cmd_reg;
+              toggle   <= 4'b0111;
+            end
+            7: begin
+              disk_bus <= dar;
+              toggle   <= 4'b0000;
+            end
 
-           
+
 
             default: toggle <= 4'b0;
           endcase

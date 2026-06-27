@@ -54,6 +54,8 @@ module PDP8e (input clk,
     output tx
     );
     /* I/O */
+
+    wire [0:14] addr;
     assign An = ~addr;
     wire [0:11] ds;
     assign dsn = ~ds;
@@ -85,7 +87,6 @@ module PDP8e (input clk,
     wire int_in_prog;
     wire trigger,addr_loadd,extd_addrd,depd,examd,contd,cleard;
     wire [0:11] pc;
-    wire [0:14] addr;
     wire [0:11] ac,ac_input,me_bus;
     wire [0:11] mq;
     wire [0:11] instruction,mdout;
@@ -106,6 +107,7 @@ module PDP8e (input clk,
     wire run_ff;
     wire index;
     wire [15:0] baud_count;
+    wire sd_reset;
     wire oneKHz;
 
     wire disk_rdy;
@@ -147,11 +149,13 @@ module PDP8e (input clk,
 `else
     assign irq = s_interrupt | UI;
 `endif
-`include "../rates.v"
+    
+`include "../timing.v"
     
 HX_clock HX (.reset (reset),
    .clk (clk100),
    .oneKHz (oneKHz),
+   .sd_reset (sd_reset),
    .baud_count (baud_count) );
 
 `ifdef RK8E
@@ -162,6 +166,7 @@ rk8e RK8E (
     .clk (clk100) ,
     .reset (reset),
     .clear (cleard),
+    .sd_reset (sd_reset),
     .instruction (instruction) ,
     .state (state),
     .ac (ac),

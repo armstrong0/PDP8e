@@ -94,11 +94,11 @@ parameter real clock_period = 1/clock_frequency*1e9;
 // define the startup delay allowed for the sd card
 // units of milliseconds
 
-`ifdef SIM
-parameter sd_delay = 2;
-`else
-parameter sd_delay = 10'd500;
-`endif
+//`ifdef SIM
+//parameter sd_delay = 2;
+//`else
+//parameter sd_delay = 10'd500;
+//`endif
 
 // two diagnostic tests will not pass with partial fields so change to 8k
 // 2 fields when running those tests ADDER MEM_EXT

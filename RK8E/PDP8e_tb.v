@@ -106,7 +106,7 @@ module PDP8e_tb;
 
   initial begin
     #1 $display("clock frequency %f Hz", (clock_frequency));
-    #1 $display("baud rate %f Hz ", (baud_rate));
+  //  #1 $display("baud rate %f Hz ", (baud_rate));
     #1 $display("clock period %f nanoseconds", (clock_period));
     #1 $display("cycle time %f nanoseconds", (6 * clock_period));
     #1 dsel_swn <= 1;

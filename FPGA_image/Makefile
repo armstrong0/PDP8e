@@ -27,11 +27,11 @@ place:
 	# Convert to bitstream using IcePack
 	icepack $(PROJ).asc $(PROJ).bin
 
-clocks: HX_clock.v HX_clock_tb.v clock_frequency.v ../rates.v
-	iverilog -g2012 HX_clock.v HX_clock_tb.v -o clocks.o
+clocks: HX_clock.v HX_clock_tb.v clock_frequency.v ../timing.v
+	iverilog -DSIM -g2012 HX_clock.v HX_clock_tb.v -o clocks.o
 	vvp clocks.o
-	sleep 1
-	gtkwave clocks.o clocks.gtkw
+	sleep 2s
+	gtkwave clocks.vcd clocks.gtkw
 	
 
 

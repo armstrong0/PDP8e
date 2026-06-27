@@ -6,11 +6,14 @@ module HX_clock_tb;
   reg  clk;
 
   reg  spi_high_clock;
+  reg fp_trigger;
 
   wire oneKHz;
   wire rx_baud_clock;
   wire spi_clock;
   wire [15:0] baud_count;
+  wire [9:0] cntr;
+  wire fp_cont;
 
   parameter real clock_frequency = 73500000;
 
@@ -24,10 +27,12 @@ module HX_clock_tb;
   HX_clock UUT (
       .clk(clk),
       .reset(reset),
-      .spi_high_clk(spi_high_clk),
+      .fp_trigger (fp_trigger),
+      .fp_cont (fp_cont),
+      .cntr (cntr),
       .oneKHz(oneKHz),
-      .baud_count(baud_count),
-      .spi_clk(spi_clk)
+      .baud_count(baud_count)
+    //  .spi_clk(spi_clk)
   );
 
 initial begin
@@ -36,10 +41,13 @@ initial begin
   $display("clock period:",clock_period," nanoseconds");
   
   #1 reset <= 0;
+  #2 fp_trigger <= 0;
   #20 reset <=1;
   #40 reset <=0;
-
-  #3000000 $finish;
+  #500 fp_trigger <= 1;
+  wait(fp_cont == 1)
+  #1 fp_trigger <= 0;
+  #9000000 $finish;
 
 end
 
