@@ -28,6 +28,7 @@ module state_machine_tb;
   reg UF;
   reg data_break, to_disk;
 
+  integer address;
 
   state_machine SM1 (
       .clk(clk),
@@ -61,7 +62,6 @@ module state_machine_tb;
 
   `include "../parameters.v"
 
-  integer address;
 
 
   always begin
