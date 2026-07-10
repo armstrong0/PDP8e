@@ -108,7 +108,8 @@ module PDP8e (input clk,
     wire index;
     wire [15:0] baud_count;
     wire sd_reset;
-    wire oneKHz;
+    wire fp_trigger;
+    wire fp_cont;
 
     wire disk_rdy;
 `ifdef RK8E
@@ -154,8 +155,9 @@ module PDP8e (input clk,
     
 HX_clock HX (.reset (reset),
    .clk (clk100),
-   .oneKHz (oneKHz),
    .sd_reset (sd_reset),
+   .fp_trigger (fp_trigger),
+   .fp_cont (fp_cont),
    .baud_count (baud_count) );
 
 `ifdef RK8E
@@ -312,7 +314,8 @@ rk8e RK8E (
         .reset (reset),
         .state (state),
         .clear (clear),
-	.oneKHz (oneKHz),
+	.fp_trigger (fp_trigger),
+	.fp_cont (fp_cont),
         .extd_addr (extd_addr),
         .addr_load (addr_load),
         .dep (dep),

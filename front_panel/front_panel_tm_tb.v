@@ -8,8 +8,6 @@ module front_panel_tb;
   wire cleard, extd_addrd, addr_loadd, depd, examd;
 
   wire [0:11] dout;
-  wire fp_trigger;
-  reg fp_cont;
   reg [0:11] status, ac, mq, mb, io_bus, sr;
   reg [4:0] state;
   reg [3:11] state1;
@@ -26,8 +24,6 @@ module front_panel_tb;
 
 front_panel FP (
       .clk(clk),
-      .fp_trigger(fp_trigger),
-      .fp_cont(fp_cont),
       .clear(clear),
       .extd_addr(extd_addr),
       .addr_load(addr_load),
@@ -41,7 +37,8 @@ front_panel FP (
       .depd(depd),
       .examd(examd),
       .contd(contd),
-
+      .fp_trigger(fp_trigger),
+      .fp_cont(fp_cont),
       .dsel(dsel),
       .sw_active(sw_active),
       .reset(reset),
@@ -65,18 +62,22 @@ front_panel FP (
       .run_ff(run_ff),
       .run_led(run_led)
   );
-  always begin  // assumes about a 50 MHz clock
-    #10 clk <= 1;
-    #10 clk <= 0;
-  end
-  always @(posedge clk) begin
-    fp_cont <= fp_trigger;
+
+  HX_clock HX (
+      .reset(reset),
+      .clk(clk),
+      .fp_trigger(fp_trigger),
+      .fp_cont(fp_cont)
+  );
+  always begin  // assumes about a 71.4 MHz clock
+    #7 clk <= 1;
+    #7 clk <= 0;
   end
 
   initial begin
 
-    $dumpfile("front_panel.vcd");
-    $dumpvars(0, FP, DM);
+    $dumpfile("timing.vcd");
+    $dumpvars(0, FP, DM, HX);
 
     clear <= 0;
     run_ff <= 0;
@@ -101,54 +102,12 @@ front_panel FP (
 
     #15 reset <= 1;
     #40 reset <= 0;
-    #24 clear <= 1;
-    #100 clear <= 0;
+    // #24 clear <= 1;
+    // #100 clear <= 0;
     #40 cont <= 1;
     #40 cont <= 0;
-    #500 extd_addr <= 1;
-    #80 extd_addr <= 0;
 
-    #500 addr_load <= 1;
-    #50 addr_load <= 0;
-
-    #1500 exam <= 1;
-    #1 sr <= 12'o2525;
-    #40 exam <= 0;
-
-    #50 exam <= 1;
-    #40 exam <= 0;
-
-    #500 dep <= 1;
-    #40 dep <= 0;
-
-    sing_step <= 1;
-    #500 cont <= 1;
-    #50 cont <= 0;
-
-    sing_step <= 0;
-    #50 halt <= 1;
-
-    #500 cont <= 1;
-    #50 cont <= 0;
-
-    #1500 dsel_sw <= 1;
-    #50 dsel_sw <= 0;
-
-    #1500 dsel_sw <= 1;
-    #50 dsel_sw <= 0;
-    #1500 dsel_sw <= 1;
-    #50 dsel_sw <= 0;
-    #10 run_ff <= 1;
-    #1500 dsel_sw <= 1;
-    #50 dsel_sw <= 0;
-    #1500 dsel_sw <= 1;
-    #50 dsel_sw <= 0;
-    #1500 dsel_sw <= 1;
-    #50 dsel_sw <= 0;
-    #1500 dsel_sw <= 1;
-    #50 dsel_sw <= 0;
-
-    #2500 $finish;
+    #3500000 $finish;
   end
 
 

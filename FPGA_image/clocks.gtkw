@@ -1,0 +1,29 @@
+[*]
+[*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
+[*] Sat Jun 27 02:47:05 2026
+[*]
+[dumpfile] "/home/armstrong/Desktop/PDP8e/FPGA_image/clocks.vcd"
+[dumpfile_mtime] "Sat Jun 27 02:46:16 2026"
+[dumpfile_size] 31734157
+[savefile] "/home/armstrong/Desktop/PDP8e/FPGA_image/clocks.gtkw"
+[timestart] 0
+[size] 1920 1006
+[pos] -1 -1
+*-30.157595 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] HX_clock_tb.
+[sst_width] 263
+[signals_width] 126
+[sst_expanded] 1
+[sst_vpaned_height] 299
+@28
+HX_clock_tb.UUT.oneKHz
+@420
+HX_clock_tb.UUT.sd_delay
+@28
+HX_clock_tb.UUT.sd_reset
+@22
+HX_clock_tb.UUT.fp_cntr[9:0]
+@29
+HX_clock_tb.UUT.fp_cont
+[pattern_trace] 1
+[pattern_trace] 0

@@ -48,8 +48,9 @@ module PDP8e_tb;
 
   reg halt_addr;
 
-  `include "../parameters.v"
-//  localparam clock_period = 1e9 / clock_frequency;
+//  `include "../parameters.v"
+  localparam clock_frequency = 73500000;
+  localparam clock_period = 1e9 / clock_frequency;
   always begin  // clock _period comes from parameters.v
     #(clock_period / 2) clk100 <= 1;
     #(clock_period / 2) clk100 <= 0;
@@ -136,21 +137,28 @@ module PDP8e_tb;
     #5000;
     sr <= 12'o0030;  // loop until disk is ready
     `PULSE(addr_load);
+     wait(UUT.sw_active == 0);
     #1000;
+
     sr <= 12'o6743; // DLAG
     `PULSE(dep);
+     wait(UUT.sw_active == 0);
+    
     #1000;
     sr <= 12'o5031;
+     wait(UUT.sw_active == 0);
     `PULSE(dep);
     #1000;
     sr <= 12'o6747; // starting here allows the reading of the diagnostics
     // if the boot procedure works this will all be overwritten
+     wait(UUT.sw_active == 0);
     `PULSE(dep);
     #1000;
-	sr <= 12'o7402; // HLT pressing cont will mode to the next diagnostic
-	`PULSE(dep);
-	#1000;
+//	sr <= 12'o7402; // HLT pressing cont will mode to the next diagnostic
+//	`PULSE(dep);
+//	#1000;
     sr <= 12'o5032; // JMP .
+     wait(UUT.sw_active == 0);
     `PULSE(dep);
     #1000;
     sr <= 12'o0030;

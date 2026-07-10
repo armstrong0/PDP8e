@@ -26,6 +26,7 @@ module PDP8e_tb;
     wire led1;
     wire led2;
     wire runn;
+    wire sw_active;
     wire [0:14] An;
     wire [0:11] dsn;
     wire tx;
@@ -105,9 +106,10 @@ module PDP8e_tb;
 	#299 reset <= 0;
         #300;
         #10 `pulse(addr_load);
+	#500	wait(sw_active != 0);
         #300 `pulse(cont);
 
-        #4000000 $finish;
+        #6000000 $finish;
 
     end
 

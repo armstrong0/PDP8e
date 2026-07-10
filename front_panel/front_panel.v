@@ -1,6 +1,5 @@
 module front_panel (
     input clk,
-    input oneKHz,
     input reset,
     input [4:0] state,
     input clear,
@@ -10,9 +9,11 @@ module front_panel (
     input exam,
     input cont,
     input dsel_sw,
+    input fp_cont,
     output reg sw_active,
     output triggerd,
-    cleard,
+    output reg fp_trigger,
+    output reg cleard,
     extd_addrd,
     addr_loadd,
     depd,
@@ -23,7 +24,7 @@ module front_panel (
 
 );
 
-`include "../rates.v"
+  `include "../timing.v"
 
 
 
@@ -58,12 +59,12 @@ module front_panel (
       switchl <= 7'b0000000;
       sw_active <= 1'b0;
       dsel <= 3'b000;
+      fp_trigger <= 0;
     end else begin
       case (trig_state)
         LATCH: begin
-          switchl <= switchl |
-                    {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw };
-		    // latch inputs
+          switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw};
+          // latch inputs
           if (switchl == 7'b0000000) trig_state <= LATCH;
           else begin
             trig_state <= WAIT;
@@ -81,6 +82,7 @@ module front_panel (
         TRIG2: begin
           trig_state <= TRIG3;
           switchd <= switchd;
+          fp_trigger <= 1;
           if (dseld == 1) begin
             if (dsel == 5) dsel <= 0;
             else dsel <= dsel + 1;
@@ -89,36 +91,27 @@ module front_panel (
         TRIG3: begin
           trig_state <= DELAY;
           switchd <= switchd;
-	  sw_active <= 1'b1;
+          sw_active <= 1'b1;
         end
         DELAY:
-	if (cntr == 0)
-	begin
-		trig_state <= REENABLE;
-		sw_active <= 1'b0;
-	end		
-	else trig_state <= DELAY;
+        if (fp_cont == 1) begin
+          trig_state <= REENABLE;
+          fp_trigger <= 0;
+          sw_active  <= 1'b0;
+        end else begin
+          trig_state <= DELAY;
+          switchd <= 8'b00000000;
+        end
 
-
-        REENABLE: trig_state <= LATCH;
-        default:  trig_state <= LATCH;
+        REENABLE: begin
+          trig_state <= LATCH;
+          fp_trigger <= 0;
+        end
+        default: trig_state <= LATCH;
 
       endcase
     end
   end
 
-  always @(posedge oneKHz) begin
-      case (trig_state)
-        LATCH: cntr <= 0;
-	WAIT, TRIG1, TRIG2: ;
-        TRIG3: cntr <= sw_dbnc;
-
-        DELAY: begin
-          cntr <= cntr - 1;
-        end
-        REENABLE: ;
-        default;
-      endcase
-  end
 endmodule
 

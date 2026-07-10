@@ -3,9 +3,18 @@ parameter real baud_rate = 115200; //10 clocks per output
 
 `define ONESTOP // one stop bit for all baud rates greater than 110
 `ifdef SIM
-localparam sw_dbnc = 2;
+localparam sw_dbnc = 1;
 `else
 localparam sw_dbnc = 300;
+`endif
+// define the startup delay allowed for the sd card
+// units of milliseconds
+
+`ifdef SIM
+parameter sd_delay = 2;
+
+`else
+parameter sd_delay = 10'd500;
 `endif
 
 // define the slow and fast clocks of the sd card
