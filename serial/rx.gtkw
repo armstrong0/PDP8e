@@ -1,29 +1,28 @@
 [*]
-[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Thu Feb 20 02:24:42 2025
+[*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
+[*] Thu Jul 16 02:24:51 2026
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/serial/rx.vcd"
-[dumpfile_mtime] "Thu Feb 20 02:21:18 2025"
-[dumpfile_size] 2690
-[savefile] "/home/armstrong/Desktop/PDP8e/serial/rx_rx.gtkw"
+[dumpfile_mtime] "Thu Jul 16 02:01:54 2026"
+[dumpfile_size] 4040
+[savefile] "/home/armstrong/Desktop/PDP8e/serial/rx.gtkw"
 [timestart] 0
 [size] 1868 937
 [pos] -1 -1
-*-25.783413 4000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-25.783413 18749120 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] rx_tb.
-[sst_width] 197
+[sst_width] 263
 [signals_width] 150
 [sst_expanded] 1
 [sst_vpaned_height] 381
-@22
-rx_tb.RX.baud_rate
 @420
 rx_tb.RX.bit0
 rx_tb.RX.bit1
 @30
 rx_tb.RX.char0[0:7]
-@31
 rx_tb.RX.char1[0:7]
+@8023
+rx_tb.RX.counter[15:0]
 @28
 rx_tb.RX.clear
 rx_tb.RX.clear_flag
@@ -31,8 +30,5 @@ rx_tb.RX.clk
 rx_tb.RX.flag
 rx_tb.RX.reset
 rx_tb.RX.rx
-@420
-rx_tb.RX.rx_term_count
-rx_tb.RX.rx_term_nu_bits
 [pattern_trace] 1
 [pattern_trace] 0

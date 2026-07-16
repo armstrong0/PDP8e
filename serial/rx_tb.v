@@ -11,6 +11,8 @@ reg clear;
 wire flag;
 wire [0:7] char;
 
+reg [15:0] baud_count;
+
 rx RX (.reset (reset),
 .clear (clear),
 .clk (clk),
@@ -22,7 +24,7 @@ rx RX (.reset (reset),
 );
 
 `include "../parameters.v"
-
+//`include "../FPGA_image/clock_frequency.v"
 initial begin
         clk <=0;
         forever
@@ -40,7 +42,6 @@ localparam tx_term_nu_bits = $clog2(tx_term_count);
 localparam tx_term_cnt = tx_term_count[tx_term_nu_bits-1:0]; 
 
 
-reg [15:0] baud_count;
 
 
 initial begin 
@@ -64,7 +65,7 @@ initial begin
 
 #1 $display("slow baud period %f",(slow_baud));
 #100 Rx <= 1;
-#100 ;
+#1000 ;
 #(baud_period) Rx <= 0; // start
 #(baud_period) Rx <= 1; // bit 0
 #(baud_period) Rx <= 0; // 1

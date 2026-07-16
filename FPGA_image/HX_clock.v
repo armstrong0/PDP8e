@@ -7,7 +7,7 @@ module HX_clock (
     output reg fp_cont,
     output wire [9:0] SlowDev,
     output wire [9:0] FastDev,
-    output logic [9:0] cntr,
+    output reg [9:0] cntr,
     output wire [15:0] baud_count  // enough bits to get down to 1200 baud
     // with 73.5 MHz clock
     // we send the constant rather than generate a clock because RX needs part rate clocks
@@ -28,8 +28,8 @@ module HX_clock (
   assign SlowDev = slow_dev;
   localparam fast_dev = $rtoi(clock_frequency / (fast_spi * 2));
   assign FastDev = fast_dev;
-  logic [9:0] fp_cntr;
-  logic [9:0] sd_cntr;
+  reg [9:0] fp_cntr;
+  reg [9:0] sd_cntr;
 
   always @(posedge clk) begin
     if (reset) begin

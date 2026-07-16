@@ -55,7 +55,7 @@ localparam idle = 0,
             state   <= idle;
           end
         end
-        start: ;  
+        start: counter <= baud_count ;  
         bit0, bit1, bit2, bit3, bit4, bit5, bit6: begin
           counter <= baud_count;
           char1   <= {rx, char1[0:6]};
