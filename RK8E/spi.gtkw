@@ -1,20 +1,20 @@
 [*]
-[*] GTKWave Analyzer v3.3.106 (w)1999-2020 BSI
-[*] Mon Mar  6 21:30:53 2023
+[*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
+[*] Sat Jul 18 02:49:12 2026
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/RK8E/sdspi_test.vcd"
-[dumpfile_mtime] "Mon Mar  6 21:30:35 2023"
-[dumpfile_size] 40454
+[dumpfile_mtime] "Sat Jul 18 02:34:18 2026"
+[dumpfile_size] 3892
 [savefile] "/home/armstrong/Desktop/PDP8e/RK8E/spi.gtkw"
 [timestart] 0
-[size] 1674 975
-[pos] -1 -1
-*-20.877443 11715000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1920 1006
+[pos] -247 -32
+*-17.044827 180000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] spi_tb.
-[sst_width] 214
+[sst_width] 263
 [signals_width] 118
 [sst_expanded] 1
-[sst_vpaned_height] 284
+[sst_vpaned_height] 295
 @28
 spi_tb.UUT.spiMISO
 spi_tb.UUT.spiMOSI

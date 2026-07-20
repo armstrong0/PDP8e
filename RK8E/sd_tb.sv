@@ -22,14 +22,25 @@ module sd_tb;
   sdSTAT_t            sdSTAT;
 
 
-  //  `include "../parameters.v"
-  `include "../FPGA_image/HX_clock.v"
+  `include "../FPGA_image/clock_frequency.v"
+  `include "../timing.v"
+  parameter slow_dev = $rtoi(clock_frequency / (slow_spi * 2));
+  parameter fast_dev = $rtoi(clock_frequency / (fast_spi * 2));
+
+  logic [9:0] SlowDiv, FastDiv;
+
+  assign SlowDiv = slow_dev;
+  assign FastDiv = fast_dev;
+
   localparam clock_period = 1e9 / clock_frequency;
 
   sd SD (
-      .clk       (clk),
-      .reset     (reset),       //! Clock/Reset
-      .clear     (clear),       //! IOCLR
+      .clk    (clk),
+      .reset  (reset),    //! Clock/Reset
+      .clear  (clear),    //! IOCLR 
+      .SlowDiv(SlowDiv),
+      .FastDiv(FastDiv),
+
       // PDP8 Interface
       .dmaDIN    (dmaDIN),      //! DMA Data Into Disk
       .dmaDOUT   (dmaDOUT),     //! DMA Data Out of Disk

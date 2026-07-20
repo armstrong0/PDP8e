@@ -83,6 +83,8 @@ module sd
     input                      clk,
     input                      reset,       //! Clock/Reset
     input                      clear,       //! IOCLR
+    input               [ 9:0] SlowDiv,
+    input               [ 9:0] FastDiv,
     // PDP8 Interface
     input               [0:11] dmaDIN,      //! DMA Data Into Disk
     output reg          [0:11] dmaDOUT,     //! DMA Data Out of Disk
@@ -101,26 +103,9 @@ module sd
     input               [0:14] sdMEMaddr,   //! Memory Address
     input  sdDISKaddr_t        sdDISKaddr,  //! Disk Address
     input                      sdLEN,       //! Sector Length
-    output sdSTAT_t            sdSTAT      //! Status
+    output sdSTAT_t            sdSTAT       //! Status
 );
 
-
-  //
-  //! SDSPI Instance
-  //
-
-  sdspi SDSPI (
-      .rst (reset),
-      .clk   (clk),
-      .spiOP   (spiOP),
-      .spiTXD  (spiTXD),
-      .spiRXD  (spiRXD),
-      .spiMISO (sdMISO),
-      .spiMOSI (sdMOSI),
-      .spiSCLK (sdSCLK),
-      .spiCS   (sdCS),
-      .spiDONE (spiDONE)
-  );
 
 
   //
@@ -215,6 +200,23 @@ module sd
   localparam logic [11:0] nAC = 1023;  //! NAC from SD Spec
   localparam logic [11:0] nWR = 20;  //! NWR from SD Spec
 
+  //
+  //! SDSPI Instance
+  //
+  sdspi SDSPI (
+      .rst (reset),
+      .clk   (clk),
+      .spiOP   (spiOP),
+      .spiTXD  (spiTXD),
+      .spiRXD  (spiRXD),
+      .spiMISO (sdMISO),
+      .spiMOSI (sdMOSI),
+      .spiSCLK (sdSCLK),
+      .spiCS   (sdCS),
+      .spiDONE (spiDONE),
+      .FastDiv (FastDiv),
+      .SlowDiv (SlowDiv)
+  );
 
 
   //!
@@ -401,7 +403,7 @@ module sd
                 state <= stateINFAIL;
               end else begin
                 spiOP <= spiCSH;
-                err   <= 8'h03; // fail version 1
+                err   <= 8'h03;  // fail version 1
                 state <= stateINFAIL;
               end
             end
@@ -440,7 +442,7 @@ module sd
                 spiTXD  <= 8'hff;
                 bytecnt <= 3;
               end else begin
-                err <= 8'h05;
+                err   <= 8'h05;
                 state <= stateINFAIL;
               end
 
@@ -964,7 +966,7 @@ module sd
             if (bytecnt != 8) begin
               spiOP   <= spiTR;
               spiTXD  <= 8'hff;
-              bytecnt <= bytecnt +1 ;
+              bytecnt <= bytecnt + 1;
             end else if (bytecnt == 8) begin
               spiOP   <= spiCSH;
               bytecnt <= 0;
@@ -1033,12 +1035,10 @@ module sd
               end
             else begin
               bytecnt <= 0;
-              if (spiRXD == 8'h00) 
-              begin
-                  state <= stateWRITE03;
-                  dmaRD <= 1'b1;  // assert this early so that the word is there when we need it
-              end
-              else begin
+              if (spiRXD == 8'h00) begin
+                state <= stateWRITE03;
+                dmaRD <= 1'b1;  // assert this early so that the word is there when we need it
+              end else begin
                 spiOP <= spiCSH;
                 val   <= spiRXD;
                 err   <= 8'h11;
@@ -1077,7 +1077,7 @@ module sd
           end else if (spiDONE == 1'b1) begin
             bytecnt <= 0;
             state   <= stateWRITE05;
-            memADDR <= memADDR + 1; // moved here so word is ready next time around
+            memADDR <= memADDR + 1;  // moved here so word is ready next time around
           end
         end
 
@@ -1123,8 +1123,8 @@ module sd
             memBUF <= 4'b0000;
             spiTXD <= 8'b0000_0000;
           end
-          memADDR <= memADDR + 1; // moved here so word is ready next time around
-          state <= stateWRITE08;
+          memADDR <= memADDR + 1;  // moved here so word is ready next time around
+          state   <= stateWRITE08;
         end
 
         //
@@ -1160,7 +1160,7 @@ module sd
               spiOP   <= spiTR;
               spiTXD  <= 8'hff;
               bytecnt <= 0;
-             // memADDR <= memADDR + 1;
+              // memADDR <= memADDR + 1;
               state   <= stateWRITE10;
               // adjust because we have one uncouted word loaded at the
               // begining
@@ -1174,7 +1174,7 @@ module sd
               state   <= stateWRITE06;
             end else begin
               bytecnt <= bytecnt + 1;
-             // memADDR <= memADDR + 1;
+              // memADDR <= memADDR + 1;
               state   <= stateWRITE06;
             end
         end
@@ -1405,11 +1405,11 @@ module sd
 
 
 
-      /* //
+      //
       //! SDSPI Instance
       //
 
-      sdspi SDSPI (
+      /*   sdspi SDSPI (
         .reset (reset),
         .clk   (clk),
         .spiOP   (spiOP),
@@ -1479,8 +1479,8 @@ module sd
       endcase
     end
     // asynchronous assignements to output signals
-    dmaADDR      = memADDR;
-    dmaREQ       = memREQ;
+    dmaADDR = memADDR;
+    dmaREQ  = memREQ;
     sdSTAT.err   <= err;
     sdSTAT.val   <= val;
     sdSTAT.rdCNT <= rdCNT;

@@ -49,31 +49,24 @@
 //--
 // RK8E Secure Digital SPI Interface Entity
 // --
-`include "../timing.v"
-parameter slow_dev = $rtoi(clock_frequency / (slow_spi * 2));
-parameter nu_divcnt_bits = $clog2(slow_dev);
-parameter SlowDiv = slow_dev[nu_divcnt_bits-1:0];
-parameter fast_dev = $rtoi(clock_frequency / (fast_spi * 2));
-parameter FastDiv = fast_dev[nu_divcnt_bits-1:0];
-parameter LoSpiFreq = clock_frequency / (SlowDiv * 2);
-parameter HiSpiFreq = clock_frequency / (FastDiv * 2);
-
 
 
 module sdspi
   import sdspi_types::*;
   import sd_types::*;
 (
-    input  logic    clk,      // Clock/Reset
-    input  logic    rst,
-    input  spiOP_t  spiOP,    // Operation */
-    input  sdBYTE_t spiTXD,   // Transmit Data */
-    output sdBYTE_t spiRXD,   // Receive Data */
-    input  logic    spiMISO,  // Data In
-    output reg      spiMOSI,  // Data Out
-    output reg      spiSCLK,  // Clock
-    output reg      spiCS,    // Chip Select
-    output reg      spiDONE   // Done */
+    input  logic          clk,      // Clock/Reset
+    input  logic          rst,
+    input  logic    [9:0] SlowDiv,
+    input  logic    [9:0] FastDiv,
+    input  spiOP_t        spiOP,    // Operation */
+    input  sdBYTE_t       spiTXD,   // Transmit Data */
+    output sdBYTE_t       spiRXD,   // Receive Data */
+    input  logic          spiMISO,  // Data In
+    output reg            spiMOSI,  // Data Out
+    output reg            spiSCLK,  // Clock
+    output reg            spiCS,    // Chip Select
+    output reg            spiDONE   // Done */
 
 );
 
@@ -93,7 +86,7 @@ module sdspi
   sdBYTE_t txd;
   sdBYTE_t rxd;
 
-  logic [nu_divcnt_bits-1:0] clkcnt, clkdiv;  // integer range 0 to 1024;
+  logic [9:0] clkcnt, clkdiv;  // integer range 0 to 1024;
 
 
   typedef enum logic [1:0] {

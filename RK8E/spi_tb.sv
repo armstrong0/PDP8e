@@ -18,10 +18,21 @@ module spi_tb;
   wire spiCS;
   wire spiDONE;
   logic spiMIS0;
+  `include "../FPGA_image/clock_frequency.v"
+  `include "../timing.v"
+
+  parameter slow_dev = $rtoi(clock_frequency / (slow_spi * 2));
+  parameter fast_dev = $rtoi(clock_frequency / (fast_spi * 2));
+
+  wire [9:0] SlowDiv, FastDiv;
+  assign SlowDiv = slow_dev;
+  assign FastDiv = fast_dev;
 
   sdspi UUT (
       .clk(clk),
       .rst(rst),
+      .SlowDiv(SlowDiv),
+      .FastDiv(FastDiv),
       .spiOP(spiOP),
       .spiTXD(spiTXD),
       .spiRXD(spiRXD),
@@ -33,7 +44,7 @@ module spi_tb;
   );
 
   always begin
-    #5 clk <= ~clk;
+    #6.5 clk <= ~clk;
   end
 
   initial begin

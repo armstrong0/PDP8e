@@ -110,6 +110,8 @@ module PDP8e (input clk,
     wire sd_reset;
     wire fp_trigger;
     wire fp_cont;
+    wire [9:0] SlowDiv;
+    wire [9:0] FastDiv;
 
     wire disk_rdy;
 `ifdef RK8E
@@ -158,12 +160,11 @@ HX_clock HX (.reset (reset),
    .sd_reset (sd_reset),
    .fp_trigger (fp_trigger),
    .fp_cont (fp_cont),
+   .SlowDiv (SlowDiv),
+   .FastDiv (FastDiv),
    .baud_count (baud_count) );
 
 `ifdef RK8E
-//`ifndef SIM
-//`include "HX_clock.v"
-//`endif
 rk8e RK8E (
     .clk (clk100) ,
     .reset (reset),
@@ -183,6 +184,8 @@ rk8e RK8E (
     .skip (disk_skip) ,
     .dmaDIN (mem2disk),
     .dmaDOUT (disk2mem),
+    .SlowDiv (SlowDiv),
+    .FastDiv (FastDiv),
     .sdMISO (sdMISO),
     .sdMOSI (sdMOSI),
     .sdSCLK (sdSCLK), 

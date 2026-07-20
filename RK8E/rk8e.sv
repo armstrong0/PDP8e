@@ -29,6 +29,8 @@ module rk8e
     input      [ 4:0] state,
     input      [0:11] ac,
     input             UF,
+    input      [ 9:0] FastDiv,
+    input      [ 9:0] SlowDiv,
     output reg [0:11] disk_bus,       // input to the  CPU
     /* verilator lint_off SYMRSVDWORD */
     output reg        interrupt,
@@ -49,14 +51,14 @@ module rk8e
 
 );
 
-  wire         flag;
-  reg   [ 3:0] toggle;
-  reg   [0:11] cmd_reg;  // command register
-  reg   [0:11] car;  // current address register
-  reg   [0:11] dar;  // disk address  
-  reg   [0:11] status;  // status register
+  wire                flag;
+  reg          [ 3:0] toggle;
+  reg          [0:11] cmd_reg;  // command register
+  reg          [0:11] car;  // current address register
+  reg          [0:11] dar;  // disk address  
+  reg          [0:11] status;  // status register
 
-  logic        sd_reset;  // delayed reset deassertion for the sd card
+  logic               sd_reset;  // delayed reset deassertion for the sd card
 
 
   // need a write protect for each drive
@@ -94,6 +96,8 @@ module rk8e
       .sdMOSI    (sdMOSI),      //! SD Data Out
       .sdSCLK    (sdSCLK),      //! SD Clock
       .sdCS      (sdCS),        //! SD Chip Select
+      .FastDiv   (FastDiv),
+      .SlowDiv   (SlowDiv),
       // RK8E Interface
       .sdOP      (sdOP),        //! SD OP
       .sdMEMaddr (sdMEMaddr),   //! Memory Address
@@ -104,7 +108,6 @@ module rk8e
 
 
   `include "../parameters.v"
-//  `include "../rates.v"
 
   /* Status Register bit assignment
 bit 0 0 = busy 1 = done
