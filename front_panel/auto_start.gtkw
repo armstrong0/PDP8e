@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
+[*] Mon Jul 27 02:05:59 2026
+[*]
+[dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/auto_start.vcd"
+[dumpfile_mtime] "Mon Jul 27 02:01:24 2026"
+[dumpfile_size] 12927
+[savefile] "/home/armstrong/Desktop/PDP8e/front_panel/auto_start.gtkw"
+[timestart] 188000
+[size] 1920 1006
+[pos] -1 -1
+*-17.663258 958000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] auto_start_tb.
+[sst_width] 263
+[signals_width] 150
+[sst_expanded] 1
+[sst_vpaned_height] 300
+@28
+auto_start_tb.FP.AS_state[2:0]
+auto_start_tb.FP.addr_load
+auto_start_tb.FP.addr_loadd
+auto_start_tb.FP.clear
+auto_start_tb.FP.cleard
+auto_start_tb.FP.clk
+auto_start_tb.FP.cont
+auto_start_tb.FP.contd
+auto_start_tb.FP.dep
+auto_start_tb.FP.depd
+auto_start_tb.FP.exam
+auto_start_tb.FP.examd
+auto_start_tb.FP.extd_addr
+auto_start_tb.FP.extd_addrd
+auto_start_tb.FP.fp_cont
+auto_start_tb.FP.fp_trigger
+auto_start_tb.FP.reset
+@30
+auto_start_tb.FP.rsr[0:11]
+@29
+auto_start_tb.FP.trig_state[2:0]
+@28
+auto_start_tb.FP.sw
+@22
+auto_start_tb.FP.state[4:0]
+@30
+auto_start_tb.FP.sr[0:11]
+[pattern_trace] 1
+[pattern_trace] 0

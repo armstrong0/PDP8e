@@ -1,4 +1,4 @@
-all: view_front view_front_st view_system view_timing
+all: view_front view_front_st view_system view_timing auto_start
 
 front_design: front_panel.v D_mux.v front_panel_tb.v
 	iverilog -DSIM -g2012 front_panel.v D_mux.v front_panel_tb.v -o front_design
@@ -37,6 +37,11 @@ view_system: system.vcd
 
 view_timing: timing.vcd
 	gtkwave timing.vcd front_timing.gtkw
+	
+auto_start: front_panel.v auto_start_tb.v
+	iverilog -g2012 front_panel.v auto_start_tb.v -o auto_start.o
+	vvp auto_start.o
+	gtkwave auto_start.vcd auto_start.gtkw
 
 clean:
 	rm -rf front_design front_st  *.vcd front_tm

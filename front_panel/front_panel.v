@@ -10,6 +10,8 @@ module front_panel (
     input cont,
     input dsel_sw,
     input fp_cont,
+    input [0:11] sr,
+    input sw,
     output reg sw_active,
     output triggerd,
     output reg fp_trigger,
@@ -20,6 +22,7 @@ module front_panel (
     examd,
     contd,
     dseld,
+    output reg [0:11] rsr,
     output reg [2:0] dsel
 
 );
@@ -34,10 +37,13 @@ module front_panel (
   reg [6:0] switchl;
   reg [2:0] trig_state;
   reg [9:0] cntr;
-
   reg trigger1;
 
   assign {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} = switchd;
+
+  // autostart control
+  reg AutoStart;
+  reg [2:0] AS_state;
 
   parameter reg [2:0]  //integer
   LATCH = 3'b000,
@@ -45,6 +51,7 @@ module front_panel (
       TRIG1 = 3'b010,
       TRIG2 = 3'b011,
       TRIG3 = 3'b100,
+      TRIG4 = 3'b111,
       DELAY = 3'b101,
       REENABLE = 3'b110;
 
@@ -60,15 +67,71 @@ module front_panel (
       sw_active <= 1'b0;
       dsel <= 3'b000;
       fp_trigger <= 0;
+      rsr <= 0;
+      // need to test here to see if we need to autostart
+      if (sw == 1) AS_state <= 1;
+      else AS_state <= 0;
     end else begin
+      // we must be in the halt (F0) state for this to work
+      //  two types of substitutions.
+      // 1.) when sw is set and addr_load is asserted we substitute 12'o7777 - starting address of the
+      // binary loader
+      // 2.) when sw is set when we power up we go through a bootstrap for the RK8e / RK05
+      //    this intails setting 12`o0030  asserting addr_load
+      //                 setting 12'o7643  asserting dep
+      //                 setting 12'o5031  asserting dep
+      //                 setting 12'o0030 asserting addr_load .
+      //                 asserting cont
+      // note we need to force 
       case (trig_state)
         LATCH: begin
-          switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw};
-          // latch inputs
-          if (switchl == 7'b0000000) trig_state <= LATCH;
-          else begin
-            trig_state <= WAIT;
-          end
+
+          case (AS_state)
+            0: begin
+              rsr <= sr;
+              switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw};
+              // latch inputs
+              if (switchl == 7'b0000000) trig_state <= LATCH;
+              else begin
+                trig_state <= WAIT;
+              end
+            end
+
+            1: begin
+              rsr <= 12'o0030;
+              AS_state <= 2;
+              switchl <= 7'b0010000;
+              trig_state <= WAIT;
+            end  // addr load
+
+            2: begin
+              rsr <= 12'o7643;
+              AS_state <= 3;
+              switchl <= 7'b0001000;
+              trig_state <= WAIT;
+            end
+            3: begin
+              rsr <= 12'o5031;
+              AS_state <= 4;
+              switchl <= 7'b0001000;
+              trig_state <= WAIT;
+            end
+            4: begin
+              rsr <= 12'o0030;
+              AS_state <= 5;
+              switchl <= 7'b0010000;
+              trig_state <= WAIT;
+            end
+            5: begin
+              AS_state <= 0;
+              switchl <= 7'b0000010;
+              trig_state <= WAIT;
+            end  // required to produce the cont signal
+            default: begin
+              rsr <= sr;
+              AS_state <= 0;
+            end
+          endcase
         end
         WAIT: begin
           trig_state <= TRIG1;
@@ -82,22 +145,30 @@ module front_panel (
         TRIG2: begin
           trig_state <= TRIG3;
           switchd <= switchd;
-          fp_trigger <= 1;
+	  if (AS_state == 0) fp_trigger <= 1;
           if (dseld == 1) begin
             if (dsel == 5) dsel <= 0;
             else dsel <= dsel + 1;
           end
         end
         TRIG3: begin
-          trig_state <= DELAY;
+	  if (AS_state == 0)
+             trig_state <= DELAY;
+	  else trig_state <= TRIG4;   
           switchd <= switchd;
           sw_active <= 1'b1;
         end
+	TRIG4: begin
+           trig_state <= REENABLE;
+	   sw_active  <= 1'b0;
+          switchd <= 8'b00000000;
+	end	
         DELAY:
         if (fp_cont == 1) begin
           trig_state <= REENABLE;
           fp_trigger <= 0;
           sw_active  <= 1'b0;
+          switchd <= 8'b00000000;
         end else begin
           trig_state <= DELAY;
           switchd <= 8'b00000000;
@@ -112,6 +183,4 @@ module front_panel (
       endcase
     end
   end
-
 endmodule
-

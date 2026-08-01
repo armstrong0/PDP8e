@@ -1153,16 +1153,16 @@ module sd
               spiOP   <= spiCSH;
               bytecnt <= 0;
               state   <= stateFINI;
-              // reeduce by 2 because we have one word at the beginning that
+              // reduce by 2 because we have one word at the beginning that
               // is uncounted
-            end else if (bytecnt == 506) begin
+            end else if (bytecnt == 509) begin
               memREQ  <= 1'b0;
               spiOP   <= spiTR;
               spiTXD  <= 8'hff;
               bytecnt <= 0;
               // memADDR <= memADDR + 1;
               state   <= stateWRITE10;
-              // adjust because we have one uncouted word loaded at the
+              // adjust because we have one uncounted word loaded at the
               // begining
             end else if ((bytecnt == 253) && (sdLEN == 1'b1)) begin
               memREQ  <= 1'b0;
@@ -1405,22 +1405,6 @@ module sd
 
 
 
-      //
-      //! SDSPI Instance
-      //
-
-      /*   sdspi SDSPI (
-        .reset (reset),
-        .clk   (clk),
-        .spiOP   (spiOP),
-        .spiTXD  (spiTXD),
-        .spiRXD  (spiRXD),
-        .spiMISO (sdMISO),
-        .spiMOSI (sdMOSI),
-        .spiSCLK (sdSCLK),
-        .spiCS   (sdCS),
-        .spiDONE (spiDONE)
-      ); */
 
       case (state)
         stateINIT00:  sdSTAT.debug <= 8'b00000000;

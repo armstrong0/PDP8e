@@ -143,7 +143,7 @@ module PDP8e_tb;
 
   initial begin
     #1 $display("clock frequency %f Hz", (clock_frequency));
-    #1 $display("baud rate %f Hz ", (baud_rate));
+ //   #1 $display("baud rate %f Hz ", (baud_rate));
     #1 $display("clock period %f nanoseconds", (clock_period));
     #1 $display("cycle time %f nanoseconds", (6 * clock_period));
 
@@ -154,7 +154,7 @@ module PDP8e_tb;
     //$readmemh("dumprk05.hex", UUT.MA.ram.mem, 0, 8191);
     $readmemh("write_sector.hex", UUT.MA.ram.mem, 0, 8191);
     $display("Read write_sector.hex");
-    $dumpvars(0,tx_char,diskio,serialio,serial_tx,UUT);
+    $dumpvars(0,tx_char,diskio,serialio,serial_tx,UUT,SDSIM);
 
     #1 reset <= 1;
     #(clock_period * 30) reset <= 0;
@@ -178,7 +178,7 @@ module PDP8e_tb;
     `PULSE(addr_load);
     wait(UUT.RK8E.disk_rdy == 1);
     #1000 `PULSE(cont);
-    #5000000 $finish;
+    #10000000 $finish;
  
 
   end

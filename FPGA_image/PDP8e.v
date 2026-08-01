@@ -101,7 +101,7 @@ module PDP8e (input clk,
     wire [0:2] IF,DF;
     wire UF;
     wire UI;
-    reg [0:11] rsr;
+    wire [0:11] rsr;
     wire EAE_mode,EAE_loop;
     wire sw_active;
     wire run_ff;
@@ -136,12 +136,6 @@ module PDP8e (input clk,
     begin
         pll_locked_buf <= {pll_locked_buf[2:0],pll_locked};
         reset <= ~pll_locked_buf[3];
-        rsr <= sr;
-    end
-`else
-    always @(posedge clk)
-    begin
-        rsr <= sr;
     end
 `endif
 
@@ -317,6 +311,9 @@ rk8e RK8E (
         .reset (reset),
         .state (state),
         .clear (clear),
+	.sr (sr),
+	.sw (sw),
+	.rsr (rsr),
 	.fp_trigger (fp_trigger),
 	.fp_cont (fp_cont),
         .extd_addr (extd_addr),

@@ -101,6 +101,7 @@ module sd_tb;
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= sdopNOP;  // only read one sector
+ 
     wait (dmaREQ == 1'b0);
     #20 dmaGNT <= 1'b0;
     sdLEN <= 1'b1;  // set up to read 1/2 of a sector
@@ -108,14 +109,17 @@ module sd_tb;
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
     sdOP <= sdopNOP;  // only read one sector
+
     wait (dmaREQ == 1'b0);
     #20 dmaGNT <= 1'b0;
     wait (sdstate == 3'b001);
     //#10000 $finish ;
+
     #160 sdOP <= sdopWR;  // write
     wait (dmaREQ == 1'b1);
     #20 dmaGNT <= 1'b1;
-    sdOP <= sdopNOP;  // only read one sector
+    sdOP <= sdopNOP;  // only write 1/2 of one sector
+
     wait (dmaREQ == 1'b0);
     sdLEN <= 1'b0;  // set up to read full sector
     // but wait for sdstate to go idle
@@ -126,6 +130,11 @@ module sd_tb;
     #20 dmaGNT <= 1'b1;
     sdOP <= sdopNOP;  // only read one sector
     wait (dmaREQ == 1'b0);
+    #20 dmaGNT <= 1'b0;
+    sdLEN <= 1'b0;  // set up to read full sector
+    sdOP <= sdopWR;  // write
+    wait (dmaREQ == 1'b0);
+
     #20 dmaGNT <= 1'b0;
     #25000 $finish;
 

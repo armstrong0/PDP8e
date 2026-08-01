@@ -65,7 +65,7 @@ front_panel UUT (
   initial begin
 
     $dumpfile("front_st.vcd");
-    $dumpvars(0, UUT);
+    $dumpvars(0,instruction, UUT);
 
     clk = 0;
     forever #10 clk = ~clk;

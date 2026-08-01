@@ -85,8 +85,8 @@ module sdsim (
 
   typedef logic [0:7] byte_t;
 
-  typedef byte_t [0:3325951] image_t;  // reduced the image file size, so gtkwave 
-  //doesn't segfault
+  typedef byte_t [0:3325951] image_t;  // reduced the image file size,
+  //so gtkwave doesn't segfault
   image_t image;
   logic [1:0] clkstat;
   integer c;
@@ -287,9 +287,9 @@ module sdsim (
         stateWRITE2:
         if (clkstat == 2'b10) begin
           if ((bitcnt == 0) || (sdCS == 1'b1)) begin
-            // bitcnt  <= 15;
-            // bytecnt <= 0;
-            // spiTX   <= 56'h00_ff_ff_ff_ff_ff_ff;
+             bitcnt  <= 15;
+             bytecnt <= 0;
+             spiTX   <= 56'h00_ff_ff_ff_ff_ff_ff;
             state <= stateRESET;
           end else begin
             bitcnt <= bitcnt - 1;

@@ -106,10 +106,10 @@ module PDP8e_tb;
 	#299 reset <= 0;
         #300;
         #10 `pulse(addr_load);
-	#500	wait(sw_active != 0);
+	#500	wait(UUT.sw_active == 0);
         #300 `pulse(cont);
 
-        #6000000 $finish;
+        #600000 $finish;
 
     end
 
