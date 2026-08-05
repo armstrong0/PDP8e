@@ -1,13 +1,13 @@
 [*]
 [*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
-[*] Mon Jul 27 02:05:59 2026
+[*] Sun Aug  2 20:29:09 2026
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/front_panel/auto_start.vcd"
-[dumpfile_mtime] "Mon Jul 27 02:01:24 2026"
-[dumpfile_size] 12927
+[dumpfile_mtime] "Sun Aug  2 20:28:42 2026"
+[dumpfile_size] 14061
 [savefile] "/home/armstrong/Desktop/PDP8e/front_panel/auto_start.gtkw"
 [timestart] 188000
-[size] 1920 1006
+[size] 1868 937
 [pos] -1 -1
 *-17.663258 958000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] auto_start_tb.
@@ -35,8 +35,10 @@ auto_start_tb.FP.fp_trigger
 auto_start_tb.FP.reset
 @30
 auto_start_tb.FP.rsr[0:11]
-@29
+@28
 auto_start_tb.FP.trig_state[2:0]
+@29
+auto_start_tb.FP.disk_rdy
 @28
 auto_start_tb.FP.sw
 @22

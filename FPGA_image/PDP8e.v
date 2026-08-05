@@ -110,6 +110,7 @@ module PDP8e (input clk,
     wire sd_reset;
     wire fp_trigger;
     wire fp_cont;
+    wire swr;
     wire [9:0] SlowDiv;
     wire [9:0] FastDiv;
 
@@ -204,13 +205,13 @@ rk8e RK8E (
         .depd (depd),
         .examd (examd),
         .extd_addrd (extd_addrd),
-        .sw (sw),
+        .sw (swr),
 `ifdef RK8E
         .to_disk (to_disk),
         .disk2mem (disk2mem),
         .dmaAddr (dmaAddr),
         .mem2disk (mem2disk),
-	.data_break (data_break),
+        .data_break (data_break),
 `endif
         .mdout (mdout),
         .index (index));
@@ -266,9 +267,9 @@ rk8e RK8E (
         .state (state),
         .instruction (instruction),
         .ac (ac),
-		.mq (mq),
-		.EAE_mode (EAE_mode),
-		.gtf (gtf),
+        .mq (mq),
+        .EAE_mode (EAE_mode),
+        .gtf (gtf),
         .l (link),
         .skip (skip));
 
@@ -291,9 +292,9 @@ rk8e RK8E (
         .dsel (dsel),
         .state (state),
 `ifdef RK8E
-        .state1 ( {instruction[0:2],2'b00,sw,disk_rdy,break_in_prog,EAE_mode} ),
+        .state1 ( {instruction[0:2],2'b00,swr,disk_rdy,break_in_prog,EAE_mode} ),
 `else
-        .state1 ( {instruction[0:2],2'b00,sw,2'b00,EAE_mode} ),
+        .state1 ( {instruction[0:2],2'b00,swr,2'b00,EAE_mode} ),
 `endif
         .status ({link,gtf,irq,int_inh,int_ena,{UF,IF,DF}}),
         .ac (ac),
@@ -311,11 +312,13 @@ rk8e RK8E (
         .reset (reset),
         .state (state),
         .clear (clear),
-	.sr (sr),
-	.sw (sw),
-	.rsr (rsr),
-	.fp_trigger (fp_trigger),
-	.fp_cont (fp_cont),
+        .sr (sr),
+        .sw (sw),
+        .swr (swr),
+        .rsr (rsr),
+        .fp_trigger (fp_trigger),
+        .fp_cont (fp_cont),
+        .disk_rdy (disk_rdy),
         .extd_addr (extd_addr),
         .addr_load (addr_load),
         .dep (dep),

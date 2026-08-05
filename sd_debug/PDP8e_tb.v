@@ -2,29 +2,32 @@
 `timescale 1 ns / 10 ps
 `define PULSE(arg) #1 ``arg <=1 ; #(20*clock_period) ``arg <= 0
 
-module la_ram (din, reset, instruction,state, clk);// 8196 x 12
+module la_ram (
+    din,
+    reset,
+    instruction,
+    state,
+    clk
+);  // 8196 x 12
 
   `include "../parameters.v"
-    localparam addr_width = 15;
-    localparam data_width = 12;
-    reg [14:0] addr;
-    input [data_width-1:0] din;
-    input reset, clk;
-    input [0:11] instruction;
-    input [4:0] state;
-    reg [data_width-1:0] mem [(1<<addr_width)-1:0];
-    
-    always @(posedge clk)
-    begin
-    if (reset ==1) addr <= 0;
-    else if ( instruction ==12'o6046)
-    begin if (state == F2) 
-    mem[addr] <= din;
-    else if (state == F3)
-	addr <= addr +1;
-	end
+  localparam addr_width = 15;
+  localparam data_width = 12;
+  reg [14:0] addr;
+  input [data_width-1:0] din;
+  input reset, clk;
+  input [0:11] instruction;
+  input [4:0] state;
+  reg [data_width-1:0] mem[(1<<addr_width)-1:0];
+
+  always @(posedge clk) begin
+    if (reset == 1) addr <= 0;
+    else if (instruction == 12'o6046) begin
+      if (state == F2) mem[addr] <= din;
+      else if (state == F3) addr <= addr + 1;
     end
-    endmodule
+  end
+endmodule
 
 
 
@@ -61,13 +64,12 @@ module PDP8e_tb;
   wire diskio;
   assign diskio = (UUT.instruction[0:8] == 9'o674);
   wire serialio;
-  assign serialio = ((UUT.instruction[0:8] == 9'o603) || 
-                    (UUT.instruction[0:8] == 9'o604));
+  assign serialio = ((UUT.instruction[0:8] == 9'o603) || (UUT.instruction[0:8] == 9'o604));
   wire serial_tx;
-  assign serial_tx = UUT.instruction ==12'o6046;
-  
+  assign serial_tx = UUT.instruction == 12'o6046;
+
   wire [0:11] tx_char;
-  assign tx_char = (( UUT.ac ) && (serial_tx == 1));
+  assign tx_char = ((UUT.ac) && (serial_tx == 1));
 
   wire DLAC;
   assign DLAC = (UUT.instruction == 12'o6744);
@@ -105,8 +107,8 @@ module PDP8e_tb;
       .reset(reset),
       .rx(rx),
       .sr(sr),
-      .dsel_swn (~dsel_sw),
-      .dsel_led (dsel_led),
+      .dsel_swn(~dsel_sw),
+      .dsel_led(dsel_led),
       .dep(dep),
       .sw(sw),
       .single_stepn(single_stepn),
@@ -133,17 +135,18 @@ module PDP8e_tb;
       .sdMISO(sdMISO)
   );
 
- la_ram LARAM(
-       .clk (clk100),
-       .reset (reset),
-       .din (UUT.ac),
-       .state (UUT.state),
-       .instruction (UUT.instruction));
+  la_ram LARAM (
+      .clk(clk100),
+      .reset(reset),
+      .din(UUT.ac),
+      .state(UUT.state),
+      .instruction(UUT.instruction)
+  );
 
 
   initial begin
     #1 $display("clock frequency %f Hz", (clock_frequency));
- //   #1 $display("baud rate %f Hz ", (baud_rate));
+    //   #1 $display("baud rate %f Hz ", (baud_rate));
     #1 $display("clock period %f nanoseconds", (clock_period));
     #1 $display("cycle time %f nanoseconds", (6 * clock_period));
 
@@ -154,38 +157,38 @@ module PDP8e_tb;
     //$readmemh("dumprk05.hex", UUT.MA.ram.mem, 0, 8191);
     $readmemh("write_sector.hex", UUT.MA.ram.mem, 0, 8191);
     $display("Read write_sector.hex");
-    $dumpvars(0,tx_char,diskio,serialio,serial_tx,UUT,SDSIM);
+    $dumpvars(0, tx_char, diskio, serialio, serial_tx, UUT, SDSIM);
 
     #1 reset <= 1;
-    #(clock_period * 30) reset <= 0;
     #1 single_step <= 0;
-    #1 sw <= 0;
+    #1 sw <= 1;
     #1 exam <= 0;
     #1 cont <= 0;
     #1 extd_addr <= 0;
     #1 addr_load <= 0;
     #1 dep <= 0;
-	#1 clear <= 0;
+    #1 clear <= 0;
     #1 dsel_sw <= 0;
+    #1 halt <= 0;
     #1 sr <= 12'o1000;
-    #1 pll_locked <= 0;
     #1 rx <= 1;  // marking state
+    #1 pll_locked <= 0;
     #100 pll_locked <= 1;
-    #100 halt <= 0;
-    #200 `PULSE(clear);
+    #(clock_period * 30) reset <= 0;
+    // #200 `PULSE(clear);
 
-    sr <= 12'o0200;  
-    `PULSE(addr_load);
-    wait(UUT.RK8E.disk_rdy == 1);
-    #1000 `PULSE(cont);
-    #10000000 $finish;
- 
+    // sr <= 12'o0200;  
+    // `PULSE(addr_load);
+    wait (UUT.RK8E.disk_rdy == 1);
+    // #1000 `PULSE(cont);
+    #100000 $finish;
+
 
   end
- final begin
-	// $writememh("dumpac.hex",LARAM.mem,0,1536); // 0, 16383);
-	// $writememh("mem.hex",UUT.MA.ram.mem,512,1024);
-	// $writememh("reg.hex",UUT.MA.ram.mem,0,45);
+  final begin
+    // $writememh("dumpac.hex",LARAM.mem,0,1536); // 0, 16383);
+    // $writememh("mem.hex",UUT.MA.ram.mem,512,1024);
+    // $writememh("reg.hex",UUT.MA.ram.mem,0,45);
   end
 
 endmodule

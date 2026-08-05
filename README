@@ -1,3 +1,5 @@
+Autostart is now implemented.  If the sw switch is asserted and then the unit is powered up, the boot code for OS8 is deposited into memory and executed.  Note there is a small delay while the code waits for the sd card to be ready. 
+
 Now booting OS8 from SD Card!!
 
 Timing information removed from parameters.v and now in timing.v   A module in the same directory as the top level (for the particular FPGA) generates timing debounce constants for the serial port and the spi port of the sd card interface.  As well it generates start up delays for the sd card and the delays for the front panel.
@@ -11,11 +13,17 @@ All tests now pass.  The ma and pc units have been merged.  All source files hav
 
 The design passes all three EAE tests, so a complete EAE implementation.  
 
-There is a problem with the serial port, if the halt switch is set, it is possible that the serial transmitter was in the middle of a character, leaving the line is the spacing state, this messes up the receiving uart.
+//There is a problem with the serial port, if the halt switch is set, it is 
+//possible that the serial transmitter was in the middle of a character, 
+//leaving the line is the spacing state, this messes up the receiving uart.
+This is NOT a problem!  Halt does not stop the TX state machine from running.  Iwill complete the sending of the charactor.  The main state machine will stop in the F0 state and nothing more will happen!
 
-The front panel code has been modified so that: when in halt state and a control switch is toggled the run LED comes on for the debounce time.  There is still a problem with the front panel code where the switch is depressed, the run LED comes on BUT that action required in not taken!
+
+The front panel code has been modified so that: when in halt state and a control switch is toggled the run LED comes on for the debounce time.  
 
 The Least Significant Bit (bit 11) of the state display has been reallocated to the EAE state, LED on signifies the "B" mode.
+
+Bit 9 of the state display indicates if the disk (sd card) is ready.
 
 Toggling the "sw" switch up and pressing address load result in octal 7777 being loaded into the memory address register, useful when starting the binary loader - which is loaded in memory during FPGA boot.  It is necessary to have switch 0 up (high) for the bootloader to use the console port.
 
@@ -37,15 +45,6 @@ AWG wire is used to hook up 3.3 Volts.
 
 Yellow LED's required - address 15, data display 12, run 1 and display selected
 indicator 6.  Total 34.  Current limit resistor value is: 220 ohms.
-
-// The display switch was problematic, it was not clear where the switch was
-// positioned so LEDs were added.  The wiper of the switch is tied to 3.3 V, The
-// six poles are connected to their respect ICEWERKS module pins, pull down
-// resistors (18 k - not critical) go from each pole to ground.  Also from pole a
-// wire goes to the anode of the associated display LED.  The cathodes of the
-// LED's are all tied together and then routed through a 220 ohm resistor to
-// ground.  Thus the only one LED lights and it indicates with switch positions
-// is select.  
 
 The rotary switch has been replaced with a push button switch.  When the rotary switch was used, all of the 6 lines assigned to this function were inputs to the FPGA and the LEDS were driven from the switch. Now one input is used by the push button switch.  The other 5 lines are now outputs driving the LEDS.  LED's are grouped into two groups three.  The cathodes of the three LEDS are tied together and through a 220 ohm resistor go to an FPGA pin.  Same for the other group of three.  Then corresponding anodes of LED's are tied together and are driven by an FPGA pin.  To turn a LED on the cathode of the LED is driven low, either (01 or 10) and the anode is driven high (100, 010, or 001).   
 
@@ -76,25 +75,6 @@ burned into the ICEWERKS module using the command "make burn".
 To build the FPGA, enter the directory FPGA_image and type make.  If make is
 successful, then the image can be burned into the flash device on the ICEWERKS
 module using: make burn.
-
-This to do:
-1.) implement USER mode. DONE July 20
-
-2.) implement EAE Done January 26, 2023
-
-3.) implement a real time clock
-
-4.) implement an emulated RK05 disk array using an SD card - take a look at
-Rob Doyle's PDP8 implantation on opencores!
-
-5.) retarget to a ICE40up5k part - which has enough RAM to implement the full
-32K words of memory (actually could implement 128 K as in the PDP8a).  However
-the part does not have enough IO pins to drive all the LEDs and sense all of
-the switches.  Would take some thought...
-
-5.) Redo the state machine adding one state to each of the 3 (4 Halt) machine
-cycles to register the RAM outputs before being used.  Currently this is the
-longest delays - should be able to speed the thing up. DONE July 20, it has sped the machine up
 
 
 
