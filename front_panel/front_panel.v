@@ -15,7 +15,7 @@ module front_panel (
     input sw,
     output reg sw_active,
     output reg swr,
-    output triggerd,
+    output reg triggerd,
     output reg fp_trigger,
     output reg cleard,
     extd_addrd,
@@ -35,27 +35,62 @@ module front_panel (
 
 
   wire cont_c;
-  reg [7:0] switchd;
+ // reg [7:0] switchd;
   reg [6:0] switchl;
-  reg [2:0] trig_state;
+  reg [3:0] trig_state;
   reg [9:0] cntr;
   reg trigger1;
 
-  assign {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} = switchd;
+ // assign {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} = switchd;
 
+//`define AB_RK8E
+`define AB_CSD  
   // autostart control
   reg AutoStart;
-  reg [2:0] AS_state;
+  reg [13:0] AS_data[0:10]; // 2 bits for op, 12 bits opernd
+  // 00 load, 01 extn addr, 10 dep, 11 cont 
+  reg [3:0] data_idx;
 
-  parameter reg [2:0]  //integer
-  LATCH = 3'b000,
-      WAIT  = 3'b001,
-      TRIG1 = 3'b010,
-      TRIG2 = 3'b011,
-      TRIG3 = 3'b100,
-      TRIG4 = 3'b111,
-      DELAY = 3'b101,
-      REENABLE = 3'b110;
+  initial begin  // RK8e
+`ifdef AB_RK8E
+    AS_data[0] = 14'o00030;  // Load
+    AS_data[1] = 14'o26743;  // Dep
+    AS_data[2] = 14'o25031;
+    AS_data[3] = 14'o00030;
+    AS_data[4] = 14'o30000;  //cont
+`elsif AB_CSD
+    //CSD
+    AS_data[0] <= 14'o00025;  //	Load
+    AS_data[1] <= 14'o26031;  //	Dep
+    AS_data[2] <= 14'o25025;
+    AS_data[3] <= 14'o26036;
+    AS_data[4] <= 14'o27012;
+    AS_data[5] <= 14'o27010;
+    AS_data[6] <= 14'o23001;
+    AS_data[7] <= 14'o22032;
+    AS_data[8] <= 14'o25025;
+    AS_data[9] <= 14'o00025;  //    Load
+    AS_data[10] = 14'o30000;  //    cont
+`endif
+
+    end
+  parameter reg [3:0]  //integer
+  LATCH = 4'b000,
+      WAIT  = 4'b001,
+      TRIG1 = 4'b010,
+      TRIG2 = 4'b011,
+      TRIG3 = 4'b100,
+      DELAY = 4'b101,
+      REENABLE = 4'b110,
+      TRIG4 = 4'b0111,
+      AS0 = 4'b1000,
+      AS1 = 4'b1001,
+      AS2 = 4'b1010,
+      AS3 = 4'b1011,
+      AS4 = 4'b1100,
+      AS5 = 4'b1101,
+      AS6 = 4'b1110,
+      AS7 = 4'b1111;
 
 
   // don't really care what state the main state machine is in,
@@ -63,8 +98,7 @@ module front_panel (
   // switch press is validated for the proper state elsewhere
   always @(posedge clk) begin
     if (reset) begin
-      trig_state <= LATCH;
-      switchd <= 8'b00000000;
+      {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= 8'b0;
       switchl <= 7'b0000000;
       sw_active <= 1'b0;
       dsel <= 3'b000;
@@ -72,110 +106,57 @@ module front_panel (
       rsr <= 0;
       // need to test here to see if we need to autostart
       if (sw == 1) begin
-        AS_state <= 1;
+        trig_state <= AS0;
         swr <= 0;  // inhibit sw for addr load from rsr
-      end else AS_state <= 0;
+      end else trig_state <= LATCH;
+      data_idx <= 0;
     end else begin
-      // when sw is set when we power up we go through a bootstrap
-      // for the RK8e / RK05
-      //    this intails setting 12`o0030  asserting addr_load
-      //                 setting 12'o6743  asserting dep
-      //                 setting 12'o5031  asserting dep
-      //                 setting 12'o0030 asserting addr_load .
-      //                 asserting cont
       case (trig_state)
         LATCH: begin
 
-          case (AS_state)
-            0: begin
-              rsr <= sr;
-              swr <= sw;  // pass sw through so that ma can check and load the bus
-              switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw};
-              // latch inputs
-              if (switchl == 7'b0000000) trig_state <= LATCH;
-              else begin
-                trig_state <= WAIT;
-              end
-            end
 
-            1: begin
-              rsr <= 12'o0030;
-              if (disk_rdy == 1) // wait for sd card to be available
-              begin
-                AS_state <= 2;
-                switchl <= 7'b0010000;
-                trig_state <= WAIT;
-              end else trig_state <= LATCH;
+          rsr <= sr;
+          swr <= sw;  // pass sw through so that ma can check and load the bus
+          switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw};
+          // latch inputs
+          if (switchl == 7'b0000000) trig_state <= LATCH;
+          else begin
+            trig_state <= WAIT;
+          end
 
-            end  // addr load
-
-            2: begin
-              rsr <= 12'o6743;
-              AS_state <= 3;
-              switchl <= 7'b0001000;
-              trig_state <= WAIT;
-            end
-            3: begin
-              rsr <= 12'o5031;
-              AS_state <= 4;
-              switchl <= 7'b0001000;
-              trig_state <= WAIT;
-            end
-            4: begin
-              rsr <= 12'o0030;
-              AS_state <= 5;
-              switchl <= 7'b0010000;
-              trig_state <= WAIT;
-            end
-            5: begin
-              AS_state <= 0;
-              switchl <= 7'b0000010;
-              trig_state <= WAIT;
-            end  // required to produce the cont signal
-            default: begin
-              rsr <= sr;
-              AS_state <= 0;
-            end
-          endcase
         end
         WAIT: begin
           trig_state <= TRIG1;
-          switchd <= {1'b1, switchl};
+	  {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= {1'b1, switchl};
           switchl <= 7'b0000000;
         end
         TRIG1: begin
           trig_state <= TRIG2;
-          switchd <= switchd;
+         // switchd <= switchd;
         end
         TRIG2: begin
           trig_state <= TRIG3;
-          switchd <= switchd;
-          if (AS_state == 0) fp_trigger <= 1;
+        //  switchd <= switchd;
+          fp_trigger <= 1;
           if (dseld == 1) begin
             if (dsel == 5) dsel <= 0;
             else dsel <= dsel + 1;
           end
         end
         TRIG3: begin
-          if (AS_state == 0) trig_state <= DELAY;
-          else trig_state <= TRIG4;
-          switchd   <= switchd;
+          trig_state <= DELAY;
+        //  switchd <= switchd;
           sw_active <= 1'b1;
-        end
-        TRIG4: begin
-          trig_state <= REENABLE;
-          sw_active <= 1'b0;
-          switchd <= 8'b00000000;
         end
         DELAY:
         if (fp_cont == 1) begin
           trig_state <= REENABLE;
           fp_trigger <= 0;
           sw_active <= 1'b0;
-          switchd <= 8'b00000000;
+	  {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= 8'b00000000; 
         end else begin
           trig_state <= DELAY;
-          switchd <= 8'b00000000;
+	  {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= 8'b00000000;
         end
 
         REENABLE: begin
@@ -183,8 +164,55 @@ module front_panel (
           fp_trigger <= 0;
         end
         default: trig_state <= LATCH;
-
+	AS0: trig_state <= AS1;
+	AS1: begin
+		trig_state <= AS2;
+		rsr <= AS_data[data_idx][11:0];
+		case (AS_data[data_idx][13:12])
+			0:addr_loadd <= 1;
+			1:extd_addrd <= 1;
+			2:depd <= 1;
+			3:contd <= 1;
+			default:;
+		endcase
+	end
+	AS2: trig_state <= AS3;
+	AS3: trig_state <= AS4;
+	AS4: trig_state <= AS5;
+	AS5: begin
+		trig_state <= AS6;
+		addr_loadd <= 0;
+		extd_addrd <= 0;
+		depd <= 0;
+		contd <= 0;
+	end
+	AS6: begin
+		if (AS_data[data_idx][13:12] == 2'b11)
+			trig_state <= AS7;
+		else trig_state <= AS1;
+		data_idx <= data_idx + 1;
+	end	
+	AS7: trig_state <= LATCH;
       endcase
     end
   end
 endmodule
+
+// for auto start
+// add parameter to compile in auto start
+// add a parameter to have the code for CSD loaded
+// else load the RK8e boot code
+// for RK8e we must wait for the disk_rdy  to assert
+// set up arrays for the code and a variable to access them
+// 
+//  expand the state machine to handle states to load
+// state machine assesses the array, sets 12 bits to the sr and 
+// uses one of the other four bits to activate the control siganls
+// addr_load, extd_addr_load, dep, cont.
+// when cont inue is asserted the auto start portion of the state
+// machine exits and the normal functions work as normal
+// duplicate the state machine for normal for use with autostart, 
+// howevery it does not use the fp_trigger, fp_cont signals
+
+
+
