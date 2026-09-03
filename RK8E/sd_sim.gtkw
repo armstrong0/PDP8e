@@ -1,11 +1,11 @@
 [*]
 [*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
-[*] Tue Jul 28 01:53:10 2026
+[*] Tue Jul 28 02:00:33 2026
 [*]
 [dumpfile] "/home/armstrong/Desktop/PDP8e/RK8E/sdsim.vcd"
 [dumpfile_mtime] "Tue Jul 28 01:52:18 2026"
 [dumpfile_size] 400145763
-[savefile] "/home/armstrong/Desktop/PDP8e/RK8E/full_debug.gtkw"
+[savefile] "/home/armstrong/Desktop/PDP8e/RK8E/sd_sim.gtkw"
 [timestart] 0
 [size] 1920 1006
 [pos] -1 -407
@@ -15,5 +15,25 @@
 [signals_width] 166
 [sst_expanded] 1
 [sst_vpaned_height] 633
+@22
+sd_tb.SD.bytecnt[11:0]
+@8022
+sd_tb.SD.dmaADDR[0:14]
+@28
+sd_tb.SD.dmaGNT
+@29
+sd_tb.SD.dmaREQ
+@28
+sd_tb.SD.dmaRD
+sd_tb.SD.dmaREQ
+@22
+sd_tb.SD.memADDR[0:14]
+@28
+sd_tb.SD.sdLEN
+sd_tb.SD.sdSCLK
+@22
+sd_tb.SD.sdSTAT[42:0]
+sd_tb.SD.spiRXD[0:7]
+sd_tb.SD.spiTXD[0:7]
 [pattern_trace] 1
 [pattern_trace] 0

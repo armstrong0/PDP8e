@@ -1,0 +1,6 @@
+Max10/db/
+Max10/output_files/
+*.cdb
+*.hdb
+*.bak
+*.swp

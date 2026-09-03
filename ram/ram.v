@@ -1,3 +1,4 @@
+
 module ram (din, addr, write_en, clk, dout);// 8196 x 12 + 2048 x 12
     localparam data_width = 12;
     input [14:0] addr;
@@ -20,17 +21,21 @@ module ram (din, addr, write_en, clk, dout);// 8196 x 12 + 2048 x 12
 
         reg [data_width-1:0] mem [MAX_ADDRESS:0];
     
-`ifndef SIM
-        initial begin
-           $readmemh("focal_loader.hex",mem,0,4095);
-        end
-`endif
+//ifndef SIM
+//        initial begin
+//           $readmemh("focal_loader.hex",mem,0,4095);
+//        end
+//`endif
 
-	always @(posedge clk)
+(* ramstyle = "mlab" *)
+   always @(posedge clk)
+   begin
     if (write_en == 1)    begin
-	    if (addr < MAX_ADDRESS+1) mem[addr[13:0]] <= din;
+       if (addr < MAX_ADDRESS+1) mem[addr[13:0]] <= din;
     end
     else
-    if (addr < MAX_ADDRESS+1) dout <= mem[addr[13:0]];
-    else dout <= 12'o0;
+   // if (addr < MAX_ADDRESS+1) 
+	dout <= mem[addr[13:0]];
+   // else dout <= 12'o0;
+    end
 endmodule

@@ -89,6 +89,7 @@ module PDP8e_tb;
     $dumpvars(0, address, UUT);
 
     #0 halt <= 1;
+    #1 reset <=1;
     #1 single_step <= 0;
     #1 addr_load <= 0;
     #1 extd_addr <= 0;
@@ -107,9 +108,9 @@ module PDP8e_tb;
     #1 reset <= 1;
     #299 reset <= 0;
     #300;
-    //       #10 `pulse(addr_load);
-    //	#500	wait(UUT.sw_active == 0);
-    //        #300 `pulse(cont);
+    #10 `pulse(addr_load);
+    #500	wait(UUT.sw_active == 0);
+    #300 `pulse(cont);
 
     #6000000 $finish;
 

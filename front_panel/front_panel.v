@@ -29,39 +29,42 @@ module front_panel (
 
 );
 
-  `include "../timing.v"
 
 
 
 
   wire cont_c;
- // reg [7:0] switchd;
   reg [6:0] switchl;
   reg [3:0] trig_state;
   reg [9:0] cntr;
   reg trigger1;
+`ifdef AS_RK8E
+`define AS
+`endif
 
- // assign {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} = switchd;
+`ifdef AS_CSD
+`define AS
+`endif
 
-//`define AB_RK8E
-`define AB_CSD  
+`ifdef AS
   // autostart control
   reg AutoStart;
-  reg [13:0] AS_data[0:10]; // 2 bits for op, 12 bits opernd
+  reg [13:0] AS_data[0:10];  // 2 bits for op, 12 bits opernd
   // 00 load, 01 extn addr, 10 dep, 11 cont 
   reg [3:0] data_idx;
+`endif
 
   initial begin  // RK8e
-`ifdef AB_RK8E
+`ifdef AS_RK8E
     AS_data[0] = 14'o00030;  // Load
     AS_data[1] = 14'o26743;  // Dep
     AS_data[2] = 14'o25031;
     AS_data[3] = 14'o00030;
     AS_data[4] = 14'o30000;  //cont
-`elsif AB_CSD
+`elsif AS_CSD
     //CSD
-    AS_data[0] <= 14'o00025;  //	Load
-    AS_data[1] <= 14'o26031;  //	Dep
+    AS_data[0] <= 14'o00025;  //    Load
+    AS_data[1] <= 14'o26031;  //    Dep
     AS_data[2] <= 14'o25025;
     AS_data[3] <= 14'o26036;
     AS_data[4] <= 14'o27012;
@@ -73,7 +76,7 @@ module front_panel (
     AS_data[10] = 14'o30000;  //    cont
 `endif
 
-    end
+  end
   parameter reg [3:0]  //integer
   LATCH = 4'b000,
       WAIT  = 4'b001,
@@ -104,17 +107,19 @@ module front_panel (
       dsel <= 3'b000;
       fp_trigger <= 0;
       rsr <= 0;
+`ifdef AS
       // need to test here to see if we need to autostart
       if (sw == 1) begin
         trig_state <= AS0;
         swr <= 0;  // inhibit sw for addr load from rsr
       end else trig_state <= LATCH;
       data_idx <= 0;
+`else
+      trig_state <= LATCH;
+`endif
     end else begin
       case (trig_state)
         LATCH: begin
-
-
           rsr <= sr;
           swr <= sw;  // pass sw through so that ma can check and load the bus
           switchl <= switchl | {clear, extd_addr, addr_load, dep, exam, cont, dsel_sw};
@@ -127,16 +132,15 @@ module front_panel (
         end
         WAIT: begin
           trig_state <= TRIG1;
-	  {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= {1'b1, switchl};
+          {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= {1'b1, switchl};
           switchl <= 7'b0000000;
         end
         TRIG1: begin
           trig_state <= TRIG2;
-         // switchd <= switchd;
+          // switchd <= switchd;
         end
         TRIG2: begin
           trig_state <= TRIG3;
-        //  switchd <= switchd;
           fp_trigger <= 1;
           if (dseld == 1) begin
             if (dsel == 5) dsel <= 0;
@@ -145,18 +149,17 @@ module front_panel (
         end
         TRIG3: begin
           trig_state <= DELAY;
-        //  switchd <= switchd;
-          sw_active <= 1'b1;
+          sw_active  <= 1'b1;
         end
         DELAY:
         if (fp_cont == 1) begin
           trig_state <= REENABLE;
           fp_trigger <= 0;
           sw_active <= 1'b0;
-	  {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= 8'b00000000; 
+          {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= 8'b0;
         end else begin
           trig_state <= DELAY;
-	  {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= 8'b00000000;
+          {triggerd, cleard, extd_addrd, addr_loadd, depd, examd, contd, dseld} <= 8'b0;
         end
 
         REENABLE: begin
@@ -164,35 +167,45 @@ module front_panel (
           fp_trigger <= 0;
         end
         default: trig_state <= LATCH;
-	AS0: trig_state <= AS1;
-	AS1: begin
-		trig_state <= AS2;
-		rsr <= AS_data[data_idx][11:0];
-		case (AS_data[data_idx][13:12])
-			0:addr_loadd <= 1;
-			1:extd_addrd <= 1;
-			2:depd <= 1;
-			3:contd <= 1;
-			default:;
-		endcase
-	end
-	AS2: trig_state <= AS3;
-	AS3: trig_state <= AS4;
-	AS4: trig_state <= AS5;
-	AS5: begin
-		trig_state <= AS6;
-		addr_loadd <= 0;
-		extd_addrd <= 0;
-		depd <= 0;
-		contd <= 0;
-	end
-	AS6: begin
-		if (AS_data[data_idx][13:12] == 2'b11)
-			trig_state <= AS7;
-		else trig_state <= AS1;
-		data_idx <= data_idx + 1;
-	end	
-	AS7: trig_state <= LATCH;
+`ifdef AS	
+        AS0:
+`ifdef AS_RK8E
+        begin
+          if (disk_rdy == 1) trig_state <= AS1;
+	  else if (sw == 0 ) trig_state <= LATCH; // allows an escape when disk is not functioning
+	  else trig_state <= AS0;
+        end
+`else
+        trig_state <= AS1;  // CSD case we dont have to wait for disk_rdy
+`endif
+        AS1: begin
+          trig_state <= AS2;
+          rsr <= AS_data[data_idx][11:0];
+          case (AS_data[data_idx][13:12])
+            0: addr_loadd <= 1;
+            1: extd_addrd <= 1;
+            2: depd <= 1;
+            3: contd <= 1;
+            default: ;
+          endcase
+        end
+        AS2: trig_state <= AS3;
+        AS3: trig_state <= AS4;
+        AS4: trig_state <= AS5;
+        AS5: begin
+          trig_state <= AS6;
+          addr_loadd <= 0;
+          extd_addrd <= 0;
+          depd <= 0;
+          contd <= 0;
+        end
+        AS6: begin
+          if (AS_data[data_idx][13:12] == 2'b11) trig_state <= AS7;// cont pressed finish loader
+          else trig_state <= AS1;
+          data_idx <= data_idx + 1;
+        end
+        AS7: trig_state <= LATCH;
+`endif
       endcase
     end
   end

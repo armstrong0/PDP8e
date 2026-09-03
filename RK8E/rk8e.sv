@@ -23,7 +23,7 @@ module rk8e
 (
     input             clk,
     input             reset,
-    input             sd_reset,
+    input    logic    sd_reset,
     input             clear,
     input      [0:11] instruction,
     input      [ 4:0] state,
@@ -58,7 +58,7 @@ module rk8e
   reg          [0:11] dar;  // disk address  
   reg          [0:11] status;  // status register
 
-  logic               sd_reset;  // delayed reset deassertion for the sd card
+  //logic               sd_reset;  // delayed reset deassertion for the sd card
 
 
   // need a write protect for each drive
