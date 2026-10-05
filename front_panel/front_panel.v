@@ -30,7 +30,7 @@ module front_panel (
 );
 
 
-
+  `include "../parameters.v"
 
 
   wire cont_c;
@@ -39,11 +39,11 @@ module front_panel (
   reg [9:0] cntr;
   reg trigger1;
 `ifdef AS_RK8E
-`define AS
+  `define AS
 `endif
 
 `ifdef AS_CSD
-`define AS
+  `define AS
 `endif
 
 `ifdef AS
@@ -107,6 +107,7 @@ module front_panel (
       dsel <= 3'b000;
       fp_trigger <= 0;
       rsr <= 0;
+      swr <= 0; 
 `ifdef AS
       // need to test here to see if we need to autostart
       if (sw == 1) begin
@@ -137,7 +138,6 @@ module front_panel (
         end
         TRIG1: begin
           trig_state <= TRIG2;
-          // switchd <= switchd;
         end
         TRIG2: begin
           trig_state <= TRIG3;
@@ -167,13 +167,13 @@ module front_panel (
           fp_trigger <= 0;
         end
         default: trig_state <= LATCH;
-`ifdef AS	
+`ifdef AS
         AS0:
 `ifdef AS_RK8E
         begin
           if (disk_rdy == 1) trig_state <= AS1;
-	  else if (sw == 0 ) trig_state <= LATCH; // allows an escape when disk is not functioning
-	  else trig_state <= AS0;
+          else if (sw == 0) trig_state <= LATCH;  // allows an escape when disk is not functioning
+          else trig_state <= AS0;
         end
 `else
         trig_state <= AS1;  // CSD case we dont have to wait for disk_rdy
@@ -200,7 +200,7 @@ module front_panel (
           contd <= 0;
         end
         AS6: begin
-          if (AS_data[data_idx][13:12] == 2'b11) trig_state <= AS7;// cont pressed finish loader
+          if (AS_data[data_idx][13:12] == 2'b11) trig_state <= AS7;  // cont pressed finish loader
           else trig_state <= AS1;
           data_idx <= data_idx + 1;
         end

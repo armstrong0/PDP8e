@@ -1,6 +1,14 @@
 `define RK8E
 //`define EAE
 //`define up5k
+//
+//Auto Start
+`define AS
+// define one of
+// RK8E - OS8 boot code
+//`define AS_RK8E
+// boot code for Doug Ingrams' Console Serial Device
+`define AS_CSD
 
 // state machine encoding
 localparam F0 = 5'd0,  // 0
